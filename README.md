@@ -69,27 +69,37 @@ Welcome to the Ultimate TypeScript Full Stack Starter! This comprehensive toolki
 1. **Clone the repository**
 
    ```
-   git clone https://github.com/your-username/ultimate-typescript-starter.git
-   cd ultimate-typescript-starter
+   git clone https://github.com/ghostlexly/ultimate-typescript-starter-kit.git
+   cd ultimate-typescript-starter-kit
    ```
 
 2. **Set up environment variables**
    Copy `.env.template` to `.env` and fill in your values
 
-3. **Start the development environment**
+3. **Install dependencies**
+
+   ```
+   cd backend
+   yarn install
+
+   cd ../frontend
+   yarn install
+   ```
+
+4. **Start the development environment**
 
    ```
    docker compose -f docker-compose.yml -f docker-compose.dev.yml up
    ```
 
-4. **Access the application**
+5. **Access the application**
    - Frontend: http://localhost
    - Backend: http://localhost/api/
    - Swagger Docs: http://localhost/swagger
 
 ## 📚 Documentation
 
-For detailed documentation on each feature and how to use this starter kit, please refer to our [Wiki](https://github.com/ghostlexly/ultimate-typescript-starter/wiki).
+For detailed documentation on each feature and how to use this starter kit, please refer to our [Wiki](https://github.com/ghostlexly/ultimate-typescript-starter-kit/wiki).
 
 ## 🤝 Contributing
 
