@@ -1,0 +1,62 @@
+services:
+  # ===================================================================================================================================================================================
+  backend:
+    command: yarn start:dev
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./backend:/usr/src/app
+    restart: "on-failure"
+  # ===================================================================================================================================================================================
+  nginx:
+    restart: "on-failure"
+  # ===================================================================================================================================================================================
+  frontend:
+    command: yarn dev
+    # command: /bin/sh -c "yarn build && yarn start"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./frontend:/usr/src/app
+    restart: "on-failure"
+  # ===================================================================================================================================================================================
+  redis-commander:
+    image: ghcr.io/joeferner/redis-commander:latest
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=GhostLexly.7
+    ports:
+      - "8081:8081"
+  # ===================================================================================================================================================================================
+  mysql:
+    image: mysql:8.2
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_USER=ghostlexly
+      - MYSQL_PASSWORD=password
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=${COMPOSE_PROJECT_NAME}
+    volumes:
+      - ./mysql:/var/lib/mysql
+  # ===================================================================================================================================================================================
+  #  mysql_backup:
+  #    image: databack/mysql-backup:8b7f6338d7af6a008d20c986b862a99310eb237d
+  #    volumes:
+  #      - ./mysql-backups:/db:z
+  #    environment:
+  #      - DB_DUMP_TARGET=/db
+  #      - DB_NAMES=${PROJECT_NAME}
+  #      - DB_USER=root
+  #      - DB_PASS=hnLcqbLjGfruHlHN
+  #      - DB_SERVER=mysql
+  #      - DB_PORT=3306
+  #      - DB_DUMP_FREQ=360 # In minutes
+  #      - DB_DUMP_BEGIN=0000 # HHMM OR +10 to start 10 minutes after run
+  #      - NICE=true
+  #    user: "0"
+  #    depends_on:
+  #      - mysql
+  #    restart: always
+  # ===================================================================================================================================================================================

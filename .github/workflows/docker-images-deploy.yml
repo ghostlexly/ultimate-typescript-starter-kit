@@ -1,0 +1,85 @@
+name: Docker Images Deploy
+
+on:
+  push:
+    branches: [master, main]
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create environment file(s)
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env
+
+      - name: Login to docker registry
+        uses: docker/login-action@v2
+        with:
+          username: fenrisshq
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push docker images
+        run: |
+          NODE_ENV=production docker compose build
+          docker compose push
+
+      - name: Transfer files to production server
+        uses: appleboy/scp-action@master
+        with:
+          host: 51.44.21.144
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "docker-compose.yml,.env"
+          target: "~/docker"
+
+      - name: Deploy on production server
+        uses: appleboy/ssh-action@master
+        with:
+          host: 51.44.21.144
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Go to docker directory
+            cd ~/docker
+
+            # Login to docker registry
+            docker login -u fenrisshq -p ${{ secrets.DOCKER_PASSWORD }}
+
+            # Pull new images
+            docker compose pull
+
+            # Stop and remove existing containers
+            docker compose down
+
+            # Start new containers
+            docker compose up -d
+
+      - name: Run migrations on production server
+        uses: appleboy/ssh-action@master
+        with:
+          host: 51.44.21.144
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Go to docker directory
+            cd ~/docker
+
+            # Run migrations
+            docker compose exec backend yarn prisma migrate deploy
+
+      - name: Prune untagged docker images
+        uses: appleboy/ssh-action@master
+        with:
+          host: 51.44.21.144
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Go to docker directory
+            cd ~/docker
+
+            # Prune untagged images
+            docker image prune -f

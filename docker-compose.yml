@@ -1,0 +1,65 @@
+services:
+  # ===================================================================================================================================================================================
+  backend:
+    image: fenrisshq/terracapital:backend
+    build:
+      context: ./backend
+    environment:
+      - NODE_ENV=production
+      - FORCE_COLOR=1
+      - DISPLAY=${X11_DISPLAY}
+      - DATABASE_CONNECTION_URL=${DATABASE_CONNECTION_URL}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - S3_ENDPOINT=${S3_ENDPOINT}
+      - S3_ACCESS_KEY=${S3_ACCESS_KEY}
+      - S3_SECRET_KEY=${S3_SECRET_KEY}
+      - S3_BUCKET=${S3_BUCKET}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - PLAYWRIGHT_HEADLESS=${PLAYWRIGHT_HEADLESS}
+    volumes:
+      - ./backend/logs:/usr/src/app/logs
+    restart: always
+  # ===================================================================================================================================================================================
+  frontend:
+    image: fenrisshq/terracapital:frontend
+    build:
+      context: ./frontend
+    environment:
+      - NODE_ENV=production
+    restart: always
+  # ===================================================================================================================================================================================
+  nginx:
+    image: fenrisshq/terracapital:nginx
+    build:
+      context: ./nginx
+    ports:
+      - mode: host
+        protocol: tcp
+        published: 80
+        target: 80
+      - mode: host
+        protocol: tcp
+        published: 443
+        target: 443
+    volumes:
+      - ./nginx/logs:/var/log/nginx:z
+    depends_on:
+      - backend
+      - frontend
+    restart: always
+  # ===================================================================================================================================================================================
+  redis:
+    image: bitnami/redis:7.0.8
+    command: /opt/bitnami/scripts/redis/run.sh --maxmemory-policy noeviction
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/bitnami/redis/data
+    restart: always
+
+volumes:
+  redis_data:
