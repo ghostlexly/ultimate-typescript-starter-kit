@@ -20,6 +20,7 @@ services:
       - PLAYWRIGHT_HEADLESS=${PLAYWRIGHT_HEADLESS}
     volumes:
       - ./backend/logs:/usr/src/app/logs
+    tty: true
     restart: always
   # ===================================================================================================================================================================================
   frontend:
