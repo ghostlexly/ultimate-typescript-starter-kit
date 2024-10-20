@@ -53,8 +53,8 @@ Welcome to the Ultimate TypeScript Full Stack Starter! This comprehensive toolki
 
 ### ⚡ Performance
 
-- `SWC` bundling for faster builds
-- Hot-reload with `nodemon` for rapid development
+- `esbuild` bundling for faster builds
+- Hot-reload for rapid development
 - Redis caching
 - Optimized architecture
 
