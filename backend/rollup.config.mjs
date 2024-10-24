@@ -85,13 +85,13 @@ export default {
     },
   ],
 
-  // disable the clear screen in watch mode
+  // watch mode configuration
   watch: {
-    clearScreen: false,
+    clearScreen: false, // disable the clear screen in watch mode
     include: ["src/**"],
     chokidar: {
-      usePolling: true,
-      interval: 1000, // Poll every 1000ms (1 second)
+      usePolling: true, // use polling to watch for file changes
+      interval: 1000, // poll every 1000ms (1 second)
     },
   },
 };
