@@ -36,6 +36,7 @@ Welcome to the Ultimate TypeScript Full Stack Starter! This comprehensive toolki
 - **Background Processing**: Efficient task handling with BullMQ and node-cron
 - **Internationalization**: Multi-language support with i18n
 - **API Documentation**: Swagger integration
+- **Events**: Powerful event handling with EventEmitter2
 
 ### 🎨 Frontend
 
