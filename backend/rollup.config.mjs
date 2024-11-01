@@ -3,63 +3,93 @@ import { nodeExternals } from "rollup-plugin-node-externals";
 import { typescriptPaths } from "rollup-plugin-typescript-paths";
 import { spawn } from "child_process";
 import { glob } from "glob";
+import retry from "async-retry";
 
 const isWatchMode = process.env.ROLLUP_WATCH;
 let server;
+
+/**
+ * Create a watch plugin that will restart the server when the files change in watch mode
+ */
+const createWatchPlugin = () => ({
+  name: "watch-and-restart",
+  async buildEnd() {
+    if (isWatchMode) {
+      try {
+        await retry(restartServer, {
+          retries: 3,
+          factor: 2,
+          onRetry: (error, attempt) => {
+            console.error(`Retry attempt ${attempt}/4 failed:`, error.message);
+          },
+        });
+      } catch (error) {
+        console.error("Failed to restart server after 4 attempts !");
+        process.exit(1); // Exit the process with error code
+      }
+
+      await typescriptTypesCheck();
+    }
+  },
+});
 
 /**
  * Restart the node server process
  * when the files change in watch mode
  */
 const restartServer = async () => {
+  await stopServer();
+  await startServer();
+};
+
+const stopServer = async () => {
+  if (!server) return;
+
   try {
-    if (server) {
-      await new Promise((resolve, reject) => {
-        const timeout = setTimeout(() => {
-          reject(new Error("Server shutdown timed out after 5000ms"));
-        }, 5000);
+    await new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error("Server shutdown timed out after 5000ms"));
+      }, 5000);
 
-        server.on("close", () => {
-          clearTimeout(timeout);
-          server = null;
-          console.log("Previous server process terminated");
-          resolve();
-        });
-
-        server.on("error", (err) => {
-          clearTimeout(timeout);
-          reject(err);
-        });
-
-        server.kill("SIGTERM");
+      server.on("close", () => {
+        clearTimeout(timeout);
+        server = null;
+        console.log("Previous server process terminated");
+        resolve();
       });
-    }
 
-    console.log("Starting new server process...");
-    server = spawn("node", ["dist/main.js"], {
-      stdio: "inherit",
-      env: { ...process.env, FORCE_COLOR: "1" }, // Preserve colors in logs
-    });
-
-    server.on("error", (err) => {
-      console.error("Failed to start server process:", err);
-    });
-
-    server.on("exit", (code, signal) => {
-      if (code !== null) {
-        console.log(`Server process exited with code ${code}`);
-      } else if (signal) {
-        console.log(`Server process killed with signal ${signal}`);
-      }
+      server.kill("SIGTERM");
     });
   } catch (error) {
-    console.error("Error during server restart:", error);
-    // Try to clean up if something went wrong
-    if (server) {
-      server.kill("SIGKILL");
-      server = null;
-    }
+    server?.kill("SIGKILL");
+    server = null;
+    throw error;
   }
+};
+
+const startServer = async () => {
+  console.log("Starting new server process...");
+
+  return new Promise((resolve, reject) => {
+    server = spawn("node", ["dist/main.js"], {
+      stdio: "inherit",
+      env: { ...process.env, FORCE_COLOR: "1" },
+    });
+
+    server.on("error", reject);
+    server.on("exit", (code, signal) => {
+      if (code === 0 || signal) {
+        console.log(
+          signal
+            ? `Server process killed with signal ${signal}`
+            : "Server process exited with code 0"
+        );
+        resolve();
+      } else {
+        reject(new Error(`Server process exited with code ${code}`));
+      }
+    });
+  });
 };
 
 /**
@@ -113,15 +143,7 @@ export default {
     }),
 
     // restart the server when the files change in watch mode
-    {
-      name: "watch-and-restart",
-      async buildEnd() {
-        if (isWatchMode) {
-          restartServer();
-          typescriptTypesCheck();
-        }
-      },
-    },
+    createWatchPlugin(),
   ],
 
   // watch mode configuration
