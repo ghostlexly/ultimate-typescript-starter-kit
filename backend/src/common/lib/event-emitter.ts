@@ -1,10 +1,10 @@
 import EventEmitter2 from "eventemitter2";
-import { createLoggerService } from "./logger";
+import { createLogger } from "./logger";
 import path from "path";
 import { getAppDir } from "./app-dir";
 import { glob } from "glob";
 
-const logger = createLoggerService({ name: "initializeEventEmitter" });
+const logger = createLogger({ name: "initializeEventEmitter" });
 
 export const eventEmitter = new EventEmitter2({
   // set this to `true` to use wildcards

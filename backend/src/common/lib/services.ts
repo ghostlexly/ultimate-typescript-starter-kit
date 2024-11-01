@@ -1,8 +1,8 @@
 import { createTestService } from "@/modules/test/test.service";
-import { createLoggerService } from "./logger";
+import { createLogger } from "./logger";
 import { createTestAuthorService } from "@/modules/test-author/test-author.service";
 
-const logger = createLoggerService({ name: "initializeServices" });
+const logger = createLogger({ name: "initializeServices" });
 
 // Define a type for the service container
 export type TServiceContainer = {

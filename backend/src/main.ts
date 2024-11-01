@@ -14,11 +14,11 @@ import { initializeSwagger } from "./common/lib/swagger";
 import { initializeCrons } from "./common/lib/crons";
 import { rewriteIpAddressMiddleware } from "./common/middlewares/rewrite-ip-address.middleware";
 import { initializeEventEmitter } from "./common/lib/event-emitter";
-import { createLoggerService } from "./common/lib/logger";
+import { createLogger } from "./common/lib/logger";
 import { initializeServices } from "./common/lib/services";
 
 const app = express();
-const logger = createLoggerService({ name: "main" });
+const logger = createLogger({ name: "main" });
 
 async function bootstrap() {
   // -- Log bootstrap time
