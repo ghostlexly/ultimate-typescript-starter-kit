@@ -13,20 +13,20 @@ let server;
  */
 const createWatchPlugin = () => ({
   name: "watch-and-restart",
-  async buildEnd() {
+  async writeBundle() {
     if (isWatchMode) {
-      try {
-        await retry(restartServer, {
-          retries: 3,
-          factor: 2,
-          onRetry: (error, attempt) => {
-            console.error(`Retry attempt ${attempt}/4 failed:`, error.message);
-          },
-        });
-      } catch (error) {
-        console.error("Failed to restart server after 4 attempts !");
-        process.exit(1); // Exit the process with error code
-      }
+      retry(restartServer, {
+        retries: 4,
+        factor: 2,
+        onRetry: (error, attempt) => {
+          console.error(`Retry attempt ${attempt}/4 failed:`, error.message);
+
+          if (attempt === 4) {
+            console.error("Failed to restart server after 4 attempts !");
+            process.exit(1); // Exit the process with error code
+          }
+        },
+      });
 
       await typescriptTypesCheck();
     }
@@ -86,6 +86,7 @@ const startServer = async () => {
         );
         resolve();
       } else {
+        server = null;
         reject(new Error(`Server process exited with code ${code}`));
       }
     });
@@ -139,7 +140,7 @@ export default {
     // transpile the typescript code
     esbuild({
       target: "es2022",
-      sourceMap: false,
+      sourceMap: true,
     }),
 
     // restart the server when the files change in watch mode
