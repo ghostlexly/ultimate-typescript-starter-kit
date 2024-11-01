@@ -12,18 +12,54 @@ let server;
  * when the files change in watch mode
  */
 const restartServer = async () => {
-  if (server) {
-    await new Promise((resolve) => {
-      server.on("close", () => {
-        server = null;
-        resolve();
+  try {
+    if (server) {
+      await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error("Server shutdown timed out after 5000ms"));
+        }, 5000);
+
+        server.on("close", () => {
+          clearTimeout(timeout);
+          server = null;
+          console.log("Previous server process terminated");
+          resolve();
+        });
+
+        server.on("error", (err) => {
+          clearTimeout(timeout);
+          reject(err);
+        });
+
+        server.kill("SIGTERM");
       });
+    }
 
-      server.kill("SIGTERM");
+    console.log("Starting new server process...");
+    server = spawn("node", ["dist/main.js"], {
+      stdio: "inherit",
+      env: { ...process.env, FORCE_COLOR: "1" }, // Preserve colors in logs
     });
-  }
 
-  server = spawn("node", ["dist/main.js"], { stdio: "inherit" });
+    server.on("error", (err) => {
+      console.error("Failed to start server process:", err);
+    });
+
+    server.on("exit", (code, signal) => {
+      if (code !== null) {
+        console.log(`Server process exited with code ${code}`);
+      } else if (signal) {
+        console.log(`Server process killed with signal ${signal}`);
+      }
+    });
+  } catch (error) {
+    console.error("Error during server restart:", error);
+    // Try to clean up if something went wrong
+    if (server) {
+      server.kill("SIGKILL");
+      server = null;
+    }
+  }
 };
 
 /**
