@@ -37,7 +37,7 @@ services:
       - MYSQL_USER=ghostlexly
       - MYSQL_PASSWORD=password
       - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=${COMPOSE_PROJECT_NAME}
+      - MYSQL_DATABASE=${PROJECT_NAME}
     volumes:
       - ./mysql:/var/lib/mysql
   # ===================================================================================================================================================================================
