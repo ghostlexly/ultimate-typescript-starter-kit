@@ -65,7 +65,7 @@ const GhostDropzone = forwardRef<
     }, [value]);
 
     // ----------------
-    // Send the files objects to the parent component via the onChange prop
+    // Update the file ids on the input's value when the files change
     // ----------------
     useEffect(() => {
       if (files) {
@@ -120,8 +120,9 @@ const GhostDropzone = forwardRef<
               // ----------------
               // Handle file rejected error (server side)
               // ----------------
-              if (err.data?.message) {
-                toast.error(err.data.message);
+
+              if (err.body?.message) {
+                toast.error(err.body?.message);
               } else if (err.response.status === 413) {
                 // 413 = Payload Too Large
                 toast.error(`This file is too large.`);
@@ -130,7 +131,7 @@ const GhostDropzone = forwardRef<
               }
 
               // Remove the file that has problem from the list
-              setFiles((prevFiles) => prevFiles.filter((f) => f.id !== tempId));
+              setFiles((prevFiles) => prevFiles.filter((f) => f !== file));
             });
         });
       },
@@ -158,13 +159,13 @@ const GhostDropzone = forwardRef<
 
         switch (errorCode) {
           case "file-invalid-type":
-            toast.error(`The file type is not accepted. \n ${errorMessage}`);
+            toast.error(`The file  type is not accepted. \n ${errorMessage}`);
             break;
           case "file-too-large":
             toast.error(`The file is too large. \n ${errorMessage}`);
             break;
           default:
-            toast.error(`The file is not accepted. \n ${errorMessage}`);
+            toast.error(`The file  is not accepted. \n ${errorMessage}`);
             break;
         }
       });

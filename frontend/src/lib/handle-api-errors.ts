@@ -8,9 +8,9 @@ type IApiErrors = {
 };
 
 const handleApiErrors = ({ err, form, prefix }: IApiErrors) => {
-  if (err.data?.violations) {
+  if (err.body?.violations) {
     // decompose the error object
-    const { message, violations } = err.data;
+    const { message, violations } = err.body;
 
     // --------------------
     // If we have a form and errors list, display the errors in the form
