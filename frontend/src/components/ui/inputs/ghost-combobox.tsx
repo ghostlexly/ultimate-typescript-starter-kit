@@ -98,13 +98,17 @@ const GhostCombobox = forwardRef<HTMLInputElement, GhostComboboxProps>(
           const label = getOptionLabel(option);
           const value = getOptionValue(option);
 
-          if (value?.toLowerCase().includes(inputValue.toLowerCase())) {
+          if (
+            value?.toLowerCase().includes(inputValue.toString().toLowerCase())
+          ) {
             return option;
           }
 
           // -- if the default options are already loaded (because we need to search only by value received from the form first), we also check the label
           if (hasLoadedDefaultOption) {
-            if (label?.toLowerCase().includes(inputValue.toLowerCase())) {
+            if (
+              label?.toLowerCase().includes(inputValue.toString().toLowerCase())
+            ) {
               return option;
             }
           }
