@@ -96,7 +96,7 @@ Welcome to the Ultimate TypeScript Full Stack Starter! This comprehensive toolki
 5. **Access the application**
    - Frontend: http://localhost
    - Backend: http://localhost/api/
-   - Swagger Docs: http://localhost/swagger
+   - Swagger Docs: http://localhost/api/swagger
 
 ## 📚 Documentation
 
