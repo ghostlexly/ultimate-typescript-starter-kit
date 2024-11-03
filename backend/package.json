@@ -9,7 +9,8 @@
     "build": "rollup -c",
     "start": "node dist/main.js",
     "start:dev": "rollup -c -w",
-    "check": "tsc --noEmit",
+    "tsc:check": "tsc --noEmit",
+    "madge": "madge . -c",
     "cli": "node dist/cli.js",
     "format": "prettier --write \"src/**/*.ts\""
   },
