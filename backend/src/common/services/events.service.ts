@@ -8,8 +8,9 @@ const logger = createLogger({ name: "initializeEventEmitter" });
 
 export type AppEvents = {
   "test.event": (data: string) => void;
-  "cart.updating": (data: { cartId: string }) => void;
   "cart.updated": (data: { cartId: string }) => void;
+  "payment.updated": (data: { payment: any }) => void;
+  "payment.created": (data: { payment: any }) => void;
   "booking.created": (data: { bookingId: string; cartId: string }) => void;
   "booking.updated": (data: { bookingId: string; cartId: string }) => void;
   "booking.deleted": (data: { bookingId: string; cartId: string }) => void;
@@ -83,6 +84,7 @@ export const offEvent = <K extends keyof AppEvents>(
  * are handled through a single, application-wide event bus.
  */
 export const eventsService = {
+  bus: eventBus,
   initialize: initializeEventEmitter,
   emit: emitEvent,
   emitAsync: emitEventAsync,
