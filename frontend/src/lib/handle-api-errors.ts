@@ -33,8 +33,8 @@ const handleApiErrors = ({ err, form, prefix }: IApiErrors) => {
       );
       toast.error(errors.join("\n"));
     }
-  } else if (err.message) {
-    toast.error(err.message);
+  } else if (err.body?.message) {
+    toast.error(err.body.message);
   } else {
     // --------------------
     // if the error doesn't have a message, display a generic toast message
