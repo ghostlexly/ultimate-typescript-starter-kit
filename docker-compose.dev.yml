@@ -23,8 +23,8 @@ services:
   redis-commander:
     image: ghcr.io/joeferner/redis-commander:latest
     environment:
-      - REDIS_HOST=${REDIS_HOST}
-      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_HOST=${APP_REDIS_HOST}
+      - REDIS_PORT=${APP_REDIS_PORT}
       - REDIS_PASSWORD=GhostLexly.7
     ports:
       - "8081:8081"
