@@ -1,13 +1,9 @@
-import { Router } from "express";
 import { strictThrottler } from "@/common/throttlers/strict.throttler";
-import { TestService } from "./test.service";
-import { TestAuthorService } from "../test-author/test-author.service";
-import { TestController } from "./controllers/test.controller";
+import { Router } from "express";
+import { TestControllerFactory } from "./factories/test.controller.factory";
 
 export const testRouter = Router();
-const testAuthorService = new TestAuthorService();
-const testService = new TestService(testAuthorService);
-const testController = new TestController(testService);
+const testController = TestControllerFactory.create();
 
 /**
  * @swagger
