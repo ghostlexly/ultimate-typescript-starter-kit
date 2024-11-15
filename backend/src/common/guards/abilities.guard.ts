@@ -91,7 +91,7 @@ export const checkAbilities = async ({
   object?: any;
   throwError?: boolean;
 }) => {
-  const abilities = await defineAbilitiesFor(req.account);
+  const abilities = await defineAbilitiesFor(req.context?.account || null);
 
   if (
     abilities.cannot(method, {
@@ -120,14 +120,14 @@ export const checkAbilities = async ({
  * @returns
  */
 export const getAbilities = (req: Request) => {
-  if (!req.account) {
+  if (!req.context?.account) {
     throw new HttpError({
       status: 403,
       body: "You must be logged in to access this resource.",
     });
   }
 
-  return defineAbilitiesFor(req.account);
+  return defineAbilitiesFor(req.context?.account);
 };
 
 /**

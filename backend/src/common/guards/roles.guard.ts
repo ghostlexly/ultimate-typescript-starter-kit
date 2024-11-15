@@ -4,7 +4,7 @@ import { HttpError } from "../lib/errors";
 
 export const rolesGuard =
   (roles: Role[]) => (req: Request, res: Response, next: NextFunction) => {
-    const account = req.account;
+    const account = req.context?.account;
 
     // -----------------------------------
     // Check if the user is logged in

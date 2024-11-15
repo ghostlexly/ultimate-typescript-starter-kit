@@ -3,15 +3,15 @@ import { HttpError } from "@/common/lib/errors";
 
 const getMe = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const account = req.account;
+    const account = req.context?.account;
 
-    if (account.role === "CUSTOMER") {
+    if (account?.role === "CUSTOMER") {
       return res.json({
         id: account.customer.id,
         email: account.customer.email,
         role: account.role,
       });
-    } else if (account.role === "ADMIN") {
+    } else if (account?.role === "ADMIN") {
       return res.json({
         id: account.admin.id,
         email: account.admin.email,
