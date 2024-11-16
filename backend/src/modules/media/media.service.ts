@@ -1,4 +1,4 @@
-import { HttpError } from "@/common/lib/errors";
+import { HttpException } from "@/common/lib/errors";
 import { filesService } from "@/common/services/files.service";
 import { createLogger } from "@/common/lib/logger";
 import { prisma } from "@/common/providers/database/prisma";
@@ -64,7 +64,7 @@ export class MediaService {
     });
 
     if (!media) {
-      throw new HttpError({
+      throw new HttpException({
         status: 404,
         body: "Media to delete cannot be found.",
       });
@@ -99,14 +99,14 @@ export class MediaService {
     const fileInfos = await filesService.getFileInfos(file.path);
 
     if (!allowedMimeTypes.includes(fileInfos.mimeType)) {
-      throw new HttpError({
+      throw new HttpException({
         status: 415,
         body: "This file type is not supported.",
       });
     }
 
     if (file.size > maxFileSizeInBytes) {
-      throw new HttpError({
+      throw new HttpException({
         status: 413,
         body: `The file size must not exceed ${maxFileSize} Mo.`,
       });
@@ -141,21 +141,21 @@ export class MediaService {
     });
 
     if (!media) {
-      throw new HttpError({
+      throw new HttpException({
         status: 404,
         body: "Media to verify cannot be found.",
       });
     }
 
     if (!allowedMimeTypes.includes(media.mimeType)) {
-      throw new HttpError({
+      throw new HttpException({
         status: 415,
         body: "This file type is not allowed.",
       });
     }
 
     if (media.size > maxFileSizeInBytes) {
-      throw new HttpError({
+      throw new HttpException({
         status: 413,
         body: `The file size must not exceed ${maxFileSize} Mo.`,
       });
