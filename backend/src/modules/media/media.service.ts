@@ -6,8 +6,8 @@ import { s3Service } from "@/common/providers/s3/s3";
 import { Prisma } from "@prisma/client";
 import { sub } from "date-fns";
 
-export const createMediaService = () => {
-  const logger = createLogger({ name: "mediaService" });
+export class MediaService {
+  private readonly logger = createLogger({ name: "mediaService" });
 
   /**
    * Save a file uploaded with Multer to S3 and create a media record.
@@ -16,7 +16,7 @@ export const createMediaService = () => {
    * @param params.originalFileName The original file name
    * @returns The media record
    */
-  const uploadFileToS3 = async ({
+  uploadFileToS3 = async ({
     filePath,
     originalFileName,
   }: {
@@ -32,7 +32,7 @@ export const createMediaService = () => {
       mimeType: fileInfos.mimeType,
     });
 
-    const media = await create({
+    const media = await this.create({
       data: {
         fileKey: fileKey,
         fileName: originalFileName,
@@ -44,7 +44,7 @@ export const createMediaService = () => {
     return media;
   };
 
-  const create = async ({ data }: { data: Prisma.MediaCreateInput }) => {
+  create = async ({ data }: { data: Prisma.MediaCreateInput }) => {
     // -- create
     const media = await prisma.media.create({
       data: {
@@ -55,7 +55,7 @@ export const createMediaService = () => {
     return media;
   };
 
-  const remove = async ({ where }: { where: Prisma.MediaWhereUniqueInput }) => {
+  remove = async ({ where }: { where: Prisma.MediaWhereUniqueInput }) => {
     // -- Get the record from the database
     const media = await prisma.media.findUnique({
       where: {
@@ -86,7 +86,7 @@ export const createMediaService = () => {
    * @param params.allowedTypes The allowed MIME types
    * @param params.maxFileSize The maximum file size in Mo
    */
-  const verifyMulterMaxSizeAndMimeType = async ({
+  verifyMulterMaxSizeAndMimeType = async ({
     file,
     allowedMimeTypes,
     maxFileSize,
@@ -123,7 +123,7 @@ export const createMediaService = () => {
    * @param params.allowedMimeTypes The allowed MIME types
    * @param params.maxFileSize The maximum file size in Mo
    */
-  const verifyMediaMaxSizeAndMimeType = async ({
+  verifyMediaMaxSizeAndMimeType = async ({
     mediaId,
     allowedMimeTypes,
     maxFileSize,
@@ -168,7 +168,7 @@ export const createMediaService = () => {
    * Remove orphan media records.
    * An orphan media record is a media record that is not linked to any other record.
    */
-  const removeOrphanMedias = async () => {
+  removeOrphanMedias = async () => {
     // -- Get the orphan media records
     const orphanMedias = await prisma.media.findMany({
       where: {
@@ -209,28 +209,19 @@ export const createMediaService = () => {
 
     // -- Delete the orphan media records
     for (const media of orphanMedias) {
-      logger.debug(
+      this.logger.debug(
         `Deleting orphan media #${media.id} with FileKey [${media.fileKey}]...`
       );
 
-      await remove({
+      await this.remove({
         where: {
           id: media.id,
         },
       }).catch((err) => {
-        logger.error(
+        this.logger.error(
           `Error deleting orphan media #${media.id}: ${err.message}`
         );
       });
     }
   };
-
-  return {
-    uploadFileToS3,
-    create,
-    remove,
-    verifyMulterMaxSizeAndMimeType,
-    verifyMediaMaxSizeAndMimeType,
-    removeOrphanMedias,
-  };
-};
+}

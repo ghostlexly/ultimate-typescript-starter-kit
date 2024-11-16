@@ -1,6 +1,6 @@
 import { validate } from "@/common/lib/validator";
 import { NextFunction, Request, Response } from "express";
-import { customerAuthLoginSchema } from "./schemas/login.schema";
+import { customerAuthLoginSchema } from "./inputs/login.schema";
 import { prisma } from "@/common/providers/database/prisma";
 import * as bcrypt from "bcryptjs";
 import { HttpError } from "@/common/lib/errors";
@@ -9,7 +9,7 @@ import { SessionService } from "../session.service";
 export class CustomerAuthController {
   constructor(private readonly sessionService: SessionService) {}
 
-  async signin(req: Request, res: Response, next: NextFunction) {
+  signin = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const body = await validate({
         data: req.body,
@@ -58,5 +58,5 @@ export class CustomerAuthController {
     } catch (error) {
       next(error);
     }
-  }
+  };
 }

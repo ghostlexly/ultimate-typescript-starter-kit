@@ -20,6 +20,8 @@ services:
       - APP_PLAYWRIGHT_HEADLESS=${APP_PLAYWRIGHT_HEADLESS}
     volumes:
       - ./backend/logs:/usr/src/app/logs
+    depends_on:
+      - redis
     tty: true
     restart: always
   # ===================================================================================================================================================================================
