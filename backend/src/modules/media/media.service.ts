@@ -174,30 +174,12 @@ export class MediaService {
       where: {
         AND: [
           // {
-          //   propertyPhotos: {
-          //     none: {},
-          //   },
-          // },
-          // {
-          //   propertyDocuments: {
-          //     none: {},
-          //   },
-          // },
-          // {
-          //   propertyVideo: {
-          //     none: {},
-          //   },
-          // },
-          // {
           //   housekeeperAvatar: null,
           // },
           // {
           //   housekeeperDocumentsMedias: {
           //     none: {},
           //   },
-          // },
-          // {
-          //   housekeeperInsurance: null,
           // },
         ],
 

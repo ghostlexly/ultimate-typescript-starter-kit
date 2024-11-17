@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { optimizeVideoQueue } from "../queues/optimize-video/optimize-video.queue";
-import { OPTIMIZE_VIDEO_JOB } from "../queues/optimize-video/optimize-video.job";
+import { mediaQueue } from "../queues/media.queue";
+import { OPTIMIZE_VIDEO_JOB } from "../queues/optimize-video.job";
 import { HttpException } from "@/common/lib/errors";
 import { MediaService } from "../media.service";
 
@@ -70,7 +70,7 @@ export class MediaController {
       });
 
       // -- optimize the video file with ffmpeg and reupload it to S3
-      await optimizeVideoQueue.add(OPTIMIZE_VIDEO_JOB, { mediaId: media.id });
+      await mediaQueue.add(OPTIMIZE_VIDEO_JOB, { mediaId: media.id });
 
       return res.json({
         status: "success",
