@@ -58,7 +58,7 @@ testRouter.get("/tests/queue-launch", testController.testQueueLaunch);
  * @swagger
  * /api/tests/zod:
  *  post:
- *    tags: [Test]
+ *    tags: [Tests]
  *    summary: Test Zod
  *    description: Test Zod validation.
  *    requestBody:
@@ -90,33 +90,15 @@ testRouter.post("/tests/zod", testController.testZod);
 /**
  * @swagger
  * /api/tests/serializer:
- *  post:
+ *  get:
  *    tags: [Tests]
  *    summary: Test serializer
  *    description: Test serializer.
- *    requestBody:
- *      required: true
- *      content:
- *        application/json:
- *          schema:
- *            type: object
- *            properties:
- *              name:
- *                type: string
- *              bookings:
- *                type: array
- *                items:
- *                  type: object
- *                  properties:
- *                    id:
- *                      type: string
- *                    name:
- *                      type: string
  *    responses:
  *      '200':
  *        description: OK
  */
-testRouter.post("/tests/serializer", testController.testSerializer);
+testRouter.get("/tests/serializer", testController.testSerializer);
 
 /**
  * @swagger
