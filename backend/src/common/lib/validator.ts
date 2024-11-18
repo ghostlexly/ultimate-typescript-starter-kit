@@ -1,5 +1,5 @@
 import { ZodSchema, z } from "zod";
-import { HttpException } from "./errors";
+import { HttpException } from "./http-exception";
 
 export const validate = async <T>({
   data,

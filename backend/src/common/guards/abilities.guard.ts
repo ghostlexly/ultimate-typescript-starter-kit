@@ -7,7 +7,7 @@ import {
 } from "@casl/ability";
 import { CustomAccount } from "../types/request";
 import { Request, Response, NextFunction } from "express";
-import { HttpException } from "../lib/errors";
+import { HttpException } from "../lib/http-exception";
 
 /**
  * Define the abilities of the given account.

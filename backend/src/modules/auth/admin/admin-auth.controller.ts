@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { adminAuthLoginSchema } from "./inputs/login.schema";
 import { prisma } from "@/common/providers/database/prisma";
 import * as bcrypt from "bcryptjs";
-import { HttpException } from "@/common/lib/errors";
+import { HttpException } from "@/common/lib/http-exception";
 import { SessionService } from "../session.service";
 
 export class AdminAuthController {

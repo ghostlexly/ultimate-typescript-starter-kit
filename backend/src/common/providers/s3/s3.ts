@@ -11,7 +11,7 @@ import fs from "fs";
 import path from "path";
 import { filesService } from "../../services/files.service";
 import { format } from "date-fns";
-import { HttpException } from "@/common/lib/errors";
+import { HttpException } from "@/common/lib/http-exception";
 
 const client = new S3Client({
   endpoint: configService.getOrThrow("API_S3_ENDPOINT"),

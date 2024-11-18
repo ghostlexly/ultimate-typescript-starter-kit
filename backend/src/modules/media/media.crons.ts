@@ -6,7 +6,7 @@ const logger = createLogger({ name: "mediaCrons" });
 const mediaService = new MediaService();
 
 new CronJob(
-  "* 0 * * * *",
+  "0 0 */3 * * *",
   async () => {
     try {
       await mediaService.removeOrphanMedias();

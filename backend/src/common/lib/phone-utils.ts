@@ -1,5 +1,5 @@
 import parsePhoneNumberFromString, { CountryCode } from "libphonenumber-js";
-import { HttpException } from "./errors";
+import { HttpException } from "./http-exception";
 
 const parse = (params: { phoneNumber: string; countryCode?: CountryCode }) => {
   const { phoneNumber, countryCode = "FR" } = params;

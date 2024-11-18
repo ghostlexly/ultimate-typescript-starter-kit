@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { createLogger } from "../lib/logger";
-import { HttpException } from "../lib/errors";
+import { HttpException } from "../lib/http-exception";
 
 const logger = createLogger({ name: "exceptions-middleware" });
 const isDev = process.env.NODE_ENV === "development";

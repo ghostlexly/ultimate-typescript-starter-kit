@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import passport from "passport";
-import { HttpException } from "../lib/errors";
+import { HttpException } from "../lib/http-exception";
 
 /**
   Block everything if the user is not authenticated and the route is not public

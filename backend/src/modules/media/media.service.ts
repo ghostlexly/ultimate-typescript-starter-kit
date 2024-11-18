@@ -1,4 +1,4 @@
-import { HttpException } from "@/common/lib/errors";
+import { HttpException } from "@/common/lib/http-exception";
 import { filesService } from "@/common/services/files.service";
 import { createLogger } from "@/common/lib/logger";
 import { prisma } from "@/common/providers/database/prisma";

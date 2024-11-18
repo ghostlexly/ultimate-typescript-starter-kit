@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { mediaQueue } from "../queues/media.queue";
 import { OPTIMIZE_VIDEO_JOB } from "../queues/optimize-video.job";
-import { HttpException } from "@/common/lib/errors";
+import { HttpException } from "@/common/lib/http-exception";
 import { MediaService } from "../media.service";
 
 export class MediaController {

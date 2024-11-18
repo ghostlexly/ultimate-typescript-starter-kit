@@ -4,7 +4,7 @@ import { AccountDto } from "../outputs/account.dto";
 import { testQueue } from "../queues/test.queue";
 import { accountUpdateSchema } from "../inputs/account-update.schema";
 import { TESTING_JOB } from "../queues/testing.job";
-import { HttpException } from "@/common/lib/errors";
+import { HttpException } from "@/common/lib/http-exception";
 import { testConfig } from "../test.config";
 import { serializerService } from "@/common/services/serializer.service";
 import { eventsService } from "@/common/services/events.service";
@@ -15,7 +15,7 @@ export class TestController {
 
   testBadRequest = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      throw HttpException.BadRequest({
+      throw HttpException.badRequest({
         body: "An error occurred.",
         code: "TEST_BAD_REQUEST",
       });

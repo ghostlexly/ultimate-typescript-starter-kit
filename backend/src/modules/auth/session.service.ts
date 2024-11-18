@@ -1,4 +1,4 @@
-import { HttpException } from "@/common/lib/errors";
+import { HttpException } from "@/common/lib/http-exception";
 import { prisma } from "@/common/providers/database/prisma";
 import { Prisma } from "@prisma/client";
 import { add, isAfter } from "date-fns";
