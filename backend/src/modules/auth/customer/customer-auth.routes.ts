@@ -11,9 +11,9 @@ const customerAuthController = new CustomerAuthController(sessionService);
  * @swagger
  * /api/customer/auth/signin:
  *  post:
- *    tags: [Auth/Customer]
  *    summary: Signin to the customer panel
  *    description: Signin to the customer panel.
+ *    tags: [Auth/Customer]
  *    requestBody:
  *      required: true
  *      content:

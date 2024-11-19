@@ -19,9 +19,9 @@ const fileInterceptor = multer({
  * @swagger
  * /api/media:
  *  post:
- *    tags: [Media]
  *    summary: Upload a media
  *    description: Upload a media to the server.
+ *    tags: [Media]
  *    requestBody:
  *      required: true
  *      content:
@@ -46,9 +46,9 @@ mediaRouter.post(
  * @swagger
  * /api/media/video:
  *  post:
- *    tags: [Media]
  *    summary: Upload a video media
  *    description: Upload a video media to the server.
+ *    tags: [Media]
  *    requestBody:
  *      required: true
  *      content:

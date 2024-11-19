@@ -10,9 +10,9 @@ const meController = new MeController();
  * @swagger
  * /api/me:
  *  get:
- *    tags: [Me]
  *    summary: Get the current logged-in user's information.
  *    description: Get the current logged-in user's information.
+ *    tags: [Me]
  *    security:
  *      - bearerAuth: []
  *    responses:

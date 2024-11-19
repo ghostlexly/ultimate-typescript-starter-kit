@@ -11,9 +11,9 @@ const adminAuthController = new AdminAuthController(sessionService);
  * @swagger
  * /api/admin/auth/signin:
  *  post:
- *    tags: [Auth/Admin]
  *    summary: Signin to the admin panel
  *    description: Signin to the admin panel.
+ *    tags: [Auth/Admin]
  *    requestBody:
  *      required: true
  *      content:
