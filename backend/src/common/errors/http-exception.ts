@@ -1,6 +1,6 @@
 type HttpExceptionParams = {
   status: number;
-  body: { message: string; [key: string]: any } | string;
+  message: string;
   code?: string;
   cause?: Error;
 };
@@ -18,33 +18,29 @@ type HttpExceptionParams = {
  *    throw new HttpException({
  *      status: 400,
  *      code: 'PAYMENT_FAILED',
- *      body: 'Payment processing failed',
+ *      message: 'Payment processing failed',
  *      cause: stripeError
  *    });
  * }
  */
 export class HttpException extends Error {
   public readonly status: number;
-  public readonly body: object;
+  public readonly message: string;
   public readonly stack!: string;
   public readonly code?: string;
   public readonly cause?: Error;
 
-  constructor({ status, body, code, cause }: HttpExceptionParams) {
+  constructor({ status, message, code, cause }: HttpExceptionParams) {
     // -- validate
     if (!status || typeof status !== "number" || status < 100 || status > 599) {
       throw new Error("Invalid status code");
     }
 
-    // -- normalize body
-    // if body is a string, convert it to an object with a message property
-    const normalizedBody = typeof body === "string" ? { message: body } : body;
-
     // -- initialize
-    super(normalizedBody.message);
+    super(message);
     this.status = status;
     this.code = code;
-    this.body = normalizedBody;
+    this.message = message;
     this.cause = cause;
 
     // This maintains proper stack trace for where our error was thrown

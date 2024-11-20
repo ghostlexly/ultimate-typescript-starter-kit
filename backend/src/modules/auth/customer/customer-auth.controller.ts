@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { customerAuthLoginSchema } from "./inputs/login.schema";
 import { prisma } from "@/common/providers/database/prisma";
 import * as bcrypt from "bcryptjs";
-import { HttpException } from "@/common/lib/http-exception";
+import { HttpException } from "@/common/errors/http-exception";
 import { SessionService } from "../session.service";
 
 export class CustomerAuthController {
@@ -26,7 +26,7 @@ export class CustomerAuthController {
       if (!user) {
         throw new HttpException({
           status: 401,
-          body: "Invalid credentials.",
+          message: "Invalid credentials.",
         });
       }
 
@@ -34,7 +34,7 @@ export class CustomerAuthController {
       if (!user.password) {
         throw new HttpException({
           status: 401,
-          body: "Invalid credentials.",
+          message: "Invalid credentials.",
         });
       }
 
@@ -43,7 +43,7 @@ export class CustomerAuthController {
       if (!validPassword) {
         throw new HttpException({
           status: 401,
-          body: "Invalid credentials.",
+          message: "Invalid credentials.",
         });
       }
 

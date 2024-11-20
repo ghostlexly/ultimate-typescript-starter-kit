@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { mediaQueue } from "../queues/media.queue";
 import { OPTIMIZE_VIDEO_JOB } from "../queues/optimize-video.job";
-import { HttpException } from "@/common/lib/http-exception";
+import { HttpException } from "@/common/errors/http-exception";
 import { MediaService } from "../media.service";
 
 export class MediaController {
@@ -14,7 +14,7 @@ export class MediaController {
       if (!file) {
         throw new HttpException({
           status: 400,
-          body: "No file uploaded.",
+          message: "No file uploaded.",
         });
       }
 
@@ -52,7 +52,7 @@ export class MediaController {
       if (!file) {
         throw new HttpException({
           status: 400,
-          body: "No file uploaded.",
+          message: "No file uploaded.",
         });
       }
 
