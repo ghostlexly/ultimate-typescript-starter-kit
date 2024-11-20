@@ -1,15 +1,8 @@
 import { strictThrottler } from "@/common/throttlers/strict.throttler";
 import { Router } from "express";
-import { TestAuthorService } from "../test-author/test-author.service";
-import { TestService } from "./test.service";
-import { TestController } from "./controllers/test.controller";
+import { testController } from "./controllers/test.controller";
 
-export const testRouter = Router();
-
-// -- Initialize services and controller
-const testAuthorService = new TestAuthorService();
-const testService = new TestService(testAuthorService);
-const testController = new TestController(testService);
+export const testRoutes = Router();
 
 /**
  * @swagger
@@ -22,7 +15,7 @@ const testController = new TestController(testService);
  *      '200':
  *        description: OK
  */
-testRouter.get("/tests/bad-request", testController.testBadRequest);
+testRoutes.get("/tests/bad-request", testController.testBadRequest);
 
 /**
  * @swagger
@@ -35,7 +28,7 @@ testRouter.get("/tests/bad-request", testController.testBadRequest);
  *      '200':
  *        description: OK
  */
-testRouter.get(
+testRoutes.get(
   "/tests/strict-throttler",
   strictThrottler,
   testController.testSerializer
@@ -52,7 +45,7 @@ testRouter.get(
  *      '200':
  *        description: OK
  */
-testRouter.get("/tests/queue-launch", testController.testQueueLaunch);
+testRoutes.get("/tests/queue-launch", testController.testQueueLaunch);
 
 /**
  * @swagger
@@ -85,7 +78,7 @@ testRouter.get("/tests/queue-launch", testController.testQueueLaunch);
  *      '200':
  *        description: OK
  */
-testRouter.post("/tests/zod", testController.testZod);
+testRoutes.post("/tests/zod", testController.testZod);
 
 /**
  * @swagger
@@ -98,7 +91,7 @@ testRouter.post("/tests/zod", testController.testZod);
  *      '200':
  *        description: OK
  */
-testRouter.get("/tests/serializer", testController.testSerializer);
+testRoutes.get("/tests/serializer", testController.testSerializer);
 
 /**
  * @swagger
@@ -111,7 +104,7 @@ testRouter.get("/tests/serializer", testController.testSerializer);
  *      '200':
  *        description: OK
  */
-testRouter.get("/tests/event-emitter", testController.testEventEmitter);
+testRoutes.get("/tests/event-emitter", testController.testEventEmitter);
 
 /**
  * @swagger
@@ -124,7 +117,7 @@ testRouter.get("/tests/event-emitter", testController.testEventEmitter);
  *      '200':
  *        description: OK
  */
-testRouter.get(
+testRoutes.get(
   "/tests/dependency-injection",
   testController.testDependencyInjection
 );

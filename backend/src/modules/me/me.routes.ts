@@ -2,7 +2,7 @@ import { Router } from "express";
 import { sessionsGuard } from "@/common/guards/sessions.guard";
 import { MeController } from "./me.controller";
 
-export const meRouter = Router();
+export const meRoutes = Router();
 
 const meController = new MeController();
 
@@ -19,4 +19,4 @@ const meController = new MeController();
  *      '200':
  *        description: OK
  */
-meRouter.get("/me", sessionsGuard, meController.getMe);
+meRoutes.get("/me", sessionsGuard, meController.getMe);

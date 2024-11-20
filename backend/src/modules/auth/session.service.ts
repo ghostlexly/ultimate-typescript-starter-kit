@@ -71,3 +71,5 @@ export class SessionService {
     return false;
   };
 }
+
+export const sessionService = new SessionService();

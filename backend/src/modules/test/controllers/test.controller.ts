@@ -8,11 +8,9 @@ import { HttpException } from "@/common/errors/http-exception";
 import { testConfig } from "../test.config";
 import { serializerService } from "@/common/services/serializer.service";
 import { eventsService } from "@/common/services/events.service";
-import { TestService } from "../test.service";
+import { testService } from "../test.service";
 
 export class TestController {
-  constructor(private readonly testService: TestService) {}
-
   testBadRequest = async (req: Request, res: Response, next: NextFunction) => {
     try {
       throw HttpException.badRequest({
@@ -107,7 +105,7 @@ export class TestController {
     next: NextFunction
   ) => {
     try {
-      const result = this.testService.example();
+      const result = testService.example();
 
       return res.json({
         message: result,
@@ -118,3 +116,5 @@ export class TestController {
     }
   };
 }
+
+export const testController = new TestController();

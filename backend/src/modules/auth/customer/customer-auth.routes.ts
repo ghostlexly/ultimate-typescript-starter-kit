@@ -1,11 +1,8 @@
 import { strictThrottler } from "@/common/throttlers/strict.throttler";
 import { Router } from "express";
-import { SessionService } from "../session.service";
-import { CustomerAuthController } from "./customer-auth.controller";
+import { customerAuthController } from "./customer-auth.controller";
 
-export const customerAuthRouter = Router();
-const sessionService = new SessionService();
-const customerAuthController = new CustomerAuthController(sessionService);
+export const customerAuthRoutes = Router();
 
 /**
  * @swagger
@@ -29,7 +26,7 @@ const customerAuthController = new CustomerAuthController(sessionService);
  *      '200':
  *        description: OK
  */
-customerAuthRouter.post(
+customerAuthRoutes.post(
   "/customer/auth/signin",
   strictThrottler,
   customerAuthController.signin

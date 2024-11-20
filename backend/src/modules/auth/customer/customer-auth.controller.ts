@@ -4,11 +4,9 @@ import { customerAuthLoginSchema } from "./inputs/login.schema";
 import { prisma } from "@/common/providers/database/prisma";
 import * as bcrypt from "bcryptjs";
 import { HttpException } from "@/common/errors/http-exception";
-import { SessionService } from "../session.service";
+import { sessionService } from "../session.service";
 
 export class CustomerAuthController {
-  constructor(private readonly sessionService: SessionService) {}
-
   signin = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const body = await validate({
@@ -48,7 +46,7 @@ export class CustomerAuthController {
       }
 
       // -- generate session token
-      const session = await this.sessionService.create({
+      const session = await sessionService.create({
         accountId: user.accountId,
       });
 
@@ -60,3 +58,5 @@ export class CustomerAuthController {
     }
   };
 }
+
+export const customerAuthController = new CustomerAuthController();

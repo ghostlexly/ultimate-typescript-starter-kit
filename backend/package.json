@@ -10,7 +10,7 @@
     "start": "node dist/main.js",
     "start:dev": "rollup -c -w",
     "tsc:check": "tsc --noEmit",
-    "madge": "madge . -c",
+    "madge": "madge . -c --ts-config ./tsconfig.json --extensions ts --warning",
     "cli": "node dist/cli.js",
     "format": "prettier --write \"src/**/*.ts\""
   },
