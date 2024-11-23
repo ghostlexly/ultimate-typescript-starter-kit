@@ -15,6 +15,7 @@ import { initializeCrons } from "./common/lib/crons";
 import { rewriteIpAddressMiddleware } from "./common/middlewares/rewrite-ip-address.middleware";
 import { createLogger } from "./common/lib/logger";
 import { eventsService } from "./common/services/events.service";
+import helmet from "helmet";
 
 const app = express();
 const logger = createLogger({ name: "main" });
@@ -34,6 +35,8 @@ async function bootstrap() {
   // ex: key1=value1&key2=value2.
   // to be able to access these forms's values in req.body
   app.use(express.urlencoded({ extended: true }));
+
+  app.use(helmet());
 
   // -- Rewrite ip address from cloudflare or other proxies
   app.use(rewriteIpAddressMiddleware);
