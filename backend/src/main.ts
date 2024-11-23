@@ -36,6 +36,7 @@ async function bootstrap() {
   // to be able to access these forms's values in req.body
   app.use(express.urlencoded({ extended: true }));
 
+  // -- Helmet is a collection of middlewares functions that set security-related headers
   app.use(helmet());
 
   // -- Rewrite ip address from cloudflare or other proxies
