@@ -66,7 +66,6 @@ This starter kit provides a robust foundation for building scalable and feature-
 
 ### ⚡ Performance Optimization
 
-- Fast build process with `Rollup` and `esbuild`
 - Hot-reload
 - Performance-optimized architecture
 
