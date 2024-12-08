@@ -9,9 +9,9 @@
     "build": "tsc",
     "type-check": "tsc --noEmit",
     "start": "node dist/src/main.js",
-    "start:dev": "nodemon --exec ts-node --files --transpile-only ./src/main.ts",
+    "start:dev": "nodemon --exec ts-node ./src/main.ts",
     "cli": "node dist/src/cli.js",
-    "cli:dev": "ts-node --transpile-only ./src/cli.ts",
+    "cli:dev": "ts-node ./src/cli.ts",
     "madge": "madge . -c --ts-config ./tsconfig.json --extensions ts --warning",
     "format": "prettier --write \"src/**/*.ts\""
   },
