@@ -7,11 +7,6 @@
     "rootDir": ".", // set root dir for source files (this is the path we will start building from in the output dir)
     "outDir": "./dist", // set output dir for build files
 
-    "baseUrl": ".", // set base url for paths
-    "paths": {
-      "#src/*": ["./src/*"]
-    },
-
     // -- Misc
     "removeComments": true,
     "emitDecoratorMetadata": true,
