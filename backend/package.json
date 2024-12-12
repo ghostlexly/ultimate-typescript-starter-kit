@@ -6,12 +6,11 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "tsc && tsc-alias",
+    "build": "node scripts/build.js",
     "typecheck": "tsc --noEmit",
     "start": "node dist/src/main.js",
-    "start:dev": "nodemon --exec ts-node ./src/main.ts",
+    "start:dev": "nodemon",
     "cli": "node dist/src/cli.js",
-    "cli:dev": "ts-node ./src/cli.ts",
     "madge": "madge . -c --ts-config ./tsconfig.json --extensions ts --warning",
     "format": "prettier --write \"src/**/*.ts\""
   },
@@ -59,7 +58,6 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^9.0.3",
-    "@swc/core": "^1.10.1",
     "@types/bcryptjs": "^2.4.6",
     "@types/express": "^4.17.13",
     "@types/lodash": "^4.17.7",
@@ -76,9 +74,7 @@
     "madge": "^8.0.0",
     "nodemon": "^3.1.7",
     "prettier": "^2.3.2",
-    "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.10",
-    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.6.3"
   },
   "jest": {
