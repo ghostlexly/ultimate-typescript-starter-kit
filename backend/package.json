@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "tsc && tsc-alias",
-    "type-check": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
     "start": "node dist/src/main.js",
     "start:dev": "nodemon --exec ts-node ./src/main.ts",
     "cli": "node dist/src/cli.js",
