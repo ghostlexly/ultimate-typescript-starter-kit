@@ -12,7 +12,8 @@
     "start:dev": "nodemon",
     "cli": "node dist/src/cli.js",
     "madge": "madge . -c --ts-config ./tsconfig.json --extensions ts --warning",
-    "format": "prettier --write \"src/**/*.ts\""
+    "format": "prettier --write \"src/**/*.ts\"",
+    "build:css": "tailwindcss -i ./src/static/assets/css/input.css -o ./src/static/assets/css/output.css"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.588.0",
@@ -26,6 +27,7 @@
     "chalk": "4.1.2",
     "class-transformer": "^0.5.1",
     "commander": "^12.1.0",
+    "cors": "^2.8.5",
     "cron": "^3.2.1",
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.5",
@@ -61,6 +63,7 @@
   "devDependencies": {
     "@faker-js/faker": "^9.0.3",
     "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.17",
     "@types/express": "^4.17.13",
     "@types/lodash": "^4.17.7",
     "@types/multer": "^1.4.11",
@@ -76,6 +79,7 @@
     "madge": "^8.0.0",
     "nodemon": "^3.1.7",
     "prettier": "^2.3.2",
+    "tailwindcss": "^3.4.16",
     "tsc-alias": "^1.8.10",
     "typescript": "^5.6.3"
   },

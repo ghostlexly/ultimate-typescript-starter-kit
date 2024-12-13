@@ -121,7 +121,7 @@ export class TestController {
     try {
       // Get template
       const template = await fs.readFile(
-        path.join(getAppDir(), "assets", "templates", "invoice.hbs"),
+        path.join(getAppDir(), "common", "templates", "invoice.hbs"),
         "utf-8"
       );
 

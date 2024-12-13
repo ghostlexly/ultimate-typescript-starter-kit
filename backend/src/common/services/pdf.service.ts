@@ -44,14 +44,17 @@ class PdfService {
    * @param html - The HTML string to generate a PDF from
    */
   htmlToPdf = async ({ html }: { html: string }) => {
-    // -- Launch browser
+    // Launch browser
     const context = await this.getContext();
     const page = await context.newPage();
 
-    // -- Set content and wait for loading
+    // Uncomment to see the console logs from the page
+    // context.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
+
+    // Set content and wait for loading
     await page.setContent(html, { waitUntil: "load" });
 
-    // -- Generate PDF
+    // Generate PDF
     const pdfBuffer = await page.pdf({
       format: "A4",
       margin: {
@@ -63,7 +66,7 @@ class PdfService {
       printBackground: true,
     });
 
-    // -- Close page
+    // Close page
     await page.close();
 
     return pdfBuffer;

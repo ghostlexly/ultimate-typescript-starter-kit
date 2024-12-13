@@ -31,8 +31,8 @@ const exec = async (cmd) => {
  * Copy assets from src to dist
  */
 const copyAssets = async () => {
-  const srcDir = "src/assets";
-  const destDir = "dist/src/assets";
+  const srcDir = "src/static";
+  const destDir = "dist/src/static";
 
   // Check if source directory exists
   if (!existsSync(srcDir)) {
@@ -53,6 +53,31 @@ const copyAssets = async () => {
 };
 
 /**
+ * Copy templates from src to dist
+ */
+const copyTemplates = async () => {
+  const srcDir = "src/common/templates";
+  const destDir = "dist/src/common/templates";
+
+  // Check if source directory exists
+  if (!existsSync(srcDir)) {
+    console.log("Templates directory does not exist, skipping copy");
+    return;
+  }
+
+  try {
+    // Create destination directory if it doesn't exist
+    await fs.mkdir(destDir, { recursive: true });
+
+    // Copy all files recursively
+    await fs.cp(srcDir, destDir, { recursive: true });
+  } catch (error) {
+    console.error("Error copying templates:", error);
+    throw error;
+  }
+};
+
+/**
  * Build TypeScript files
  */
 const buildJs = async () => {
@@ -66,6 +91,13 @@ const buildJs = async () => {
 };
 
 /**
+ * Build CSS files
+ */
+const buildCss = async () => {
+  await exec("yarn build:css");
+};
+
+/**
  * Main build function
  */
 const main = async () => {
@@ -73,7 +105,9 @@ const main = async () => {
     console.log("Building...");
 
     await buildJs();
+    await buildCss();
     await copyAssets();
+    await copyTemplates();
 
     console.log("Build completed successfully");
   } catch (error) {
