@@ -62,6 +62,7 @@ const wolfios = async (endpoint: string, config?: WolfiosProps) => {
   // ----------------------------------------
   if (config?.cookies) {
     const cookieString = Object.entries(config.cookies)
+      .filter(([key, value]) => key && value !== undefined) // Filter out undefined values
       .map(([key, value]) => `${key}=${value}`)
       .join("; ");
 
