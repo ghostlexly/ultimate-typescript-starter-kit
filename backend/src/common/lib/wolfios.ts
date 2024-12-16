@@ -66,10 +66,12 @@ const wolfios = async (endpoint: string, config?: WolfiosProps) => {
       .map(([key, value]) => `${key}=${value}`)
       .join("; ");
 
-    config.headers = {
-      ...config.headers,
-      Cookie: cookieString,
-    };
+    if (cookieString) {
+      config.headers = {
+        ...config.headers,
+        Cookie: cookieString,
+      };
+    }
   }
 
   // ----------------------------------------
