@@ -339,7 +339,7 @@ This structure follows clean architecture principles while remaining practical f
 ### Data-Flow
 
 ```jsx
-Controller -> Use-Case -> Services -> Repositories
+Controller -> Use-Cases -> Services -> Repositories
 ```
 
 - **Controller** : Receives requests and delegates to use-cases.
