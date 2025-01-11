@@ -104,7 +104,7 @@ yarn cli
 
 ## 📚 Documentation
 
-### The Clean Architecture with DDD by Tolga MALKOC
+### The Clean Architecture with modules by Tolga MALKOC
 
 #### Directory structure:
 
