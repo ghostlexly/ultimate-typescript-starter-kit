@@ -8,12 +8,13 @@
   "scripts": {
     "build": "node scripts/build.js",
     "typecheck": "tsc --noEmit",
-    "start": "node dist/src/app.js",
+    "start": "node dist/src/server.js",
     "start:dev": "nodemon",
     "cli": "node dist/src/cli.js",
     "madge": "madge . -c --ts-config ./tsconfig.json --extensions ts --warning",
     "format": "prettier --write \"src/**/*.ts\"",
-    "build:css": "tailwindcss -i ./src/static/assets/css/input.css -o ./src/static/assets/css/output.css"
+    "build:css": "tailwindcss -i ./src/static/assets/css/input.css -o ./src/static/assets/css/output.css",
+    "test": "NODE_ENV=test APP_PORT=3001 jest --runInBand --detectOpenHandles"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.588.0",
@@ -87,21 +88,5 @@
     "tailwindcss": "^3.4.16",
     "tsc-alias": "^1.8.10",
     "typescript": "^5.6.3"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json"
-    ],
-    "rootDir": "dist/src",
-    "testRegex": ".*\\.test\\.js$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "**/*.js"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
   }
 }

@@ -17,84 +17,108 @@ import { initializeSwagger } from "./shared/utils/swagger";
 import { initializeI18n } from "./shared/utils/i18n";
 import { initializeCrons } from "./infrastructure/cron";
 import { eventsService } from "./infrastructure/events/events.service";
+import { appWorker, appQueue } from "./infrastructure/queue/bull/app.queue";
+import { redisService } from "./infrastructure/cache/redis/redis";
+import { prisma } from "./infrastructure/database/prisma";
 
-const app = express();
-const logger = createLogger({ name: "main" });
+const bootstrap = async () => {
+  const app = express();
+  const logger = createLogger({ name: "app" });
 
-// Log bootstrap time
-const bootstrapStartTime = Date.now();
+  // Log bootstrap time
+  const bootstrapStartTime = Date.now();
 
-// Disable `x-powered-by` header for security reasons
-app.disable("x-powered-by");
+  // Disable `x-powered-by` header for security reasons
+  app.disable("x-powered-by");
 
-// Set view engine to ejs
-app.set("view engine", "ejs");
+  // Set view engine to ejs
+  app.set("view engine", "ejs");
 
-// We parse the body of the request to be able to access it
-// @example: app.post('/', (req) => req.body.prop)
-app.use(express.json());
+  // We parse the body of the request to be able to access it
+  // @example: app.post('/', (req) => req.body.prop)
+  app.use(express.json());
 
-// We parse the Content-Type `application/x-www-form-urlencoded`
-// ex: key1=value1&key2=value2.
-// to be able to access these forms's values in req.body
-app.use(express.urlencoded({ extended: true }));
+  // We parse the Content-Type `application/x-www-form-urlencoded`
+  // ex: key1=value1&key2=value2.
+  // to be able to access these forms's values in req.body
+  app.use(express.urlencoded({ extended: true }));
 
-// Helmet is a collection of middlewares functions that set security-related headers
-app.use(
-  helmet({
-    crossOriginResourcePolicy: false, // We are already using CORS
-  })
-);
+  // Helmet is a collection of middlewares functions that set security-related headers
+  app.use(
+    helmet({
+      crossOriginResourcePolicy: false, // We are already using CORS
+    })
+  );
 
-// Add CORS middleware
-app.use(cors()); // This will allow all origins in development
+  // Add CORS middleware
+  app.use(cors()); // This will allow all origins in development
 
-// Rewrite ip address from cloudflare or other proxies
-app.use(rewriteIpAddressMiddleware);
+  // Rewrite ip address from cloudflare or other proxies
+  app.use(rewriteIpAddressMiddleware);
 
-// We trim the body of the incoming requests to remove any leading or trailing whitespace
-app.use(trimMiddleware);
+  // We trim the body of the incoming requests to remove any leading or trailing whitespace
+  app.use(trimMiddleware);
 
-// Swagger
-initializeSwagger({ app });
+  // Passport strategies
+  await initializeBearerStrategy();
 
-// Passport strategies
-initializeBearerStrategy();
+  // I18n
+  await initializeI18n();
 
-// I18n
-initializeI18n();
+  // App Events
+  await eventsService.initialize();
 
-// Crons
-initializeCrons();
+  // Swagger
+  initializeSwagger({ app });
 
-// App Events
-eventsService.initialize();
+  // Crons
+  initializeCrons();
 
-// Static assets
-// We are using them in the PDF views
-app.use("/static", express.static(path.join(__dirname, "static")));
+  // Static assets
+  // We are using them in the PDF views
+  app.use("/static", express.static(path.join(__dirname, "static")));
 
-// Routes
-app.use("/api", globalThrottler, apiRouter);
+  // Routes
+  app.use("/api", globalThrottler, apiRouter);
 
-// ----------------------------------------
-// Unknown routes handler
-// @important: Should be just before the last `app.use`
-// ----------------------------------------
-app.use(unknownRoutesMiddleware);
+  // ----------------------------------------
+  // Unknown routes handler
+  // @important: Should be just before the last `app.use`
+  // ----------------------------------------
+  app.use(unknownRoutesMiddleware);
 
-// ----------------------------------------
-// Errors handler
-// @important: Should be the last `app.use`
-// ----------------------------------------
-app.use(exceptionsMiddleware);
+  // ----------------------------------------
+  // Errors handler
+  // @important: Should be the last `app.use`
+  // ----------------------------------------
+  app.use(exceptionsMiddleware);
 
-// Start server
-app.listen(3000, () => {
+  // Add shutdown handlers
+  process.on("SIGTERM", () => cleanup());
+  process.on("SIGINT", () => cleanup());
+  process.on("beforeExit", () => cleanup());
+
   // Log bootstrap time
   logger.info(`🕒 Bootstrap time: ${Date.now() - bootstrapStartTime}ms`);
-  // Log server ready
-  logger.info(`🚀 Server ready on port: 3000`);
-});
 
-export { app };
+  return app;
+};
+
+if (require.main === module) {
+  bootstrap();
+}
+
+// Cleanup the app connections before exiting
+const cleanup = async () => {
+  // Close all queue connections
+  await Promise.all([appQueue.close(), appWorker.close()]);
+  await Promise.all([appQueue.disconnect(), appWorker.disconnect()]);
+
+  // Close Redis connection
+  await redisService.quit();
+
+  // Close Prisma connection
+  await prisma.$disconnect();
+};
+
+export { bootstrap, cleanup };
