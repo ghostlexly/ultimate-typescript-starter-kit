@@ -20,10 +20,6 @@ class RedisService {
     this.client.on("error", (err) => {
       logger.error({ name: "redis", error: err });
     });
-
-    this.client.on("connect", () => {
-      logger.info({ name: "redis" }, "Connected");
-    });
   }
 
   /**
