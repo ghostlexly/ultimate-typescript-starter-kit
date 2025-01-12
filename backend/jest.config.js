@@ -1,4 +1,3 @@
-/** @type {import('ts-jest').JestConfigWithTsJest} **/
 module.exports = {
   moduleFileExtensions: ["js", "json"],
   rootDir: "dist/src",
