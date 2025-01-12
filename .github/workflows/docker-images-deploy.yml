@@ -69,7 +69,7 @@ jobs:
             cd ~/docker
 
             # Run migrations
-            docker compose exec backend yarn prisma migrate deploy
+            docker compose exec backend npm run prisma migrate deploy
 
       - name: Prune untagged docker images
         uses: appleboy/ssh-action@master

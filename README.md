@@ -81,10 +81,10 @@ Welcome to the Ultimate TypeScript Full Stack Starter! This comprehensive toolki
 
    ```
    cd backend
-   yarn install
+   npm install
 
    cd ../frontend
-   yarn install
+   npm install
    ```
 
 4. **Start the development environment**

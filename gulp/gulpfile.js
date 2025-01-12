@@ -174,7 +174,7 @@ defineTask(
   "Automatically generate new Prisma migration.",
   async (done) => {
     await asyncSpawn(
-      "docker compose exec backend yarn prisma migrate dev --create-only"
+      "docker compose exec backend npm run prisma migrate dev --create-only"
     );
   }
 );
@@ -183,7 +183,9 @@ defineTask(
   "prisma:m:m",
   "Apply the latest Prisma migrations.",
   async (done) => {
-    await asyncSpawn("docker compose exec backend yarn prisma migrate deploy");
+    await asyncSpawn(
+      "docker compose exec backend npm run prisma migrate deploy"
+    );
     gulp.series(["prisma:g"])(); // run commands in series (one after the other)
   }
 );
@@ -193,12 +195,12 @@ defineTask(
   "Check if my database is up to date with my schema file or if i need to create a migration.",
   async (done) => {
     await asyncSpawn(
-      "docker compose exec backend yarn prisma migrate diff --from-schema-datasource prisma/schema.prisma  --to-schema-datamodel prisma/schema.prisma  --script"
+      "docker compose exec backend npm run prisma migrate diff --from-schema-datasource prisma/schema.prisma  --to-schema-datamodel prisma/schema.prisma  --script"
     );
   }
 );
 
 defineTask("prisma:g", "Generate Prisma Client files", async (done) => {
-  await asyncSpawn("docker compose exec backend yarn prisma generate");
+  await asyncSpawn("docker compose exec backend npm run prisma generate");
   await asyncSpawn("docker compose restart backend");
 });

@@ -1,7 +1,7 @@
 services:
   # ===================================================================================================================================================================================
   backend:
-    command: yarn start:dev
+    command: npm run start:dev
     environment:
       - NODE_ENV=development
     volumes:
@@ -12,8 +12,8 @@ services:
     restart: "on-failure"
   # ===================================================================================================================================================================================
   frontend:
-    command: yarn dev
-    # command: /bin/sh -c "yarn build && yarn start"
+    command: npm run dev
+    # command: /bin/sh -c "npm run build && npm run start"
     environment:
       - NODE_ENV=development
     volumes:

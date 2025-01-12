@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "node scripts/build.js",
+    "build": "node scripts/build.mjs",
     "typecheck": "tsc --noEmit",
     "start": "node dist/src/server.js",
     "start:dev": "nodemon",
