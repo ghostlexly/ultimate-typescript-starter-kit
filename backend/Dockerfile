@@ -4,11 +4,11 @@ WORKDIR /usr/src/app
 
 # Install dependencies
 COPY . .
-RUN yarn install
+RUN npm install
 
 # Build project
-RUN yarn prisma generate
-RUN yarn build
+RUN npx prisma generate
+RUN npm run build
 
 # -- RUNNER
 FROM node:22.9.0-bullseye-slim AS base
@@ -37,17 +37,17 @@ RUN if [ "$(uname -m)" = "x86_64" ]; then \
 
 # Install production-only dependencies (this will ignore devDependencies)
 COPY ./package.json ./
-COPY ./yarn.lock ./
-RUN yarn install --production --ignore-optional
+COPY ./package-lock.json ./
+RUN npm install --production --ignore-optional
 
 # Playwright's dependencies
-RUN yarn playwright install chromium --with-deps
+RUN npx playwright install chromium --with-deps
 
 # Copy project specific files
 COPY --from=builder /usr/src/app/dist ./dist
 COPY ./prisma ./prisma
 
 # Generate Prisma
-RUN yarn prisma generate
+RUN npx prisma generate
 
-CMD yarn start
+CMD npm run start
