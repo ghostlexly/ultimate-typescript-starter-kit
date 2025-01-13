@@ -163,7 +163,7 @@ const deploymentHostConfig = {
 
 defineTask("dev", "Start the development environment", async (done) => {
   await asyncSpawn(
-    "docker compose -f docker-compose.yml -f docker-compose.dev.yml up",
+    "docker compose -f docker-compose.yml -f docker-compose.dev.yml up --renew-anon-volumes",
     false
   );
 });

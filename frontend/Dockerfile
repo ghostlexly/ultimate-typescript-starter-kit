@@ -1,8 +1,6 @@
 # -- BUILDER
 FROM node:22.9.0-bullseye-slim as builder
 WORKDIR /usr/src/app
-ENV NODE_ENV=development
-ENV NODE_TLS_REJECT_UNAUTHORIZED=0
 
 # Install dependencies
 COPY . .
@@ -26,11 +24,12 @@ RUN apt update && \
 # Install production-only dependencies (this will ignore devDependencies because NODE_ENV is set to production)
 COPY ./package.json ./
 COPY ./package-lock.json ./
-RUN npm install
+COPY --from=builder /usr/src/app/node_modules ./node_modules
 
 # Copy project specific files
 COPY --from=builder /usr/src/app/.next ./.next
 COPY ./next.config.mjs ./next.config.mjs
 COPY ./public ./public
 
+ENV NODE_ENV=production
 CMD npm run start

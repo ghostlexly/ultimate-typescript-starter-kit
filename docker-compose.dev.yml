@@ -6,6 +6,7 @@ services:
       - NODE_ENV=development
     volumes:
       - ./backend:/usr/src/app
+      - /usr/src/app/node_modules
     restart: "on-failure"
   # ===================================================================================================================================================================================
   nginx:
@@ -18,6 +19,7 @@ services:
       - NODE_ENV=development
     volumes:
       - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
     restart: "on-failure"
   # ===================================================================================================================================================================================
   redis-commander:

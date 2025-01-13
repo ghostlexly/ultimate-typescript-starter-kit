@@ -13,8 +13,6 @@ RUN npm run build
 # -- RUNNER
 FROM node:22.9.0-bullseye-slim AS base
 WORKDIR /usr/src/app
-ENV NODE_ENV=production
-ENV NODE_TLS_REJECT_UNAUTHORIZED=0
 
 # Update apt and install security updates
 RUN apt update && \
@@ -38,7 +36,7 @@ RUN if [ "$(uname -m)" = "x86_64" ]; then \
 # Install production-only dependencies (this will ignore devDependencies)
 COPY ./package.json ./
 COPY ./package-lock.json ./
-RUN npm install --production --ignore-optional
+COPY --from=builder /usr/src/app/node_modules ./node_modules
 
 # Playwright's dependencies
 RUN npx playwright install chromium --with-deps
@@ -50,4 +48,5 @@ COPY ./prisma ./prisma
 # Generate Prisma
 RUN npx prisma generate
 
+ENV NODE_ENV=production
 CMD npm run start
