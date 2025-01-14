@@ -104,10 +104,7 @@ const main = async () => {
   try {
     console.log("Building...");
 
-    await buildJs();
-    await buildCss();
-    await copyAssets();
-    await copyViews();
+    await Promise.all([buildJs(), buildCss(), copyAssets(), copyViews()]);
 
     console.log("Build completed successfully");
   } catch (error) {
