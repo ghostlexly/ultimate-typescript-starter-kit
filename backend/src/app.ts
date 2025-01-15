@@ -99,7 +99,9 @@ const bootstrap = async () => {
   process.on("beforeExit", () => cleanup());
 
   // Log bootstrap time
-  logger.info(`🕒 Bootstrap time: ${Date.now() - bootstrapStartTime}ms`);
+  if (process.env.NODE_ENV !== "test") {
+    logger.info(`🕒 Bootstrap time: ${Date.now() - bootstrapStartTime}ms`);
+  }
 
   return app;
 };
