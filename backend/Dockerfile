@@ -1,5 +1,5 @@
 # -- BUILDER
-FROM node:22.9.0-bullseye-slim as builder
+FROM node:22.9.0-bullseye-slim AS builder
 WORKDIR /usr/src/app
 
 # Install dependencies
