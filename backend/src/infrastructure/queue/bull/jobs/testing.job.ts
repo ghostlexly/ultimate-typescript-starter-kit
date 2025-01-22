@@ -2,8 +2,6 @@ import { SandboxedJob } from "bullmq";
 import { createLogger } from "#/shared/utils/logger";
 import { prisma } from "#/infrastructure/database/prisma";
 
-export const TESTING_JOB = "testingJob";
-
 export const testingJob = async (job: SandboxedJob) => {
   const logger = createLogger({ name: "testingJob" });
 
@@ -19,4 +17,7 @@ export const testingJob = async (job: SandboxedJob) => {
     msg: "Accounts list received",
     accounts,
   });
+
+  // Can throw an error
+  // throw new Error("Testing error");
 };

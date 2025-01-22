@@ -7,8 +7,6 @@ import crypto from "crypto";
 import { s3Service } from "#/infrastructure/storage/s3/s3";
 import { FfmpegService } from "#/shared/utils/ffmpeg";
 
-export const OPTIMIZE_VIDEO_JOB = "optimizeVideoJob";
-
 export const optimizeVideoJob = async (job: SandboxedJob) => {
   const logger = createLogger({ name: "optimizeVideoJob" });
   const ffmpegService = new FfmpegService();

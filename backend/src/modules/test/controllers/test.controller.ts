@@ -1,18 +1,17 @@
 import { NextFunction, Request, Response } from "express";
-import { TESTING_JOB } from "../../../infrastructure/queue/bull/jobs/testing.job";
 import { testConfig } from "../test.config";
 import fs from "fs/promises";
 import path from "path";
 import ejs from "ejs";
 import { testService } from "../test.service";
 import { HttpException } from "#/shared/exceptions/http-exception";
-import { appQueue } from "#/infrastructure/queue/bull/app.queue";
 import { AccountUpdateValidator } from "../validators/account-update.validator";
 import { eventsService } from "#/infrastructure/events/events.service";
 import { getAppDir } from "#/shared/utils/app-dir";
 import { pdfService } from "#/shared/services/pdf.service";
 import { testWriteTextUseCase } from "#/core/use-cases/test-write-text.usecase";
 import { toAccountDto } from "../dtos/account.dto";
+import { queueService } from "#/infrastructure/queue/bull/queue.service";
 
 export class TestController {
   onTestBadRequest = async (
@@ -42,9 +41,7 @@ export class TestController {
     next: NextFunction
   ) => {
     try {
-      await appQueue.add(TESTING_JOB, {
-        message: "Hello World",
-      });
+      queueService.addTestingJob("Hello World");
 
       return res.json({
         message: "Job added to queue.",

@@ -4,15 +4,22 @@
 */
 
 import { SandboxedJob } from "bullmq";
-import { TESTING_JOB, testingJob } from "./jobs/testing.job";
+import { testingJob } from "./jobs/testing.job";
+import { optimizeVideoJob } from "./jobs/optimize-video.job";
+
+type JobHandler = (job: SandboxedJob) => Promise<void>;
+
+const jobs: Record<string, JobHandler> = {
+  testingJob,
+  optimizeVideoJob
+};
 
 export default async (job: SandboxedJob) => {
-  switch (job.name) {
-    case TESTING_JOB:
-      await testingJob(job);
-      break;
+  const handler = jobs[job.name];
 
-    default:
-      throw new Error(`Unknown job type: ${job.name}.`);
+  if (!handler) {
+    throw new Error(`Unknown job type: ${job.name}`);
   }
+
+  await handler(job);
 };

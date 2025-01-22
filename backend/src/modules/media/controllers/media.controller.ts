@@ -1,8 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { mediaService } from "../media.service";
 import { HttpException } from "#/shared/exceptions/http-exception";
-import { appQueue } from "#/infrastructure/queue/bull/app.queue";
-import { OPTIMIZE_VIDEO_JOB } from "#/infrastructure/queue/bull/jobs/optimize-video.job";
+import { queueService } from "#/infrastructure/queue/bull/queue.service";
 
 export class MediaController {
   onUploadMedia = async (req: Request, res: Response, next: NextFunction) => {
@@ -68,7 +67,7 @@ export class MediaController {
       });
 
       // -- optimize the video file with ffmpeg and reupload it to S3
-      await appQueue.add(OPTIMIZE_VIDEO_JOB, { mediaId: media.id });
+      queueService.addOptimizeVideoJob(media.id);
 
       return res.json({
         status: "success",

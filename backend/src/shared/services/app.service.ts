@@ -1,12 +1,11 @@
-import { appWorker, appQueue } from "#/infrastructure/queue/bull/app.queue";
+import { queueService } from "#/infrastructure/queue/bull/queue.service";
 import { redisService } from "#/infrastructure/cache/redis";
 import { prisma } from "#/infrastructure/database/prisma";
 
 class AppService {
   cleanup = async () => {
     // Close all queue connections
-    await Promise.all([appQueue.close(), appWorker.close()]);
-    await Promise.all([appQueue.disconnect(), appWorker.disconnect()]);
+    await queueService.close();
 
     // Close Redis connection
     await redisService.quit();
