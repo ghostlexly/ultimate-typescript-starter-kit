@@ -1,5 +1,5 @@
 import { appWorker, appQueue } from "#/infrastructure/queue/bull/app.queue";
-import { redisService } from "#/infrastructure/cache/redis/redis";
+import { redisService } from "#/infrastructure/cache/redis";
 import { prisma } from "#/infrastructure/database/prisma";
 
 class AppService {

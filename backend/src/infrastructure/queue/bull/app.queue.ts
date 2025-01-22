@@ -1,4 +1,4 @@
-import { REDIS_CONNECTION } from "#/infrastructure/cache/redis/redis";
+import { REDIS_CONNECTION } from "#/infrastructure/cache/redis";
 import { bullmqService } from "#/infrastructure/queue/bull/bullmq";
 import { Queue, Worker } from "bullmq";
 import path from "path";
