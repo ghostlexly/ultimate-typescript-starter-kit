@@ -17,9 +17,6 @@ import { initializeSwagger } from "./shared/utils/swagger";
 import { initializeI18n } from "./shared/utils/i18n";
 import { initializeCrons } from "./infrastructure/cron";
 import { eventsService } from "./infrastructure/events/events.service";
-import { appWorker, appQueue } from "./infrastructure/queue/bull/app.queue";
-import { redisService } from "./infrastructure/cache/redis/redis";
-import { prisma } from "./infrastructure/database/prisma";
 
 const bootstrap = async () => {
   const app = express();
@@ -93,11 +90,6 @@ const bootstrap = async () => {
   // ----------------------------------------
   app.use(exceptionsMiddleware);
 
-  // Add shutdown handlers
-  process.on("SIGTERM", () => cleanup());
-  process.on("SIGINT", () => cleanup());
-  process.on("beforeExit", () => cleanup());
-
   // Log bootstrap time
   if (process.env.NODE_ENV !== "test") {
     logger.info(`🕒 Bootstrap time: ${Date.now() - bootstrapStartTime}ms`);
@@ -110,17 +102,4 @@ if (require.main === module) {
   bootstrap();
 }
 
-// Cleanup the app connections before exiting
-const cleanup = async () => {
-  // Close all queue connections
-  await Promise.all([appQueue.close(), appWorker.close()]);
-  await Promise.all([appQueue.disconnect(), appWorker.disconnect()]);
-
-  // Close Redis connection
-  await redisService.quit();
-
-  // Close Prisma connection
-  await prisma.$disconnect();
-};
-
-export { bootstrap, cleanup };
+export { bootstrap };

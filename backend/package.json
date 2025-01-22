@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit",
     "start": "node dist/src/server.js",
     "start:dev": "nodemon",
-    "cli": "node dist/src/cli.js",
+    "cli": "node dist/src/cli/cli.js",
     "madge": "madge . -c --ts-config ./tsconfig.json --extensions ts --warning",
     "format": "prettier --write \"src/**/*.ts\"",
     "build:css": "tailwindcss -i ./src/static/assets/css/input.css -o ./src/static/assets/css/output.css",

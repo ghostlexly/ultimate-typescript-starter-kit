@@ -4,6 +4,7 @@ import { getAppDir } from "#/shared/utils/app-dir";
 import { glob } from "glob";
 import { createLogger } from "#/shared/utils/logger";
 import chalk from "chalk";
+import { appService } from "#/shared/services/app.service";
 
 const logger = createLogger({ name: "cli" });
 const program = new Command();
@@ -17,8 +18,6 @@ program.configureHelp({
 // Function to dynamically load commands
 async function loadCommands() {
   const commandsPath = path.join(getAppDir(), "commands");
-
-  console.log(commandsPath);
 
   const files = await glob("**/*.cli.js", { cwd: commandsPath });
 
@@ -47,4 +46,7 @@ async function loadCommands() {
 
   // Parse the command line arguments
   program.parse(process.argv);
+
+  // Close all connections & exit
+  await appService.shutdownGracefully();
 })();

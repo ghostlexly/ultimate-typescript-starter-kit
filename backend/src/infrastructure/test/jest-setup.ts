@@ -1,6 +1,6 @@
-import { cleanup } from "#/app";
+import { appService } from "#/shared/services/app.service";
 
 afterAll(async () => {
   // Close all connections
-  await cleanup();
+  await appService.shutdownGracefully();
 });
