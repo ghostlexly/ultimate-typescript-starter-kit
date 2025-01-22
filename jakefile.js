@@ -16,7 +16,7 @@ task("dev", async () => {
 namespace("prisma", function () {
   desc("Generate Prisma Client files.");
   task("g", async () => {
-    await asyncSpawn("docker compose exec backend npm run prisma generate");
+    await asyncSpawn("docker compose exec backend npx prisma generate");
     await asyncSpawn("docker compose restart backend");
   });
 
@@ -25,16 +25,14 @@ namespace("prisma", function () {
     desc("Automatically generate new Prisma migration.");
     task("g", async () => {
       await asyncSpawn(
-        "docker compose exec backend npm run prisma migrate dev --create-only"
+        "docker compose exec backend npx prisma migrate dev --create-only"
       );
     });
 
     desc("Apply the latest Prisma migrations.");
     task("m", async () => {
-      await asyncSpawn(
-        "docker compose exec backend npm run prisma migrate deploy"
-      );
-      await asyncSpawn("docker compose exec backend npm run prisma generate");
+      await asyncSpawn("docker compose exec backend npx prisma migrate deploy");
+      await asyncSpawn("docker compose exec backend npx prisma generate");
       await asyncSpawn("docker compose restart backend");
     });
 
@@ -43,7 +41,7 @@ namespace("prisma", function () {
     );
     task("diff", async () => {
       await asyncSpawn(
-        "docker compose exec backend npm run prisma migrate diff --from-schema-datasource prisma/schema.prisma  --to-schema-datamodel prisma/schema.prisma  --script"
+        "docker compose exec backend npx prisma migrate diff --from-schema-datasource prisma/schema.prisma  --to-schema-datamodel prisma/schema.prisma  --script"
       );
     });
   });
