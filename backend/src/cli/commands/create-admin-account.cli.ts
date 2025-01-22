@@ -1,7 +1,7 @@
 import { Command } from "commander";
 import { createLogger } from "#/shared/utils/logger";
 import { prisma } from "#/infrastructure/database/prisma";
-import * as bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 
 const logger = createLogger({ name: "create-admin-account-command" });
 

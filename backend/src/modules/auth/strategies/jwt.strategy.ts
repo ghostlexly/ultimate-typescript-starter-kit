@@ -25,7 +25,7 @@ export const initializeJwtStrategy = async () => {
           }
 
           return done(null, account);
-        } catch (err) {
+        } catch {
           return done(null, false);
         }
       }

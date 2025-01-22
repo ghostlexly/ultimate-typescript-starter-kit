@@ -8,7 +8,6 @@ import { exceptionsMiddleware } from "#/presentation/middlewares/exceptions.midd
 import { unknownRoutesMiddleware } from "#/presentation/middlewares/unknown-routes.middleware";
 import { globalThrottler } from "#/presentation/throttlers/global.throttler";
 import { trimMiddleware } from "#/presentation/middlewares/trim.middleware";
-import { initializeBearerStrategy } from "#/modules/auth/strategies/bearer.strategy";
 import { rewriteIpAddressMiddleware } from "#/presentation/middlewares/rewrite-ip-address.middleware";
 import { createLogger } from "#/shared/utils/logger";
 import helmet from "helmet";
@@ -17,6 +16,7 @@ import { initializeSwagger } from "./shared/utils/swagger";
 import { initializeI18n } from "./shared/utils/i18n";
 import { initializeCrons } from "./infrastructure/cron";
 import { eventsService } from "./infrastructure/events/events.service";
+import { initializeJwtStrategy } from "./modules/auth/strategies/jwt.strategy";
 
 const bootstrap = async () => {
   const app = express();
@@ -57,7 +57,7 @@ const bootstrap = async () => {
   app.use(trimMiddleware);
 
   // Passport strategies
-  await initializeBearerStrategy();
+  await initializeJwtStrategy();
 
   // I18n
   await initializeI18n();
