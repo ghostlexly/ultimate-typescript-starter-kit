@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { prisma } from "#/infrastructure/database/prisma";
 import bcrypt from "bcrypt";
 import { HttpException } from "#/shared/exceptions/http-exception";
-import { AuthSigninValidator } from "../validators/auth.validator";
+import { AuthSigninValidator } from "../validators/auth.validators";
 import { Customer } from "@prisma/client";
 import { Admin } from "@prisma/client";
 import { authService } from "#/shared/services/auth.service";

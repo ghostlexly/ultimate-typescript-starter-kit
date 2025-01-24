@@ -1,5 +1,5 @@
 import { phoneNumberTransformer } from "#/shared/transformers/phone-number.transformer";
-import { phoneNumberValidator } from "#/shared/validators/phone-number.validator";
+import { phoneNumberValidator } from "#/shared/validators/phone-number.validators";
 import { z } from "zod";
 
 export const accountUpdateValidator = z.object({

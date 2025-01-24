@@ -2,7 +2,7 @@ import { Router } from "express";
 import { testController } from "../controllers/test.controller";
 import { strictThrottler } from "#/presentation/throttlers/strict.throttler";
 import { validateRequest } from "#/presentation/middlewares/validation.middleware";
-import { accountUpdateValidator } from "../validators/account-update.validator";
+import { accountUpdateValidator } from "../validators/account-update.validators";
 
 export const testRoutes = Router();
 

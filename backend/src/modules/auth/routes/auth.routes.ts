@@ -2,7 +2,7 @@ import { strictThrottler } from "#/presentation/throttlers/strict.throttler";
 import { Router } from "express";
 import { authController } from "../controllers/auth.controller";
 import { validateRequest } from "#/presentation/middlewares/validation.middleware";
-import { authSigninValidator } from "../validators/auth.validator";
+import { authSigninValidator } from "../validators/auth.validators";
 
 export const authRoutes = Router();
 

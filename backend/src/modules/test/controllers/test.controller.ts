@@ -5,7 +5,7 @@ import path from "path";
 import ejs from "ejs";
 import { testService } from "../test.service";
 import { HttpException } from "#/shared/exceptions/http-exception";
-import { AccountUpdateValidator } from "../validators/account-update.validator";
+import { AccountUpdateValidator } from "../validators/account-update.validators";
 import { eventsService } from "#/infrastructure/events/events.service";
 import { getAppDir } from "#/shared/utils/app-dir";
 import { pdfService } from "#/shared/services/pdf.service";
