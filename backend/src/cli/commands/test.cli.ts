@@ -1,7 +1,7 @@
 import { Command } from "commander";
-import { createLogger } from "#/shared/utils/logger";
+import { Logger } from "#/shared/utils/logger";
 
-const logger = createLogger({ name: "test-command" });
+const logger = new Logger("test-command");
 
 const setupCommand = (program: Command): void => {
   program
@@ -27,12 +27,9 @@ const runCommand = async (
 
   const splitedText = text.split(separator, limit).map((part) => part.trim());
 
-  logger.info(
-    {
-      splitedText,
-    },
-    "Splited text successfully"
-  );
+  logger.info("Splited text successfully", {
+    splitedText,
+  });
 
   process.exit(0);
 };

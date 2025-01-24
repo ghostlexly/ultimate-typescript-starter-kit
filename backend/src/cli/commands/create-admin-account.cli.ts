@@ -1,9 +1,9 @@
 import { Command } from "commander";
-import { createLogger } from "#/shared/utils/logger";
+import { Logger } from "#/shared/utils/logger";
 import { prisma } from "#/infrastructure/database/prisma";
 import bcrypt from "bcrypt";
 
-const logger = createLogger({ name: "create-admin-account-command" });
+const logger = new Logger("create-admin-account-command");
 
 const setupCommand = (program: Command): void => {
   program

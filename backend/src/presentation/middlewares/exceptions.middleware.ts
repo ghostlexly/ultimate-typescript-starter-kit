@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import { createLogger } from "#/shared/utils/logger";
+import { Logger } from "#/shared/utils/logger";
 import { HttpException } from "#/shared/exceptions/http-exception";
 import { ValidationException } from "#/shared/exceptions/validation-exception";
 
-const logger = createLogger({ name: "exceptions-middleware" });
+const logger = new Logger("exceptions-middleware");
 const isDev = process.env.NODE_ENV === "development";
 
 /**
@@ -46,7 +46,7 @@ export const exceptionsMiddleware = (
   }
 
   /** Log unhandled errors to a file */
-  logger.fatal({
+  logger.error("Unhandled error", {
     url: req.protocol + "://" + req.hostname + req.originalUrl,
     message: err.message,
     stack: err.stack,

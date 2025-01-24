@@ -1,12 +1,12 @@
 import { Job, Worker } from "bullmq";
-import { createLogger } from "#/shared/utils/logger";
+import { Logger } from "#/shared/utils/logger";
 
 type initWorkerEventsLoggerProps = {
   worker: Worker;
 };
 
 const initWorkerEventsLogger = ({ worker }: initWorkerEventsLoggerProps) => {
-  const logger = createLogger({ name: "bullmq" });
+  const logger = new Logger("bullmq");
 
   // Start the time
   let startTime = Date.now();
@@ -14,10 +14,11 @@ const initWorkerEventsLogger = ({ worker }: initWorkerEventsLoggerProps) => {
   worker.on("active", (job: Job) => {
     startTime = Date.now();
 
-    logger.debug(
-      { name: "job", jobName: job.name, jobId: job.id },
-      `Job #${job.id} started.`
-    );
+    logger.debug(`Job #${job.id} started.`, {
+      name: "job",
+      jobName: job.name,
+      jobId: job.id,
+    });
   });
 
   worker.on("completed", (job: Job) => {
@@ -27,28 +28,22 @@ const initWorkerEventsLogger = ({ worker }: initWorkerEventsLoggerProps) => {
     const memoryUsedInMB = Math.round(used * 100) / 100;
 
     // Write stats like elapsed time and memory used for this job to the logs
-    logger.debug(
-      {
-        name: "job",
-        jobName: job.name,
-        jobId: job.id,
-        elapsedTime: `${elapsedSeconds} seconds`,
-        memoryUsed: `${memoryUsedInMB} MB`,
-      },
-      `Job #${job.id} completed.`
-    );
+    logger.debug(`Job #${job.id} completed.`, {
+      name: "job",
+      jobName: job.name,
+      jobId: job.id,
+      elapsedTime: `${elapsedSeconds} seconds`,
+      memoryUsed: `${memoryUsedInMB} MB`,
+    });
   });
 
   worker.on("failed", (job: Job) => {
-    logger.error(
-      {
-        name: "job",
-        jobName: job.name,
-        jobId: job.id,
-        error: job.failedReason,
-      },
-      `Job #${job.id} failed.`
-    );
+    logger.error(`Job #${job.id} failed.`, {
+      name: "job",
+      jobName: job.name,
+      jobId: job.id,
+      error: job.failedReason,
+    });
   });
 };
 

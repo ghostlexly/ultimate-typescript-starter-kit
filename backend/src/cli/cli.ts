@@ -2,11 +2,11 @@ import { Command } from "commander";
 import path from "path";
 import { getAppDir } from "#/shared/utils/app-dir";
 import { glob } from "glob";
-import { createLogger } from "#/shared/utils/logger";
+import { Logger } from "#/shared/utils/logger";
 import chalk from "chalk";
 import { appService } from "#/shared/services/app.service";
 
-const logger = createLogger({ name: "cli" });
+const logger = new Logger("cli");
 const program = new Command();
 
 // Configure help output

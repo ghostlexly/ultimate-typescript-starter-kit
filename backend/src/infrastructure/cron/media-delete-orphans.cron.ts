@@ -1,9 +1,9 @@
-import { createLogger } from "#/shared/utils/logger";
+import { Logger } from "#/shared/utils/logger";
 import { CronJob } from "cron";
 import { sub } from "date-fns";
 import { prisma } from "../database/prisma";
 
-const logger = createLogger({ name: "mediaDeleteOrphansCron" });
+const logger = new Logger("mediaDeleteOrphansCron");
 
 /**
  * Remove orphan media records.

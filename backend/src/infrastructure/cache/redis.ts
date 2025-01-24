@@ -1,8 +1,8 @@
 import { Redis } from "ioredis";
 import { configService } from "#/shared/services/config.service";
-import { createLogger } from "#/shared/utils/logger";
+import { Logger } from "#/shared/utils/logger";
 
-const logger = createLogger({ name: "redis" });
+const logger = new Logger("redis");
 
 export const REDIS_CONNECTION = {
   host: configService.getOrThrow("APP_REDIS_HOST"),
@@ -18,7 +18,7 @@ class RedisService {
     });
 
     this.client.on("error", (err) => {
-      logger.error({ name: "redis", error: err });
+      logger.error("Redis connection error", { error: err });
     });
   }
 

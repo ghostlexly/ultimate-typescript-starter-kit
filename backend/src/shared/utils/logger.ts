@@ -1,60 +1,81 @@
-import * as FileStreamRotator from "file-stream-rotator";
-import pino from "pino";
-import pretty from "pino-pretty";
+import {
+  format,
+  createLogger,
+  transports,
+  Logger as WinstonLogger,
+} from "winston";
 import { getRootDir } from "./app-dir";
+import "winston-daily-rotate-file";
 
-export const createLogger = ({ name }: { name: string }) => {
-  const rootDir = getRootDir();
+export class Logger {
+  private logger: WinstonLogger;
 
-  const streams = [
-    {
-      // output to STDOUT (console)
+  constructor(name: string) {
+    const rootDir = getRootDir();
+
+    // Custom format to match Laravel's structure
+    const laravelFormat = format.printf(
+      ({ timestamp, level, message, ...meta }) => {
+        // Format context (additional metadata)
+        const context =
+          Object.keys(meta).length > 0 ? ` ${JSON.stringify(meta)}` : "";
+
+        return `[${timestamp}] ${
+          process.env.NODE_ENV || "local"
+        }.${level.toUpperCase()}: ${message}${context}`;
+      }
+    );
+
+    this.logger = createLogger({
       level: "debug",
-      stream: pretty({
-        colorize: true,
-        levelFirst: true,
-      }),
-    },
 
-    {
-      level: "debug",
-      stream: FileStreamRotator.getStream({
-        filename: `${rootDir}/logs/debug-%DATE%.log`,
-        frequency: "daily",
-        date_format: "YYYY-MM-DD",
-        max_logs: "10",
-      }),
-    },
-    {
-      level: "error",
-      stream: FileStreamRotator.getStream({
-        filename: `${rootDir}/logs/error-%DATE%.log`,
-        frequency: "daily",
-        date_format: "YYYY-MM-DD",
-        max_logs: "10",
-      }),
-    },
-  ];
+      // Add service name to the log
+      defaultMeta: { service: name },
 
-  const logger = pino(
-    {
-      level: "debug", // this MUST be set at the lowest level of the destinations
-      formatters: {
-        level: (label) => {
-          return { level: label.toUpperCase() }; // Uppercase log levels
-        },
+      format: format.combine(
+        format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+        format.errors({ stack: true }),
+        laravelFormat
+      ),
 
-        // This is the default formatter, we use it to remove pid by default
-        bindings(bindings) {
-          return { hostname: bindings.hostname };
-        },
-      },
+      transports: [
+        // Console transport with colors
+        new transports.Console({
+          format: format.combine(format.colorize(), format.simple()),
+        }),
 
-      // transform timestamp to ISO string representation to make it human readable
-      timestamp: pino.stdTimeFunctions.isoTime,
-    },
-    pino.multistream(streams)
-  );
+        // Debug logs file
+        new transports.DailyRotateFile({
+          filename: `${rootDir}/logs/debug-%DATE%.log`,
+          datePattern: "YYYY-MM-DD",
+          maxFiles: "10",
+          level: "debug",
+        }),
 
-  return logger.child({ name: name });
-};
+        // Error logs file
+        new transports.DailyRotateFile({
+          filename: `${rootDir}/logs/error-%DATE%.log`,
+          datePattern: "YYYY-MM-DD",
+          maxFiles: "10",
+          level: "error",
+        }),
+      ],
+    });
+  }
+
+  error(message: string, ...meta: unknown[]) {
+    this.logger.error(message, ...meta);
+  }
+
+  warn(message: string, ...meta: unknown[]) {
+    this.logger.warn(message, ...meta);
+  }
+
+  info(message: string, ...meta: unknown[]) {
+    this.logger.info(message, ...meta);
+  }
+
+  debug(message: string, ...meta: unknown[]) {
+    this.logger.debug(message, ...meta);
+  }
+}

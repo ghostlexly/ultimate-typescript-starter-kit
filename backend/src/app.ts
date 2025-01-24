@@ -9,7 +9,7 @@ import { unknownRoutesMiddleware } from "#/presentation/middlewares/unknown-rout
 import { globalThrottler } from "#/presentation/throttlers/global.throttler";
 import { trimMiddleware } from "#/presentation/middlewares/trim.middleware";
 import { rewriteIpAddressMiddleware } from "#/presentation/middlewares/rewrite-ip-address.middleware";
-import { createLogger } from "#/shared/utils/logger";
+import { Logger } from "#/shared/utils/logger";
 import helmet from "helmet";
 import cors from "cors";
 import { initializeSwagger } from "./shared/utils/swagger";
@@ -20,7 +20,7 @@ import { initializeJwtStrategy } from "./modules/auth/strategies/jwt.strategy";
 
 const bootstrap = async () => {
   const app = express();
-  const logger = createLogger({ name: "app" });
+  const logger = new Logger("app");
 
   // Log bootstrap time
   const bootstrapStartTime = Date.now();

@@ -1,8 +1,8 @@
 import { bootstrap } from "./app";
 import { configService } from "./shared/services/config.service";
-import { createLogger } from "./shared/utils/logger";
+import { Logger } from "./shared/utils/logger";
 
-const logger = createLogger({ name: "server" });
+const logger = new Logger("server");
 
 const setup = async () => {
   try {

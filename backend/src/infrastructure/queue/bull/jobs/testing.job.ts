@@ -1,9 +1,9 @@
 import { SandboxedJob } from "bullmq";
-import { createLogger } from "#/shared/utils/logger";
+import { Logger } from "#/shared/utils/logger";
 import { prisma } from "#/infrastructure/database/prisma";
 
 export const testingJob = async (job: SandboxedJob) => {
-  const logger = createLogger({ name: "testingJob" });
+  const logger = new Logger("testingJob");
 
   const { message } = job.data;
 
@@ -12,9 +12,8 @@ export const testingJob = async (job: SandboxedJob) => {
 
   // try prisma
   const accounts = await prisma.account.findMany({});
-  logger.debug({
+  logger.debug("Accounts list received", {
     name: "testingWorker", // optional
-    msg: "Accounts list received",
     accounts,
   });
 

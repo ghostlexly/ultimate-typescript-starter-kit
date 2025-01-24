@@ -1,11 +1,11 @@
 import { EventEmitter2 } from "eventemitter2";
-import { createLogger } from "#/shared/utils/logger";
+import { Logger } from "#/shared/utils/logger";
 import path from "path";
 import { getAppDir } from "#/shared/utils/app-dir";
 import { glob } from "glob";
 import { configService } from "#/shared/services/config.service";
 
-const logger = createLogger({ name: "initializeEventEmitter" });
+const logger = new Logger("initializeEventEmitter");
 
 export type AppEvents = {
   "test.event": (data: string) => void;

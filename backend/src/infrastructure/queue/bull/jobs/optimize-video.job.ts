@@ -1,4 +1,4 @@
-import { createLogger } from "#/shared/utils/logger";
+import { Logger } from "#/shared/utils/logger";
 import { prisma } from "#/infrastructure/database/prisma";
 import { SandboxedJob } from "bullmq";
 import path from "path";
@@ -8,7 +8,7 @@ import { s3Service } from "#/infrastructure/storage/s3/s3";
 import { FfmpegService } from "#/shared/utils/ffmpeg";
 
 export const optimizeVideoJob = async (job: SandboxedJob) => {
-  const logger = createLogger({ name: "optimizeVideoJob" });
+  const logger = new Logger("optimizeVideoJob");
   const ffmpegService = new FfmpegService();
 
   const { mediaId } = job.data;

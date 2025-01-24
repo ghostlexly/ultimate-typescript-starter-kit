@@ -2,11 +2,11 @@ import { prisma } from "#/infrastructure/database/prisma";
 import { s3Service } from "#/infrastructure/storage/s3/s3";
 import { HttpException } from "#/shared/exceptions/http-exception";
 import { filesService } from "#/shared/services/files.service";
-import { createLogger } from "#/shared/utils/logger";
+import { Logger } from "#/shared/utils/logger";
 import { Express } from "express";
 
 export class MediaService {
-  private readonly logger = createLogger({ name: "mediaService" });
+  private readonly logger = new Logger("mediaService");
 
   /**
    * Save a file uploaded with Multer to S3 and create a media record.
