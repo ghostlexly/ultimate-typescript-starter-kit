@@ -16,7 +16,8 @@ task("dev", async () => {
 namespace("prisma", function () {
   desc("Generate Prisma Client files.");
   task("g", async () => {
-    await asyncSpawn("docker compose exec backend npx prisma generate");
+    await asyncSpawn("cd backend && npx prisma generate"); // Generate Prisma Client files on local
+    await asyncSpawn("docker compose exec backend npx prisma generate"); // Generate Prisma Client files on docker containr
     await asyncSpawn("docker compose restart backend");
   });
 
@@ -32,7 +33,8 @@ namespace("prisma", function () {
     desc("Apply the latest Prisma migrations.");
     task("m", async () => {
       await asyncSpawn("docker compose exec backend npx prisma migrate deploy");
-      await asyncSpawn("docker compose exec backend npx prisma generate");
+      await asyncSpawn("cd backend && npx prisma generate"); // Generate Prisma Client files on local
+      await asyncSpawn("docker compose exec backend npx prisma generate"); // Generate Prisma Client files on docker containr
       await asyncSpawn("docker compose restart backend");
     });
 

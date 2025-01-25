@@ -10,5 +10,13 @@ export const globalThrottler = rateLimit({
     // Use the ip address given by the proxy
     return req.clientIp || req.ip || req.socket?.remoteAddress || "anonymous";
   },
+  skip: () => {
+    // -- Skip rate limiting in test mode
+    if (process.env.NODE_ENV === "test") {
+      return true;
+    }
+
+    return false;
+  },
   message: { message: "Too many requests, please try again later." },
 });

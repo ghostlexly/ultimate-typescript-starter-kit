@@ -18,11 +18,22 @@ enum Role {
 }
 
 model Account {
-  id   String @id @default(uuid())
-  role Role
+  id       String    @id @default(uuid())
+  role     Role
+  sessions Session[]
 
   customer Customer?
   admin    Admin?
+}
+
+model Session {
+  id           String  @id @default(uuid())
+  accountId    String
+  account      Account @relation(fields: [accountId], references: [id])
+  refreshToken String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Customer {

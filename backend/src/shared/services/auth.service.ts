@@ -1,13 +1,13 @@
 import { prisma } from "#/infrastructure/database/prisma";
 import jwt from "jsonwebtoken";
 import { configService } from "./config.service";
-import { AUTH_TOKEN_EXPIRATION_HOURS } from "../constants/auth.constants";
+import { AUTH_ACCESS_TOKEN_EXPIRATION_MINUTES } from "../constants/auth.constants";
 
 class AuthService {
   /**
-   * Generate a JWT token for a given account id.
+   * Generate a JWT access token for a given account id.
    */
-  generateJwtToken = async ({
+  generateAccessToken = async ({
     accountId,
   }: {
     accountId: string;
@@ -30,7 +30,7 @@ class AuthService {
         },
         configService.getOrThrow("APP_JWT_SECRET"),
         {
-          expiresIn: `${AUTH_TOKEN_EXPIRATION_HOURS}h`,
+          expiresIn: `${AUTH_ACCESS_TOKEN_EXPIRATION_MINUTES}m`,
         },
         (err, token) => {
           if (err) reject(err);

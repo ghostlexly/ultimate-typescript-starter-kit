@@ -10,5 +10,16 @@ export const strictThrottler = rateLimit({
     // Use the ip address given by the proxy
     return req.clientIp || req.ip || req.socket?.remoteAddress || "anonymous";
   },
+  skip: (req: Request) => {
+    // -- Skip rate limiting in test mode
+    if (
+      process.env.NODE_ENV === "test" &&
+      req.headers["x-throttler-test-mode"]
+    ) {
+      return true;
+    }
+
+    return false;
+  },
   message: { message: "Too many requests, please try again later." },
 });

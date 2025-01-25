@@ -1,7 +1,7 @@
 import { Role } from "@prisma/client";
 import { z } from "zod";
 
-export const authSigninValidator = z.object({
+export const authOnSigninValidator = z.object({
   body: z.object({
     email: z.string().email(),
     password: z.string(),
@@ -9,4 +9,14 @@ export const authSigninValidator = z.object({
   }),
 });
 
-export type AuthSigninValidator = z.infer<typeof authSigninValidator>;
+export type AuthOnSigninValidator = z.infer<typeof authOnSigninValidator>;
+
+export const authOnRefreshTokenValidator = z.object({
+  body: z.object({
+    refreshToken: z.string(),
+  }),
+});
+
+export type AuthOnRefreshTokenValidator = z.infer<
+  typeof authOnRefreshTokenValidator
+>;

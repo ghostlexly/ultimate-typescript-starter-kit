@@ -8,11 +8,17 @@ export const initializeTestDb = async () => {
 };
 
 const cleanupTestDb = async () => {
+  // Session
+  await prisma.session.deleteMany();
+
   // Customer
   await prisma.customer.deleteMany();
 
   // Admin
   await prisma.admin.deleteMany();
+
+  // Account
+  await prisma.account.deleteMany();
 };
 
 const seedTestDb = async () => {
@@ -20,10 +26,12 @@ const seedTestDb = async () => {
 
   await prisma.admin.create({
     data: {
+      id: "03f76f80-30ee-4db5-a542-de207d8ac7c5",
       email: "contact@lunisoft.fr",
       password: hashedPassword,
       account: {
         create: {
+          id: "f494c2f4-d257-4739-80e8-797f2f23d17c",
           role: "ADMIN",
         },
       },

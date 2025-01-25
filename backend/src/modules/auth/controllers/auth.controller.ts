@@ -2,15 +2,19 @@ import { NextFunction, Request, Response } from "express";
 import { prisma } from "#/infrastructure/database/prisma";
 import bcrypt from "bcrypt";
 import { HttpException } from "#/shared/exceptions/http-exception";
-import { AuthSigninValidator } from "../validators/auth.validators";
+import {
+  AuthOnRefreshTokenValidator,
+  AuthOnSigninValidator,
+} from "../validators/auth.validators";
 import { Customer } from "@prisma/client";
 import { Admin } from "@prisma/client";
 import { authService } from "#/shared/services/auth.service";
+import { randomUUID } from "crypto";
 
 export class AuthController {
   onSignIn = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const body = req.body as AuthSigninValidator["body"];
+      const body = req.body as AuthOnSigninValidator["body"];
 
       // Verify if user exists
       let user: Admin | Customer | null = null;
@@ -29,15 +33,13 @@ export class AuthController {
       }
 
       if (!user) {
-        throw new HttpException({
-          status: 401,
+        throw HttpException.badRequest({
           message: "Invalid credentials.",
         });
       }
 
       if (!user.password) {
-        throw new HttpException({
-          status: 401,
+        throw HttpException.badRequest({
           message:
             "You have previously signed up with another service like Google, please use the appropriate login method for this account.",
         });
@@ -47,18 +49,26 @@ export class AuthController {
       const validPassword = await bcrypt.compare(body.password, user.password);
 
       if (!validPassword) {
-        throw new HttpException({
-          status: 401,
+        throw HttpException.badRequest({
           message: "Invalid credentials.",
         });
       }
 
-      const accessToken = await authService.generateJwtToken({
+      const accessToken = await authService.generateAccessToken({
         accountId: user.accountId,
+      });
+
+      const refreshToken = randomUUID();
+      await prisma.session.create({
+        data: {
+          accountId: user.accountId,
+          refreshToken: refreshToken,
+        },
       });
 
       return res.json({
         accessToken,
+        refreshToken,
       });
     } catch (error) {
       next(error);
@@ -67,16 +77,22 @@ export class AuthController {
 
   onRefreshToken = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const account = req.context?.account;
+      const body = req.body as AuthOnRefreshTokenValidator["body"];
 
-      if (!account) {
+      const session = await prisma.session.findFirst({
+        where: {
+          refreshToken: body.refreshToken,
+        },
+      });
+
+      if (!session) {
         throw HttpException.badRequest({
-          message: "Unauthorized.",
+          message: "Invalid or expired refresh token.",
         });
       }
 
-      const accessToken = await authService.generateJwtToken({
-        accountId: account.id,
+      const accessToken = await authService.generateAccessToken({
+        accountId: session.accountId,
       });
 
       return res.json({
