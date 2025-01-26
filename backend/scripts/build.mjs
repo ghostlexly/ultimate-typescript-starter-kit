@@ -1,6 +1,7 @@
 import { spawn } from "child_process";
 import fs from "fs/promises";
-import { existsSync } from "fs";
+import { glob } from "glob";
+import path from "path";
 
 class Builder {
   /**
@@ -32,35 +33,25 @@ class Builder {
   };
 
   /**
-   * Copy files from source to destination directory
+   * Copy non-TypeScript files to the dist directory
    */
-  copyFiles = async (srcDir, destDir, type) => {
-    if (!existsSync(srcDir)) {
-      console.log(`${type} directory does not exist, skipping copy`);
-      return;
+  copyNonTsFiles = async () => {
+    const nonTsFiles = await glob("**/*", {
+      ignore: ["**/*.{ts,tsx,js,jsx}", "**/node_modules/**", "dist/**"],
+      nodir: true,
+      cwd: "src",
+    });
+
+    for (const file of nonTsFiles) {
+      const sourcePath = path.join("src", file);
+      const destPath = path.join("dist", "src", file);
+
+      // Ensure the destination directory exists
+      await fs.mkdir(path.dirname(destPath), { recursive: true });
+
+      // Copy the file
+      await fs.copyFile(sourcePath, destPath);
     }
-
-    try {
-      await fs.mkdir(destDir, { recursive: true });
-      await fs.cp(srcDir, destDir, { recursive: true });
-    } catch (error) {
-      console.error(`Error copying ${type}:`, error);
-      throw error;
-    }
-  };
-
-  /**
-   * Copy assets from src to dist
-   */
-  copyAssets = async () => {
-    await this.copyFiles("src/static", "dist/src/static", "Assets");
-  };
-
-  /**
-   * Copy views from src to dist
-   */
-  copyViews = async () => {
-    await this.copyFiles("src/shared/views", "dist/src/shared/views", "Views");
   };
 
   /**
@@ -90,8 +81,8 @@ class Builder {
     try {
       console.log("Building...");
 
-      await Promise.all([this.buildJs(), this.buildCss(), this.copyViews()]);
-      await this.copyAssets();
+      await this.buildCss();
+      await Promise.all([this.buildJs(), this.copyNonTsFiles()]);
 
       console.log("Build completed successfully");
     } catch (error) {
