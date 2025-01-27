@@ -4,7 +4,7 @@ import { HttpException } from "#/shared/exceptions/http-exception";
 import { queueService } from "#/infrastructure/queue/bull/queue.service";
 
 export class MediaController {
-  onUploadMedia = async (req: Request, res: Response, next: NextFunction) => {
+  uploadMedia = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const file = req.file;
 
@@ -42,7 +42,7 @@ export class MediaController {
     }
   };
 
-  onUploadVideo = async (req: Request, res: Response, next: NextFunction) => {
+  uploadVideo = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const file = req.file;
 

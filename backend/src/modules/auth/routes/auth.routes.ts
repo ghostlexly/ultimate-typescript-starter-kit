@@ -3,8 +3,8 @@ import { Router } from "express";
 import { authController } from "../controllers/auth.controller";
 import { validateRequest } from "#/presentation/middlewares/validation.middleware";
 import {
-  authOnRefreshTokenValidator,
-  authOnSigninValidator,
+  authRefreshTokenValidator,
+  authSigninValidator,
 } from "../validators/auth.validators";
 
 export const authRoutes = Router();
@@ -64,8 +64,8 @@ export const authRoutes = Router();
 authRoutes.post(
   "/auth/signin",
   strictThrottler,
-  validateRequest(authOnSigninValidator),
-  authController.onSignIn
+  validateRequest(authSigninValidator),
+  authController.signIn
 );
 
 /**
@@ -99,6 +99,6 @@ authRoutes.post(
 authRoutes.post(
   "/auth/refresh",
   strictThrottler,
-  validateRequest(authOnRefreshTokenValidator),
-  authController.onRefreshToken
+  validateRequest(authRefreshTokenValidator),
+  authController.refreshToken
 );

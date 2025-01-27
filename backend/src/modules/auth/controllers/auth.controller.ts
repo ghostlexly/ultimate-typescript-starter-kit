@@ -3,8 +3,8 @@ import { prisma } from "#/infrastructure/database/prisma";
 import bcrypt from "bcrypt";
 import { HttpException } from "#/shared/exceptions/http-exception";
 import {
-  AuthOnRefreshTokenValidator,
-  AuthOnSigninValidator,
+  AuthRefreshTokenValidator,
+  AuthSigninValidator,
 } from "../validators/auth.validators";
 import { Customer } from "@prisma/client";
 import { Admin } from "@prisma/client";
@@ -12,9 +12,9 @@ import { authService } from "#/shared/services/auth.service";
 import { randomUUID } from "crypto";
 
 export class AuthController {
-  onSignIn = async (req: Request, res: Response, next: NextFunction) => {
+  signIn = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const body = req.body as AuthOnSigninValidator["body"];
+      const body = req.body as AuthSigninValidator["body"];
 
       // Verify if user exists
       let user: Admin | Customer | null = null;
@@ -75,9 +75,9 @@ export class AuthController {
     }
   };
 
-  onRefreshToken = async (req: Request, res: Response, next: NextFunction) => {
+  refreshToken = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const body = req.body as AuthOnRefreshTokenValidator["body"];
+      const body = req.body as AuthRefreshTokenValidator["body"];
 
       const session = await prisma.session.findFirst({
         where: {

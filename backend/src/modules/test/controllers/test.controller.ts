@@ -5,7 +5,7 @@ import path from "path";
 import ejs from "ejs";
 import { testService } from "../test.service";
 import { HttpException } from "#/shared/exceptions/http-exception";
-import { AccountUpdateValidator } from "../validators/account-update.validators";
+import { UpdateAccountValidator } from "../validators/test.validators";
 import { eventsService } from "#/infrastructure/events/events.service";
 import { getAppDir } from "#/shared/utils/app-dir";
 import { pdfService } from "#/shared/services/pdf.service";
@@ -14,11 +14,7 @@ import { toAccountDto } from "../dtos/account.dto";
 import { queueService } from "#/infrastructure/queue/bull/queue.service";
 
 export class TestController {
-  onTestBadRequest = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+  testBadRequest = async (req: Request, res: Response, next: NextFunction) => {
     try {
       throw HttpException.badRequest({
         message: "An error occurred.",
@@ -35,11 +31,7 @@ export class TestController {
     }
   };
 
-  onTestQueueLaunch = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+  testQueueLaunch = async (req: Request, res: Response, next: NextFunction) => {
     try {
       queueService.addTestingJob("Hello World");
 
@@ -51,9 +43,9 @@ export class TestController {
     }
   };
 
-  onTestZod = async (req: Request, res: Response, next: NextFunction) => {
+  testZod = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const body = req.body as AccountUpdateValidator["body"];
+      const body = req.body as UpdateAccountValidator["body"];
 
       return res.json(body);
     } catch (error) {
@@ -61,7 +53,7 @@ export class TestController {
     }
   };
 
-  onTestDto = async (req: Request, res: Response, next: NextFunction) => {
+  testDto = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = {
         id: "123",
@@ -82,7 +74,7 @@ export class TestController {
     }
   };
 
-  onTestEventEmitter = async (
+  testEventEmitter = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -98,7 +90,7 @@ export class TestController {
     }
   };
 
-  onTestDependencyInjection = async (
+  testDependencyInjection = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -115,7 +107,7 @@ export class TestController {
     }
   };
 
-  onTestPdf = async (req: Request, res: Response, next: NextFunction) => {
+  testPdf = async (req: Request, res: Response, next: NextFunction) => {
     try {
       // Get template
       const template = await fs.readFile(
@@ -137,7 +129,7 @@ export class TestController {
     }
   };
 
-  onTestComplexUseCase = async (
+  testComplexUseCase = async (
     req: Request,
     res: Response,
     next: NextFunction

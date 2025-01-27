@@ -2,7 +2,7 @@ import { phoneNumberTransformer } from "#/shared/transformers/phone-number.trans
 import { phoneNumberValidator } from "#/shared/validators/phone-number.validators";
 import { z } from "zod";
 
-export const accountUpdateValidator = z.object({
+export const updateAccountValidator = z.object({
   body: z.object({
     name: z.string(),
     bookings: z.array(
@@ -18,4 +18,4 @@ export const accountUpdateValidator = z.object({
   }),
 });
 
-export type AccountUpdateValidator = z.infer<typeof accountUpdateValidator>;
+export type UpdateAccountValidator = z.infer<typeof updateAccountValidator>;
