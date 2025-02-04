@@ -13,8 +13,8 @@ export class Logger {
   constructor(name: string) {
     const rootDir = getRootDir();
 
-    // Custom format to match Laravel's structure
-    const laravelFormat = format.printf(
+    // Custom format to make the error logs more human readable (inspired by Laravel)
+    const humanReadableFormat = format.printf(
       ({ timestamp, level, message, ...meta }) => {
         // Format context (additional metadata)
         const context =
@@ -35,7 +35,7 @@ export class Logger {
       format: format.combine(
         format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
         format.errors({ stack: true }),
-        laravelFormat
+        humanReadableFormat
       ),
 
       transports: [
