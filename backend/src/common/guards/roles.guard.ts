@@ -6,10 +6,11 @@ export const rolesGuard =
   (roles: Role[]) => (req: Request, res: Response, next: NextFunction) => {
     const account = req.context?.account;
 
-    // -----------------------------------
-    // Handle authentication failure
-    // We provide 401 status code so the frontend can redirect to the login page
-    // -----------------------------------
+    /**
+     * Check if the user is logged in
+     * otherwise, throw an Unauthorized error (401).
+     * This status code indicates that the client is not authenticated.
+     */
     if (!account) {
       return next(
         new HttpException({
@@ -20,12 +21,11 @@ export const rolesGuard =
       );
     }
 
-    // -----------------------------------
-    // Check if the user has the required role otherwise, throw a Forbidden error (403).
-    // This status code indicates that the client is authenticated,
-    // but it does not have the necessary permissions for the resource.
-    // It's important to use 403 instead of 401 because 401 is for authentication failure.
-    // -----------------------------------
+    /**
+     * Check if the user has the required role otherwise, throw a Forbidden error (403).
+     * This status code indicates that the client is authenticated,
+     * but it does not have the necessary permissions for the resource.
+     */
     if (!roles.includes(account.role)) {
       return next(
         new HttpException({
