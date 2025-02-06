@@ -32,6 +32,10 @@ class Builder {
     });
   };
 
+  clearDist = async () => {
+    await fs.rm(path.join("dist"), { recursive: true, force: true });
+  };
+
   /**
    * Copy non-TypeScript files to the dist directory
    */
@@ -79,8 +83,9 @@ class Builder {
    */
   build = async () => {
     try {
-      console.log("Building...");
+      await this.clearDist();
 
+      console.log("Building...");
       await this.buildCss();
       await Promise.all([this.buildJs(), this.copyNonTsFiles()]);
 
