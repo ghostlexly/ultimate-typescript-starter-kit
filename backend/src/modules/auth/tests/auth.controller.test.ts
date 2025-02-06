@@ -2,10 +2,13 @@ import request from "supertest";
 import { bootstrap } from "#/app";
 import { Express } from "express";
 import { prisma } from "#/infrastructure/database/prisma";
+import { initializeTestDb } from "#/infrastructure/test/jest-initialize-db";
 
 let app: Express;
 
 beforeAll(async () => {
+  await initializeTestDb();
+
   app = await bootstrap();
 });
 
