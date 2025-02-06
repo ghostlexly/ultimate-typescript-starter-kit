@@ -21,12 +21,14 @@ const cleanupTestDb = async () => {
   await prisma.account.deleteMany();
 };
 
+export const seedAdminId = "03f76f80-30ee-4db5-a542-de207d8ac7c5";
+
 const seedTestDb = async () => {
   const hashedPassword = await bcrypt.hash("password", 10);
 
   await prisma.admin.create({
     data: {
-      id: "03f76f80-30ee-4db5-a542-de207d8ac7c5",
+      id: seedAdminId,
       email: "contact@lunisoft.fr",
       password: hashedPassword,
       account: {
