@@ -1,10 +1,10 @@
 import { Command } from "commander";
 import path from "path";
-import { getAppDir } from "#/shared/utils/app-dir";
+import { getAppDir } from "#/common/utils/app-dir";
 import { glob } from "glob";
-import { Logger } from "#/shared/utils/logger";
+import { Logger } from "#/common/utils/logger";
 import chalk from "chalk";
-import { appService } from "#/shared/services/app.service";
+import { appService } from "#/common/services/app.service";
 
 const logger = new Logger("cli");
 const program = new Command();

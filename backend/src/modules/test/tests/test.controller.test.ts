@@ -1,7 +1,7 @@
 import request from "supertest";
 import { bootstrap } from "#/app";
 import { Express } from "express";
-import { initializeTestDb } from "#/infrastructure/test/jest-initialize-db";
+import { initializeTestDb } from "#/common/test/jest-initialize-db";
 
 let app: Express;
 

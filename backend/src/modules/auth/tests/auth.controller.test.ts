@@ -1,8 +1,8 @@
 import request from "supertest";
 import { bootstrap } from "#/app";
 import { Express } from "express";
-import { prisma } from "#/infrastructure/database/prisma";
-import { initializeTestDb } from "#/infrastructure/test/jest-initialize-db";
+import { prisma } from "#/common/database/prisma";
+import { initializeTestDb } from "#/common/test/jest-initialize-db";
 
 let app: Express;
 

@@ -1,4 +1,4 @@
-import { HttpException } from "#/shared/exceptions/http-exception";
+import { HttpException } from "#/common/exceptions/http-exception";
 import { NextFunction, Request, Response } from "express";
 
 export class MeController {

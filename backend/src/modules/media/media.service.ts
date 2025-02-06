@@ -1,8 +1,8 @@
-import { prisma } from "#/infrastructure/database/prisma";
-import { s3Service } from "#/infrastructure/storage/s3/s3";
-import { HttpException } from "#/shared/exceptions/http-exception";
-import { filesService } from "#/shared/services/files.service";
-import { Logger } from "#/shared/utils/logger";
+import { prisma } from "#/common/database/prisma";
+import { s3Service } from "#/common/storage/s3";
+import { HttpException } from "#/common/exceptions/http-exception";
+import { filesService } from "#/common/services/files.service";
+import { Logger } from "#/common/utils/logger";
 import { Express } from "express";
 
 export class MediaService {

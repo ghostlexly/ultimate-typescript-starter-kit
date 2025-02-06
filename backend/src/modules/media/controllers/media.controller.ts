@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { mediaService } from "../media.service";
-import { HttpException } from "#/shared/exceptions/http-exception";
-import { queueService } from "#/infrastructure/queue/bull/queue.service";
+import { HttpException } from "#/common/exceptions/http-exception";
+import { queueService } from "#/common/queue/queue.service";
 
 export class MediaController {
   uploadMedia = async (req: Request, res: Response, next: NextFunction) => {

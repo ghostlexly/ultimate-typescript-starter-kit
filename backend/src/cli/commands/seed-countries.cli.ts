@@ -1,8 +1,8 @@
 import { Command } from "commander";
-import { Logger } from "#/shared/utils/logger";
+import { Logger } from "#/common/utils/logger";
 import papaparse from "papaparse";
-import { wolfios } from "#/shared/utils/wolfios";
-import { prisma } from "#/infrastructure/database/prisma";
+import { wolfios } from "#/common/utils/wolfios";
+import { prisma } from "#/common/database/prisma";
 
 const logger = new Logger("seed-countries-command");
 

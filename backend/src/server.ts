@@ -1,6 +1,6 @@
 import { bootstrap } from "./app";
-import { configService } from "./shared/services/config.service";
-import { Logger } from "./shared/utils/logger";
+import { configService } from "./common/services/config.service";
+import { Logger } from "./common/utils/logger";
 
 const logger = new Logger("server");
 
