@@ -1,7 +1,7 @@
 import { prisma } from "#/infrastructure/database/prisma";
 import jwt from "jsonwebtoken";
 import { configService } from "./config.service";
-import { AUTH_ACCESS_TOKEN_EXPIRATION_MINUTES } from "../constants/auth.constants";
+import { authConfig } from "#/modules/auth/auth.config";
 
 class AuthService {
   /**
@@ -30,7 +30,7 @@ class AuthService {
         },
         configService.getOrThrow("APP_JWT_SECRET"),
         {
-          expiresIn: `${AUTH_ACCESS_TOKEN_EXPIRATION_MINUTES}m`,
+          expiresIn: `${authConfig.accessTokenExpirationMinutes}m`,
         },
         (err, token) => {
           if (err) reject(err);
