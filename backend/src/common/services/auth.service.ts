@@ -1,9 +1,40 @@
-import { prisma } from "#/common/database/prisma";
 import jwt from "jsonwebtoken";
 import { configService } from "./config.service";
 import { authConfig } from "#/modules/auth/auth.config";
+import { prisma } from "../database/prisma";
 
 class AuthService {
+  /**
+   * Authenticate a token and return the user
+   */
+  authenticateToken = async (token: string) => {
+    try {
+      // Verify and decode the JWT token
+      const payload = jwt.verify(
+        token,
+        configService.getOrThrow("APP_JWT_SECRET")
+      ) as { sub: string };
+
+      // Get account by id
+      const account = await prisma.account.findFirst({
+        include: {
+          admin: true,
+          customer: true,
+        },
+        where: { id: payload.sub },
+      });
+
+      // Check if the account is valid
+      if (!account) {
+        throw new Error("Invalid token.");
+      }
+
+      return account;
+    } catch {
+      return null;
+    }
+  };
+
   /**
    * Generate a JWT access token for a given account id.
    */

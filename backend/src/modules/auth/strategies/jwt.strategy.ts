@@ -12,7 +12,7 @@ export const initializeJwtStrategy = async () => {
         secretOrKey: configService.getOrThrow("APP_JWT_SECRET"),
       },
       async (
-        jwt_payload: { sub: string },
+        payload: { sub: string },
         done: (error: Error | null, account?: Account | false) => void
       ) => {
         try {
@@ -22,7 +22,7 @@ export const initializeJwtStrategy = async () => {
               admin: true,
               customer: true,
             },
-            where: { id: jwt_payload.sub },
+            where: { id: payload.sub },
           });
 
           if (!account) {
