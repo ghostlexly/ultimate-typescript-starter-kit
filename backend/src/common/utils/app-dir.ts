@@ -13,8 +13,8 @@ import path from "path";
 export const getAppDir = () => {
   // if appRoot is not set, use the app.ts file location from the require cache
   if (!global.appRoot) {
-    const parentDirOne = path.join(__dirname, "../");
-    return path.dirname(require?.main?.filename ?? parentDirOne);
+    const parentDirTwo = path.join(__dirname, "../../");
+    return path.dirname(require?.main?.filename ?? parentDirTwo);
   }
 
   return global.appRoot;
