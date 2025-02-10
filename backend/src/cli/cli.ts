@@ -44,9 +44,9 @@ async function loadCommands() {
     program.outputHelp();
   });
 
-  // Parse the command line arguments
-  program.parse(process.argv);
+  // Parse the command line arguments and await the result
+  await program.parseAsync(process.argv);
 
-  // Close all connections & exit
+  // Only shutdown after command completion
   await appService.shutdownGracefully();
 })();
