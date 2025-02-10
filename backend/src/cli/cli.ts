@@ -17,7 +17,7 @@ program.configureHelp({
 
 // Function to dynamically load commands
 async function loadCommands() {
-  const commandsPath = path.join(getAppDir(), "commands");
+  const commandsPath = path.join(getAppDir(), "cli", "commands");
 
   const files = await glob("**/*.cli.js", { cwd: commandsPath });
 
