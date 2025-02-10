@@ -1,5 +1,4 @@
 import path from "path";
-global.appRoot = path.resolve(__dirname);
 import "dotenv/config";
 import "reflect-metadata";
 import express from "express";

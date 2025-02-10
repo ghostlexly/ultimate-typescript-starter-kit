@@ -1,6 +1,10 @@
 // more infos: https://stackoverflow.com/questions/10265798/determine-project-root-from-a-running-node-js-application
 
 import path from "path";
+import fs from "fs";
+
+let memoizedAppDir: string | null = null;
+let memoizedRootDir: string | null = null;
 
 /**
  * Get the root directory of the application (where the app.ts file is located).
@@ -11,13 +15,30 @@ import path from "path";
  * ```
  */
 export const getAppDir = () => {
-  // if appRoot is not set, use the app.ts file location from the require cache
-  if (!global.appRoot) {
-    const parentDirTwo = path.join(__dirname, "../../");
-    return path.dirname(require?.main?.filename ?? parentDirTwo);
+  // Return memoized value if available
+  if (memoizedAppDir) {
+    return memoizedAppDir;
   }
 
-  return global.appRoot;
+  // Start from the current directory and traverse up until we find app.ts or app.js
+  let currentDir = __dirname;
+  while (currentDir !== path.parse(currentDir).root) {
+    const appTsPath = path.join(currentDir, "app.ts");
+    const appJsPath = path.join(currentDir, "app.js");
+
+    if (fs.existsSync(appTsPath) || fs.existsSync(appJsPath)) {
+      // Found the directory containing app.ts or app.js
+      global.appRoot = currentDir;
+      memoizedAppDir = currentDir;
+      return currentDir;
+    }
+
+    // Move up one directory
+    currentDir = path.dirname(currentDir);
+  }
+
+  // Fallback to error if no app.ts or app.js is found
+  throw new Error("No app.ts or app.js found in the project");
 };
 
 /**
@@ -25,15 +46,26 @@ export const getAppDir = () => {
  * @returns
  */
 export const getRootDir = () => {
-  return process.cwd();
+  // Return memoized value if available
+  if (memoizedRootDir) {
+    return memoizedRootDir;
+  }
 
-  // old method
-  // for (const modulePath of module.paths) {
-  //   try {
-  //     fs.accessSync(modulePath, constants.F_OK);
-  //     return path.dirname(modulePath);
-  //   } catch (e) {
-  //     // Just move on to next path
-  //   }
-  // }
+  // Start from the current directory and traverse up until we find package.json
+  let currentDir = __dirname;
+  while (currentDir !== path.parse(currentDir).root) {
+    const packageJsonPath = path.join(currentDir, "package.json");
+
+    if (fs.existsSync(packageJsonPath)) {
+      // Found the directory containing package.json
+      memoizedRootDir = currentDir;
+      return currentDir;
+    }
+
+    // Move up one directory
+    currentDir = path.dirname(currentDir);
+  }
+
+  // Fallback to error if no package.json is found
+  throw new Error("No package.json found in the project");
 };
