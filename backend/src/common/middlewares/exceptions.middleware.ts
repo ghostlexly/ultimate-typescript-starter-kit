@@ -55,5 +55,5 @@ export const exceptionsMiddleware = (
   /**
    * In other cases, we return a 500
    */
-  return res.status(500).json({ message: "Oops.. Internal Server Error" });
+  return res.status(500).json({ message: err.message });
 };
