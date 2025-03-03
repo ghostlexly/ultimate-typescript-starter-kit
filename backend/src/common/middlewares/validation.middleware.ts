@@ -1,6 +1,6 @@
 import { AnyZodObject, ZodEffects, ZodError } from "zod";
 import { Request, Response, NextFunction } from "express";
-import { ValidationException } from "#/common/exceptions/validation-exception";
+import { ValidationException } from "@/common/exceptions/validation-exception";
 
 /**
  * Validates request query, params and body parameters

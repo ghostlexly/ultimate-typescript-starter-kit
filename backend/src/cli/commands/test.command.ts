@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { Logger } from "#/common/utils/logger";
+import { Logger } from "@/common/utils/logger";
 
 const logger = new Logger("test-command");
 

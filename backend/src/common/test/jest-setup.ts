@@ -1,4 +1,4 @@
-import { appService } from "#/common/services/app.service";
+import { appService } from "@/common/services/app.service";
 
 afterAll(async () => {
   // Close all connections

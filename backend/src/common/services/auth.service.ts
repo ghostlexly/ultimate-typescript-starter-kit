@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { configService } from "./config.service";
-import { authConfig } from "#/modules/auth/auth.config";
+import { authConfig } from "@/modules/auth/auth.config";
 import { prisma } from "../database/prisma";
 
 class AuthService {

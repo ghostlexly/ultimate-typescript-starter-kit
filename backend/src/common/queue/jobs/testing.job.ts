@@ -1,6 +1,6 @@
 import { SandboxedJob } from "bullmq";
-import { Logger } from "#/common/utils/logger";
-import { prisma } from "#/common/database/prisma";
+import { Logger } from "@/common/utils/logger";
+import { prisma } from "@/common/database/prisma";
 
 export const testingJob = async (job: SandboxedJob) => {
   const logger = new Logger("testingJob");

@@ -5,9 +5,9 @@ import {
   MongoQuery,
   createMongoAbility,
 } from "@casl/ability";
-import { CustomAccount } from "#/common/types/request";
+import { CustomAccount } from "@/common/types/request";
 import { Request, Response, NextFunction } from "express";
-import { HttpException } from "#/common/exceptions/http-exception";
+import { HttpException } from "@/common/exceptions/http-exception";
 
 /**
  * Define the abilities of the given account.

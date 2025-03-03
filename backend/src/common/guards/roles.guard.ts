@@ -1,6 +1,6 @@
 import { Role } from "@prisma/client";
 import { Request, Response, NextFunction } from "express";
-import { HttpException } from "#/common/exceptions/http-exception";
+import { HttpException } from "@/common/exceptions/http-exception";
 
 export const rolesGuard =
   (roles: Role[]) => (req: Request, res: Response, next: NextFunction) => {

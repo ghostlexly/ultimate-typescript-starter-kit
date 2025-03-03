@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { Logger } from "#/common/utils/logger";
-import { HttpException } from "#/common/exceptions/http-exception";
-import { ValidationException } from "#/common/exceptions/validation-exception";
+import { Logger } from "@/common/utils/logger";
+import { HttpException } from "@/common/exceptions/http-exception";
+import { ValidationException } from "@/common/exceptions/validation-exception";
 
 const logger = new Logger("exceptions-middleware");
 const isDev = process.env.NODE_ENV === "development";

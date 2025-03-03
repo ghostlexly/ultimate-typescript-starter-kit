@@ -1,5 +1,5 @@
-import { REDIS_CONNECTION } from "#/common/services/redis.service";
-import { bullmqService } from "#/common/queue/bullmq";
+import { REDIS_CONNECTION } from "@/common/services/redis.service";
+import { bullmqService } from "@/common/queue/bullmq";
 import { Queue, Worker } from "bullmq";
 import path from "path";
 

@@ -1,7 +1,7 @@
-import { strictThrottler } from "#/common/throttlers/strict.throttler";
+import { strictThrottler } from "@/common/throttlers/strict.throttler";
 import { Router } from "express";
 import { authController } from "../controllers/auth.controller";
-import { validateRequest } from "#/common/middlewares/validation.middleware";
+import { validateRequest } from "@/common/middlewares/validation.middleware";
 import {
   authRefreshTokenValidator,
   authSigninValidator,

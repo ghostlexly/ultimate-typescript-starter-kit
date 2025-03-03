@@ -1,8 +1,8 @@
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import passport from "passport";
 import { Account } from "@prisma/client";
-import { prisma } from "#/common/database/prisma";
-import { configService } from "#/common/services/config.service";
+import { prisma } from "@/common/database/prisma";
+import { configService } from "@/common/services/config.service";
 
 export const initializeJwtStrategy = async () => {
   passport.use(

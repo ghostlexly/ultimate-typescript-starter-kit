@@ -1,11 +1,11 @@
-import { Logger } from "#/common/utils/logger";
-import { prisma } from "#/common/database/prisma";
+import { Logger } from "@/common/utils/logger";
+import { prisma } from "@/common/database/prisma";
 import { SandboxedJob } from "bullmq";
 import path from "path";
 import os from "os";
 import crypto from "crypto";
-import { s3Service } from "#/common/storage/s3";
-import { FfmpegService } from "#/common/utils/ffmpeg";
+import { s3Service } from "@/common/storage/s3";
+import { FfmpegService } from "@/common/utils/ffmpeg";
 
 export const optimizeVideoJob = async (job: SandboxedJob) => {
   const logger = new Logger("optimizeVideoJob");

@@ -1,7 +1,7 @@
-import { Logger } from "#/common/utils/logger";
+import { Logger } from "@/common/utils/logger";
 import { CronJob } from "cron";
 import { sub } from "date-fns";
-import { prisma } from "#/common/database/prisma";
+import { prisma } from "@/common/database/prisma";
 
 const logger = new Logger("mediaDeleteOrphansCron");
 

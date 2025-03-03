@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response } from "express";
-import { prisma } from "#/common/database/prisma";
+import { prisma } from "@/common/database/prisma";
 import bcrypt from "bcrypt";
-import { HttpException } from "#/common/exceptions/http-exception";
+import { HttpException } from "@/common/exceptions/http-exception";
 import {
   AuthRefreshTokenValidator,
   AuthSigninValidator,
 } from "../validators/auth.validators";
 import { Customer } from "@prisma/client";
 import { Admin } from "@prisma/client";
-import { authService } from "#/common/services/auth.service";
+import { authService } from "@/common/services/auth.service";
 import { randomUUID } from "crypto";
 
 export class AuthController {

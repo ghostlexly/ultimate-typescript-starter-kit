@@ -1,6 +1,6 @@
 import { Redis } from "ioredis";
-import { configService } from "#/common/services/config.service";
-import { Logger } from "#/common/utils/logger";
+import { configService } from "@/common/services/config.service";
+import { Logger } from "@/common/utils/logger";
 
 const logger = new Logger("redis");
 

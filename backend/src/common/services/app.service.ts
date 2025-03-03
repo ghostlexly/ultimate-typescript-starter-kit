@@ -1,6 +1,6 @@
-import { queueService } from "#/common/queue/queue.service";
-import { redisService } from "#/common/services/redis.service";
-import { prisma } from "#/common/database/prisma";
+import { queueService } from "@/common/queue/queue.service";
+import { redisService } from "@/common/services/redis.service";
+import { prisma } from "@/common/database/prisma";
 
 class AppService {
   cleanup = async () => {

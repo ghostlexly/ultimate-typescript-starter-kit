@@ -10,7 +10,7 @@
     // -- Aliases
     "baseUrl": ".", // set base url for paths
     "paths": {
-      "#/*": ["./src/*"]
+      "@/*": ["./src/*"]
     },
 
     // -- Misc

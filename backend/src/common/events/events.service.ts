@@ -1,9 +1,9 @@
 import { EventEmitter2 } from "eventemitter2";
-import { Logger } from "#/common/utils/logger";
+import { Logger } from "@/common/utils/logger";
 import path from "path";
-import { getAppDir } from "#/common/utils/app-dir";
+import { getAppDir } from "@/common/utils/app-dir";
 import { glob } from "glob";
-import { configService } from "#/common/services/config.service";
+import { configService } from "@/common/services/config.service";
 
 const logger = new Logger("initializeEventEmitter");
 

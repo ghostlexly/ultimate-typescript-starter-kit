@@ -1,6 +1,6 @@
 import { Command } from "commander";
-import { Logger } from "#/common/utils/logger";
-import { redisService } from "#/common/services/redis.service";
+import { Logger } from "@/common/utils/logger";
+import { redisService } from "@/common/services/redis.service";
 
 const logger = new Logger("redis-clear-command");
 
