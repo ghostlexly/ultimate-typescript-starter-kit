@@ -45,7 +45,7 @@ const prisma = new PrismaClient()
           // -- The record was deleted successfully...
           if (media) {
             // Delete the file from S3
-            await s3Service.deleteFile({ fileKey: media.fileKey });
+            await s3Service.deleteFile({ key: media.fileKey });
           }
 
           return queryResult;

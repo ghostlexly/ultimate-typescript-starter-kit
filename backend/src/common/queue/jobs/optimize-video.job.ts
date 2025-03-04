@@ -31,7 +31,7 @@ export const optimizeVideoJob = async (job: SandboxedJob) => {
   );
 
   await s3Service.downloadToFile({
-    fileKey: media.fileKey,
+    key: media.fileKey,
     destinationPath: tempVideoFilePath,
   });
 
@@ -65,7 +65,7 @@ export const optimizeVideoJob = async (job: SandboxedJob) => {
   });
 
   // -- delete the previous file from S3
-  await s3Service.deleteFile({ fileKey: media.fileKey });
+  await s3Service.deleteFile({ key: media.fileKey });
 
   logger.info(
     `Optimized video file ${mediaId} uploaded to S3 as ${fileKey} successfully.`
