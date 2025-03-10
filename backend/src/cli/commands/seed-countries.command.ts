@@ -74,7 +74,7 @@ const getGeonames = async () => {
   logger.info("Downloading geonames.org data...");
   const countries = await wolfios("http://api.geonames.org/countryInfoJSON", {
     method: "GET",
-    searchParams: {
+    params: {
       username: "ghostlexly",
       formatted: "true",
       style: "full",

@@ -68,7 +68,7 @@ model Admin {
 model Media {
   id        String   @id @default(uuid())
   fileName  String
-  fileKey   String
+  key       String
   mimeType  String
   size      Int
   createdAt DateTime @default(now())
@@ -88,7 +88,3 @@ model Country {
   currencyCode  String?
   population    Int?    @default(0)
 }
-
-// ------------------------------------------------------
-// Customer models
-// ------------------------------------------------------

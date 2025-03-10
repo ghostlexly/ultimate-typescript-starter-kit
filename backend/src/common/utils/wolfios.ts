@@ -1,10 +1,36 @@
-import isJSON from "validator/lib/isJSON";
+type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | { [key: string]: JsonValue }
+  | JsonValue[];
 
-type WolfiosProps = RequestInit & {
-  json?: Record<any, any>;
-  searchParams?: Record<string, string[] | string | number>;
+type WolfiosProps = Parameters<typeof fetch>[1] & {
+  json?: JsonValue;
+  params?: Record<string, string[] | string | number>;
   cookies?: Record<string, string>;
+  timeout?: number;
 };
+
+/**
+ * Custom error class for wolfios that mimics axios error behavior
+ */
+class WolfiosError extends Error {
+  response: Response;
+  status: number;
+  config: WolfiosProps;
+  data?: unknown; // Will hold parsed response data if available
+
+  constructor(message: string, response: Response, config: WolfiosProps) {
+    super(message);
+    this.name = "WolfiosError";
+    this.response = response;
+    this.status = response.status;
+    this.config = config;
+  }
+}
 
 /**
  * wolfios is a wrapper around fetch that handles authentication, caching and more.
@@ -15,21 +41,22 @@ type WolfiosProps = RequestInit & {
  * Also, the return response will be a JSON object, you DON'T need to chain .then((res) => res.data).
  */
 const wolfios = async (endpoint: string, config?: WolfiosProps) => {
-  const isServer = typeof window === "undefined";
+  // If we don't have a config, create an empty one
+  if (!config) {
+    config = {};
+  }
 
-  // create a url from the endpoint
-  // if we have a document, use the baseURI as the base URL (client side)
-  // otherwise, use the nginx container (server side)
-  const url = new URL(endpoint, isServer ? "http://nginx" : document.baseURI);
-
-  // ---------------------------------------
   // if we have a `data` param, handle it based on content type
-  // ----------------------------------------
   if (config?.json) {
     const contentType = config.headers?.["Content-Type"] || "application/json";
 
     if (contentType === "application/x-www-form-urlencoded") {
-      config.body = new URLSearchParams(config.json).toString();
+      // Convert Record<string, unknown> to Record<string, string> for URLSearchParams
+      const formData: Record<string, string> = {};
+      Object.entries(config.json).forEach(([key, value]) => {
+        formData[key] = String(value);
+      });
+      config.body = new URLSearchParams(formData).toString();
     } else {
       config.body = JSON.stringify(config.json);
     }
@@ -40,80 +67,76 @@ const wolfios = async (endpoint: string, config?: WolfiosProps) => {
     };
   }
 
-  // ----------------------------------------
-  // If we have params, add them to the URL
-  // ----------------------------------------
-  if (config?.searchParams) {
-    Object.entries(config.searchParams).map(([key, value]) => {
+  // If we have params, add them to the endpoint
+  if (config?.params) {
+    const searchParams = new URLSearchParams();
+
+    Object.entries(config.params).map(([key, value]) => {
       if (Array.isArray(value)) {
         value.map((v) => {
           if (v) {
-            url.searchParams.append(key, v);
+            searchParams.append(key, v);
           }
         });
       } else if (value) {
-        url.searchParams.append(key, value.toString());
+        searchParams.append(key, value.toString());
       }
     });
+
+    endpoint = `${endpoint}?${searchParams.toString()}`;
   }
 
-  // ----------------------------------------
   // If we have cookies, add them to the headers
-  // ----------------------------------------
   if (config?.cookies) {
     const cookieString = Object.entries(config.cookies)
-      .filter(([key, value]) => key && value !== undefined) // Filter out undefined values
       .map(([key, value]) => `${key}=${value}`)
       .join("; ");
 
-    if (cookieString) {
-      config.headers = {
-        ...config.headers,
-        Cookie: cookieString,
-      };
-    }
+    config.headers = {
+      ...config.headers,
+      Cookie: cookieString,
+    };
   }
 
-  // ----------------------------------------
+  // If we have a timeout, add it to the request
+  const controller = new AbortController();
+  const timeout = setTimeout(
+    () => controller.abort(),
+    config?.timeout ?? 30000
+  );
+  config.signal = controller.signal;
+
   // Make the request
-  // ----------------------------------------
-  const response = await fetch(url.toString(), config);
+  const response = await fetch(endpoint, config);
 
-  return await handleApiResponse(response);
-};
+  // Clear the timeout
+  clearTimeout(timeout);
 
-const handleApiResponse = async (response: Response) => {
+  // Check if the response is successful (status code 200-299)
   if (!response.ok) {
-    let data: any;
+    // Create a custom error
+    const customError = new WolfiosError(
+      `Request failed with status code ${response.status}`,
+      response,
+      config
+    );
 
+    // Try to parse response data if possible
     try {
-      // -- Always get the text first since it's the most reliable
-      const rawText = await response.text();
-
-      // -- Then try to parse as JSON if it's a JSON content type
-      if (isJSON(rawText)) {
-        data = JSON.parse(rawText);
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        customError.data = await response.clone().json();
       } else {
-        data = rawText;
+        customError.data = await response.clone().text();
       }
-    } catch (error) {
-      console.warn("Error while reading response !", error);
-      data = {
-        status: response.status,
-        statusText: response.statusText,
-        type: response.type,
-        url: response.url,
-      };
+    } catch {
+      // Ignore parsing errors
     }
 
-    throw {
-      message: "An error occurred on the server.\nPlease try again.",
-      response: response,
-      data: data,
-    };
+    throw customError;
   }
 
   return response;
 };
 
-export { wolfios };
+export { wolfios, WolfiosError };
