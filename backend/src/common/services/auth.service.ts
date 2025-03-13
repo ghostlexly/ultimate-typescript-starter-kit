@@ -2,8 +2,17 @@ import jwt from "jsonwebtoken";
 import { configService } from "./config.service";
 import { authConfig } from "@/modules/auth/auth.config";
 import { prisma } from "../database/prisma";
+import crypto from "crypto";
 
 class AuthService {
+  /**
+   *  Method to generate a secure unique token
+   */
+  generateUniqueToken = ({ length = 32 }: { length?: number } = {}) => {
+    const result = crypto.randomBytes(length);
+    return result.toString("hex");
+  };
+
   /**
    * Authenticate a token and return the user
    */
