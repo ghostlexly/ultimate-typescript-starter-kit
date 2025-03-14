@@ -3,6 +3,7 @@ import { configService } from "./config.service";
 import { authConfig } from "@/modules/auth/auth.config";
 import { prisma } from "../database/prisma";
 import crypto from "crypto";
+import bcrypt from "bcrypt";
 
 class AuthService {
   /**
@@ -11,6 +12,20 @@ class AuthService {
   generateUniqueToken = ({ length = 32 }: { length?: number } = {}) => {
     const result = crypto.randomBytes(length);
     return result.toString("hex");
+  };
+
+  comparePassword = async ({
+    password,
+    hashedPassword,
+  }: {
+    password: string;
+    hashedPassword: string;
+  }) => {
+    return await bcrypt.compare(password, hashedPassword);
+  };
+
+  hashPassword = async ({ password }: { password: string }) => {
+    return await bcrypt.hash(password, 10);
   };
 
   /**

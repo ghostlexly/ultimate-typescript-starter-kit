@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import { prisma } from "@/common/database/prisma";
-import bcrypt from "bcrypt";
 import { HttpException } from "@/common/exceptions/http-exception";
 import {
   AuthRefreshTokenValidator,
@@ -46,7 +45,10 @@ export class AuthController {
       }
 
       // Hash given password and compare it to the stored hash
-      const validPassword = await bcrypt.compare(body.password, user.password);
+      const validPassword = await authService.comparePassword({
+        password: body.password,
+        hashedPassword: user.password,
+      });
 
       if (!validPassword) {
         throw HttpException.badRequest({

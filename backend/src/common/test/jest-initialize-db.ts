@@ -1,5 +1,5 @@
 import { prisma } from "../database/prisma";
-import bcrypt from "bcrypt";
+import { authService } from "../services/auth.service";
 
 export const initializeTestDb = async () => {
   await cleanupTestDb();
@@ -24,7 +24,9 @@ const cleanupTestDb = async () => {
 export const seedAdminId = "03f76f80-30ee-4db5-a542-de207d8ac7c5";
 
 const seedTestDb = async () => {
-  const hashedPassword = await bcrypt.hash("password", 10);
+  const hashedPassword = await authService.hashPassword({
+    password: "password",
+  });
 
   await prisma.admin.create({
     data: {

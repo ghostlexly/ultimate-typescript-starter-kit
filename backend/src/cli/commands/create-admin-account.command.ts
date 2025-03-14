@@ -1,7 +1,7 @@
 import { Command } from "commander";
 import { Logger } from "@/common/utils/logger";
 import { prisma } from "@/common/database/prisma";
-import bcrypt from "bcrypt";
+import { authService } from "@/common/services/auth.service";
 
 const logger = new Logger("create-admin-account-command");
 
@@ -15,7 +15,7 @@ const setupCommand = (program: Command): void => {
 };
 
 const runCommand = async (email: string, password: string): Promise<void> => {
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await authService.hashPassword({ password });
 
   await prisma.admin.create({
     data: {
