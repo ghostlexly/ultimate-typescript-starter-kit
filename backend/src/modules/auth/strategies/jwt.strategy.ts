@@ -2,14 +2,14 @@ import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import passport from "passport";
 import { Account } from "@prisma/client";
 import { prisma } from "@/common/database/prisma";
-import { configService } from "@/common/services/config.service";
+import { env } from "@/config";
 
 export const initializeJwtStrategy = async () => {
   passport.use(
     new JwtStrategy(
       {
         jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-        secretOrKey: configService.getOrThrow("APP_JWT_SECRET"),
+        secretOrKey: env.APP_JWT_SECRET,
       },
       async (
         payload: { sub: string },

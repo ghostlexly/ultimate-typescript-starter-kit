@@ -3,7 +3,7 @@ import { Logger } from "@/common/utils/logger";
 import path from "path";
 import { getAppDir } from "@/common/utils/app-dir";
 import { glob } from "glob";
-import { configService } from "@/common/services/config.service";
+import { env } from "@/config";
 
 const logger = new Logger("initializeEventEmitter");
 
@@ -50,7 +50,7 @@ const loadListener = async (
     const filePath = path.join(modulesPath, file);
     await import(filePath);
 
-    if (configService.getOrThrow("NODE_ENV") !== "test") {
+    if (env.NODE_ENV !== "test") {
       logger.info(`Loaded [${file}] events listener(s).`);
     }
   } catch (error) {

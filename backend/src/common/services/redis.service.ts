@@ -1,12 +1,12 @@
 import { Redis } from "ioredis";
-import { configService } from "@/common/services/config.service";
+import { env } from "@/config";
 import { Logger } from "@/common/utils/logger";
 
 const logger = new Logger("redis");
 
 export const REDIS_CONNECTION = {
-  host: configService.getOrThrow("APP_REDIS_HOST"),
-  port: Number(configService.getOrThrow("APP_REDIS_PORT")),
+  host: env.APP_REDIS_HOST,
+  port: env.APP_REDIS_PORT,
 };
 
 class RedisService {

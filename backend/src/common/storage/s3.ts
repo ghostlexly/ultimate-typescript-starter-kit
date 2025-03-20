@@ -6,24 +6,24 @@ import {
   StorageClass,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { configService } from "@/common/services/config.service";
 import fs from "fs";
 import path from "path";
 import { filesService } from "@/common/services/files.service";
 import { format } from "date-fns";
 import { HttpException } from "@/common/exceptions/http-exception";
+import { env } from "@/config";
 
 class S3Service {
   private client = new S3Client({
-    endpoint: configService.getOrThrow("API_S3_ENDPOINT"),
+    endpoint: env.API_S3_ENDPOINT,
     region: "auto", // [ex for AWS: eu-west-3] [ex for Cloudflare: auto]
     credentials: {
-      accessKeyId: configService.getOrThrow("API_S3_ACCESS_KEY"),
-      secretAccessKey: configService.getOrThrow("API_S3_SECRET_KEY"),
+      accessKeyId: env.API_S3_ACCESS_KEY,
+      secretAccessKey: env.API_S3_SECRET_KEY,
     },
   });
 
-  private bucketName = configService.getOrThrow("API_S3_BUCKET");
+  private bucketName = env.API_S3_BUCKET;
 
   /**
    * Save a file to S3 bucket and create a record in the database

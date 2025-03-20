@@ -1,13 +1,12 @@
 import { bootstrap } from "./app";
-import { configService } from "./common/services/config.service";
 import { Logger } from "./common/utils/logger";
-
+import { env } from "./config";
 const logger = new Logger("server");
 
 const setup = async () => {
   try {
     const app = await bootstrap();
-    const PORT = configService.getOrThrow("APP_PORT");
+    const PORT = env.APP_PORT;
 
     // Start server
     app.listen(PORT, () => {

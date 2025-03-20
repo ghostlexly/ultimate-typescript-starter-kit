@@ -1,10 +1,9 @@
 import jwt from "jsonwebtoken";
-import { configService } from "./config.service";
 import { authConfig } from "@/modules/auth/auth.config";
 import { prisma } from "../database/prisma";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
-
+import { env } from "@/config";
 class AuthService {
   /**
    *  Method to generate a secure unique token
@@ -34,10 +33,7 @@ class AuthService {
   authenticateToken = async (token: string) => {
     try {
       // Verify and decode the JWT token
-      const payload = jwt.verify(
-        token,
-        configService.getOrThrow("APP_JWT_SECRET")
-      ) as { sub: string };
+      const payload = jwt.verify(token, env.APP_JWT_SECRET) as { sub: string };
 
       // Get account by id
       const account = await prisma.account.findFirst({
@@ -83,7 +79,7 @@ class AuthService {
           sub: accountId,
           role: account.role,
         },
-        configService.getOrThrow("APP_JWT_SECRET"),
+        env.APP_JWT_SECRET,
         {
           expiresIn: `${authConfig.accessTokenExpirationMinutes}m`,
         },
