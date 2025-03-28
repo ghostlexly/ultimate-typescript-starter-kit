@@ -4,7 +4,7 @@ import papaparse from "papaparse";
 import { wolfios } from "@/common/utils/wolfios";
 import { prisma } from "@/common/database/prisma";
 
-const logger = new Logger("seed-countries-command");
+const LOGGER = new Logger("seed-countries-command");
 
 const setupCommand = (program: Command): void => {
   program
@@ -39,7 +39,7 @@ const runCommand = async (): Promise<void> => {
       });
 
       if (!insee) {
-        logger.warn(`No insee data found for ${country.countryCode}`);
+        LOGGER.warn(`No insee data found for ${country.countryCode}`);
       }
 
       // -------------------------------------
@@ -59,19 +59,19 @@ const runCommand = async (): Promise<void> => {
         },
       });
 
-      logger.debug(`Seed [${country.countryName}] successfully.`);
+      LOGGER.debug(`Seed [${country.countryName}] successfully.`);
     }
 
-    logger.info(`Seeding finished successfully.`);
+    LOGGER.info(`Seeding finished successfully.`);
   } catch (error) {
-    logger.error(error, "Error on seeding countries !");
+    LOGGER.error(error, "Error on seeding countries !");
   }
 
   process.exit(0);
 };
 
 const getGeonames = async () => {
-  logger.info("Downloading geonames.org data...");
+  LOGGER.info("Downloading geonames.org data...");
   const countries = await wolfios("http://api.geonames.org/countryInfoJSON", {
     method: "GET",
     params: {
@@ -88,7 +88,7 @@ const getGeonames = async () => {
 };
 
 const createInseeService = async () => {
-  logger.info("Downloading insee data...");
+  LOGGER.info("Downloading insee data...");
   const response = await wolfios(
     "https://www.insee.fr/fr/statistiques/fichier/7766585/v_pays_territoire_2024.csv"
   ).then(async (res) => await res.text());

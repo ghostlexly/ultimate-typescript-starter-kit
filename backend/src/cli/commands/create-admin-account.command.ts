@@ -3,7 +3,7 @@ import { Logger } from "@/common/utils/logger";
 import { prisma } from "@/common/database/prisma";
 import { authService } from "@/common/services/auth.service";
 
-const logger = new Logger("create-admin-account-command");
+const LOGGER = new Logger("create-admin-account-command");
 
 const setupCommand = (program: Command): void => {
   program
@@ -29,7 +29,7 @@ const runCommand = async (email: string, password: string): Promise<void> => {
     },
   });
 
-  logger.info("Account created successfully.");
+  LOGGER.info("Account created successfully.");
   process.exit(0);
 };
 

@@ -2,7 +2,7 @@ import { Command } from "commander";
 import { Logger } from "@/common/utils/logger";
 import { redisService } from "@/common/services/redis.service";
 
-const logger = new Logger("redis-clear-command");
+const LOGGER = new Logger("redis-clear-command");
 
 const setupCommand = (program: Command): void => {
   program
@@ -14,9 +14,9 @@ const setupCommand = (program: Command): void => {
 const runCommand = async (): Promise<void> => {
   try {
     await redisService.flushall();
-    logger.info("All Redis keys have been cleared successfully.");
+    LOGGER.info("All Redis keys have been cleared successfully.");
   } catch (error) {
-    logger.error("Error clearing Redis keys:", error);
+    LOGGER.error("Error clearing Redis keys:", error);
   }
 
   process.exit(0);
