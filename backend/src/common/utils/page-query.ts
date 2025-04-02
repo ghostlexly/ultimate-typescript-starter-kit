@@ -6,9 +6,10 @@
  */
 const getPagination = ({ first, page }: { first?: number; page?: number }) => {
   const validPage = !page || page < 1 ? 1 : page;
+  const validFirst = !first || first > 100 ? 50 : first;
 
-  const take = !first || first > 100 ? 50 : first;
-  const skip = (validPage - 1) * take;
+  const take = Number(validFirst);
+  const skip = (Number(validPage) - 1) * take;
 
   return {
     take,
@@ -27,9 +28,9 @@ const getSorting = ({ sort }: { sort?: string }) => {
 
   const [column, direction] = sort.toString().split(":");
 
-  const validDirection = direction?.toLowerCase();
+  let validDirection = direction.toLowerCase() as "asc" | "desc";
   if (validDirection !== "asc" && validDirection !== "desc") {
-    return undefined;
+    validDirection = "desc";
   }
 
   return {
