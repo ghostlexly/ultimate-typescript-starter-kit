@@ -4,6 +4,7 @@ import { prisma } from "../database/prisma";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
 import { env } from "@/config";
+
 class AuthService {
   /**
    *  Method to generate a secure unique token
