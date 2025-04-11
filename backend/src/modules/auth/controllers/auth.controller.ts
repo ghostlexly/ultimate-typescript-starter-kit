@@ -1,19 +1,21 @@
-import { NextFunction, Request, Response } from "express";
 import { prisma } from "@/common/database/prisma";
 import { HttpException } from "@/common/exceptions/http-exception";
-import {
-  AuthRefreshTokenValidator,
-  AuthSigninValidator,
-} from "../validators/auth.validators";
-import { Customer } from "@prisma/client";
-import { Admin } from "@prisma/client";
 import { authService } from "@/common/services/auth.service";
+import { validateData } from "@/common/utils/validation";
+import { Admin, Customer } from "@prisma/client";
 import { randomUUID } from "crypto";
+import { NextFunction, Request, Response } from "express";
+import {
+  authRefreshTokenValidator,
+  authSigninValidator,
+} from "../validators/auth.validators";
 
 export class AuthController {
   signIn = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const body = req.body as AuthSigninValidator["body"];
+      const { body } = await validateData(authSigninValidator, {
+        body: req.body,
+      });
 
       // Verify if user exists
       let user: Admin | Customer | null = null;
@@ -79,7 +81,9 @@ export class AuthController {
 
   refreshToken = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const body = req.body as AuthRefreshTokenValidator["body"];
+      const { body } = await validateData(authRefreshTokenValidator, {
+        body: req.body,
+      });
 
       const session = await prisma.session.findFirst({
         where: {

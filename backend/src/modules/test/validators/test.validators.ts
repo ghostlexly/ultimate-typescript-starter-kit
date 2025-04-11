@@ -17,5 +17,3 @@ export const updateAccountValidator = z.object({
       .pipe(phoneNumberTransformer),
   }),
 });
-
-export type UpdateAccountValidator = z.infer<typeof updateAccountValidator>;

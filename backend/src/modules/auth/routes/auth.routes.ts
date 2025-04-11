@@ -1,11 +1,6 @@
 import { strictThrottler } from "@/common/throttlers/strict.throttler";
 import { Router } from "express";
 import { authController } from "../controllers/auth.controller";
-import { validateRequest } from "@/common/middlewares/validation.middleware";
-import {
-  authRefreshTokenValidator,
-  authSigninValidator,
-} from "../validators/auth.validators";
 
 export const authRoutes = Router();
 
@@ -61,12 +56,7 @@ export const authRoutes = Router();
  *                  type: string
  */
 
-authRoutes.post(
-  "/auth/signin",
-  strictThrottler,
-  validateRequest(authSigninValidator),
-  authController.signIn
-);
+authRoutes.post("/auth/signin", strictThrottler, authController.signIn);
 
 /**
  * @swagger
@@ -96,9 +86,4 @@ authRoutes.post(
  *                accessToken:
  *                  type: string
  */
-authRoutes.post(
-  "/auth/refresh",
-  strictThrottler,
-  validateRequest(authRefreshTokenValidator),
-  authController.refreshToken
-);
+authRoutes.post("/auth/refresh", strictThrottler, authController.refreshToken);

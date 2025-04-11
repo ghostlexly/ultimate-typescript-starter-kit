@@ -1,8 +1,6 @@
 import { Router } from "express";
 import { testController } from "../controllers/test.controller";
 import { strictThrottler } from "@/common/throttlers/strict.throttler";
-import { validateRequest } from "@/common/middlewares/validation.middleware";
-import { updateAccountValidator } from "../validators/test.validators";
 
 export const testRoutes = Router();
 
@@ -80,11 +78,7 @@ testRoutes.get("/tests/queue-launch", testController.testQueueLaunch);
  *      '200':
  *        description: OK
  */
-testRoutes.post(
-  "/tests/zod",
-  validateRequest(updateAccountValidator),
-  testController.testZod
-);
+testRoutes.post("/tests/zod", testController.testZod);
 
 /**
  * @swagger

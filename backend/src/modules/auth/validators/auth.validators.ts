@@ -9,14 +9,8 @@ export const authSigninValidator = z.object({
   }),
 });
 
-export type AuthSigninValidator = z.infer<typeof authSigninValidator>;
-
 export const authRefreshTokenValidator = z.object({
   body: z.object({
     refreshToken: z.string(),
   }),
 });
-
-export type AuthRefreshTokenValidator = z.infer<
-  typeof authRefreshTokenValidator
->;

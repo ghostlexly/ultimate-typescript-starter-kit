@@ -1,17 +1,18 @@
+import { eventsService } from "@/common/events/events.service";
+import { HttpException } from "@/common/exceptions/http-exception";
+import { queueService } from "@/common/queue/queue.service";
+import { pdfService } from "@/common/services/pdf.service";
+import { getAppDir } from "@/common/utils/app-dir";
+import { validateData } from "@/common/utils/validation";
+import { testWriteTextUseCase } from "@/core/use-cases/test-write-text.usecase";
+import ejs from "ejs";
 import { NextFunction, Request, Response } from "express";
-import { testConfig } from "../test.config";
 import fs from "fs/promises";
 import path from "path";
-import ejs from "ejs";
-import { testService } from "../test.service";
-import { HttpException } from "@/common/exceptions/http-exception";
-import { UpdateAccountValidator } from "../validators/test.validators";
-import { eventsService } from "@/common/events/events.service";
-import { getAppDir } from "@/common/utils/app-dir";
-import { pdfService } from "@/common/services/pdf.service";
-import { testWriteTextUseCase } from "@/core/use-cases/test-write-text.usecase";
 import { toAccountDto } from "../dtos/account.dto";
-import { queueService } from "@/common/queue/queue.service";
+import { testConfig } from "../test.config";
+import { testService } from "../test.service";
+import { updateAccountValidator } from "../validators/test.validators";
 
 export class TestController {
   testBadRequest = async (req: Request, res: Response, next: NextFunction) => {
@@ -45,7 +46,9 @@ export class TestController {
 
   testZod = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const body = req.body as UpdateAccountValidator["body"];
+      const { body } = await validateData(updateAccountValidator, {
+        body: req.body,
+      });
 
       return res.json(body);
     } catch (error) {
