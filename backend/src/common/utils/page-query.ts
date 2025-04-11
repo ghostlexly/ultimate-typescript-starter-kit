@@ -4,9 +4,16 @@
  * @param req
  * @returns
  */
-const getPagination = ({ first, page }: { first?: number; page?: number }) => {
-  const validPage = !page || page < 1 ? 1 : page;
-  const validFirst = !first || first > 100 ? 50 : first;
+const getPagination = ({
+  query,
+}: {
+  query: { page?: string | number; first?: string | number };
+}) => {
+  const page = query.page;
+  const first = query.first;
+
+  const validPage = !page || Number(page) < 1 ? 1 : Number(page);
+  const validFirst = !first || Number(first) > 100 ? 50 : Number(first);
 
   const take = Number(validFirst);
   const skip = (Number(validPage) - 1) * take;
@@ -23,7 +30,8 @@ const getPagination = ({ first, page }: { first?: number; page?: number }) => {
  * @param req
  * @returns
  */
-const getSorting = ({ sort }: { sort?: string }) => {
+const getSorting = ({ query }: { query: { sort?: string } }) => {
+  const sort = query.sort;
   if (!sort) return undefined;
 
   const [column, direction] = sort.toString().split(":");
@@ -50,14 +58,14 @@ const getSorting = ({ sort }: { sort?: string }) => {
 const getTransformed = ({
   data,
   itemsCount,
-  first,
-  page,
+  query,
 }: {
   data: any;
   itemsCount: number;
-  first?: number;
-  page?: number;
+  query: { page?: string | number; first?: string | number };
 }) => {
+  const page = query.page;
+  const first = query.first;
   const currentPage = page ? Number(page) : 1;
   const itemsPerPage = first ? Number(first) : 50;
   const pagesCount = Math.ceil(itemsCount / itemsPerPage);
@@ -73,125 +81,44 @@ const getTransformed = ({
   };
 };
 
+const getIncludes = ({ query }: { query: { include?: string[] | string } }) => {
+  const includes = new Set<string>();
+
+  if (Array.isArray(query.include)) {
+    query.include.forEach((include) => includes.add(include));
+  } else if (typeof query.include === "string") {
+    includes.add(query.include);
+  }
+
+  return includes;
+};
+
 /**
-   * Page query helper.
-   * @example
-   * ```typescript
-   const getMunicipalities = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
-      const query  = await validate({ data: req.query, schema: municipalitiesGetSchema });
-      const pagination = pageQuery.getPagination({
-        page: query.page,
-        first: query.first,
-      });
-  
-      const wAND: Prisma.MunicipalityWhereInput[] = [];
-      const sorting = pageQuery.getSorting({ sort: query.sort });
-      let include: Prisma.MunicipalityInclude = {};
-      let orderBy: Prisma.MunicipalityOrderByWithRelationInput = {
-        population: "desc",
-      };
-  
-      // --------------------------------------
-      // Filters
-      // --------------------------------------
-      if (query.id) {
-        wAND.push({
-          id: query.id,
-        });
-      }
-  
-      if (query.fullName) {
-        // Split the string by spaces and filter out empty strings
-        const terms = query.fullName.split(" ").filter((term) => term.length > 0);
-  
-        terms.flatMap((term) => {
-          wAND.push({
-            OR: [
-              {
-                firstName: {
-                  contains: term,
-                },
-              },
-  
-              {
-                lastName: {
-                  contains: term,
-                },
-              },
-            ],
-          });
-        });
-      }
-  
-      // ---------------------
-      // Includes
-      // ---------------------
-      if (query.include) {
-        const includeOptions = query.include.split(",");
-  
-        if (includeOptions.includes("informations")) {
-          include = {
-            ...include,
-            informations = {
-              select: {
-                firstName: true,
-                lastName: true,
-                phoneNumber: true,
-                companyName: true,
-              },
-            },
-          };
-        }
-      }
-  
-      // ---------------------
-      // Sorting
-      // ---------------------
-      if (sorting?.column === "createdAt") {
-        orderBy = {
-          createdAt: sorting.direction,
-        };
-      }
-  
-      // --------------------------------------
-      // Query
-      // --------------------------------------
-      const { data: postalCodes, count } =
-        await prisma.municipality.findManyAndCount({
-          include: include,
-  
-          where: {
-            AND: wAND,
-            city: {
-              contains: "MARIGNANE",
-            },
-          },
-  
-          orderBy,
-          ...pagination,
-        });
-  
-      return res.json(
-        pageQuery.getTransformed({
-          data: postalCodes,
-          first: query.first,
-          page: query.page,
-          itemsCount: count,
-        })
-      );
-    } catch (error) {
-      next(error);
-    }
+ * Get both pagination and sorting parameters from request query.
+ * @param query - Request query object containing optional pagination and sorting parameters
+ * @returns Object with pagination and sorting properties
+ */
+const getQueryParams = ({
+  query,
+}: {
+  query: {
+    page?: string | number;
+    first?: string | number;
+    sort?: string;
+    include?: string[] | string;
   };
-   * ```
-   */
+}) => {
+  return {
+    pagination: getPagination({ query }),
+    sorting: getSorting({ query }),
+    includes: getIncludes({ query }),
+  };
+};
+
+/**
+ * Page query helper used for pagination, sorting and transforming data.
+ */
 export const pageQuery = {
-  getPagination,
-  getSorting,
+  getQueryParams,
   getTransformed,
 };
