@@ -30,7 +30,7 @@ jobs:
       - name: Transfer files to production server
         uses: appleboy/scp-action@master
         with:
-          host: 51.44.21.144
+          host: 15.237.74.17
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "docker-compose.yml,.env"
@@ -39,7 +39,7 @@ jobs:
       - name: Deploy on production server
         uses: appleboy/ssh-action@master
         with:
-          host: 51.44.21.144
+          host: 15.237.74.17
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
@@ -61,7 +61,7 @@ jobs:
       - name: Run migrations on production server
         uses: appleboy/ssh-action@master
         with:
-          host: 51.44.21.144
+          host: 15.237.74.17
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
@@ -71,10 +71,23 @@ jobs:
             # Run migrations
             docker compose exec backend npx prisma migrate deploy
 
+      - name: Run sentry sourcemaps on production server
+        uses: appleboy/ssh-action@master
+        with:
+          host: 15.237.74.17
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Go to backend directory
+            cd ~/docker
+
+            # Run sentry sourcemaps
+            docker compose exec backend npm run sentry:sourcemaps
+
       - name: Prune untagged docker images
         uses: appleboy/ssh-action@master
         with:
-          host: 51.44.21.144
+          host: 15.237.74.17
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
