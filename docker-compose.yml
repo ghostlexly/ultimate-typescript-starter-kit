@@ -21,6 +21,7 @@ services:
       - API_GOOGLE_CLIENT_ID=${API_GOOGLE_CLIENT_ID}
       - API_GOOGLE_CLIENT_SECRET=${API_GOOGLE_CLIENT_SECRET}
       - APP_PLAYWRIGHT_HEADLESS=${APP_PLAYWRIGHT_HEADLESS}
+      - SENTRY_AUTH_TOKEN=${API_SENTRY_AUTH_TOKEN}
     volumes:
       - ./backend/logs:/usr/src/app/logs
     depends_on:
