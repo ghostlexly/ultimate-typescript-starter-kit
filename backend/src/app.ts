@@ -2,7 +2,7 @@ import path from "path";
 import "dotenv/config";
 import "reflect-metadata";
 import express from "express";
-import { apiRouter } from "@/routes";
+import { apiRoutes } from "@/routes";
 import { exceptionsMiddleware } from "@/common/middlewares/exceptions.middleware";
 import { unknownRoutesMiddleware } from "@/common/middlewares/unknown-routes.middleware";
 import { globalThrottler } from "@/common/throttlers/global.throttler";
@@ -75,7 +75,7 @@ const bootstrap = async () => {
   app.use("/static", express.static(path.join(__dirname, "static")));
 
   // Routes
-  app.use("/api", globalThrottler, apiRouter);
+  app.use("/api", globalThrottler, apiRoutes);
 
   // ----------------------------------------
   // Unknown routes handler

@@ -4,13 +4,14 @@ import { testRoutes } from "@/modules/test/routes/test.routes";
 import { mediaRoutes } from "@/modules/media/routes/media.routes";
 import { authRoutes } from "@/modules/auth/routes/auth.routes";
 
-export const apiRouter = Router();
+export const apiRoutes = Router();
+
 // -- Common
-apiRouter.use(mediaRoutes);
+apiRoutes.use(mediaRoutes);
 
 // -- Auth
-apiRouter.use(meRoutes);
-apiRouter.use(authRoutes);
+apiRoutes.use(meRoutes);
+apiRoutes.use(authRoutes);
 
 // -- Business
-apiRouter.use(testRoutes);
+apiRoutes.use(testRoutes);
