@@ -147,3 +147,16 @@ testRoutes.get("/tests/pdf", testController.testPdf);
  *        description: OK
  */
 testRoutes.get("/tests/complex-use-case", testController.testComplexUseCase);
+
+/**
+ * @swagger
+ * /api/tests/sentry:
+ *  get:
+ *    summary: Test Sentry
+ *    description: Test Sentry.
+ *    tags: [Tests]
+ *    responses:
+ *      '200':
+ *        description: OK
+ */
+testRoutes.get("/tests/sentry", testController.sentry);

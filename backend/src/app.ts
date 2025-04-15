@@ -1,21 +1,22 @@
+import "./instrument";
 import path from "path";
 import "dotenv/config";
 import "reflect-metadata";
-import express from "express";
-import { apiRoutes } from "@/routes";
 import { exceptionsMiddleware } from "@/common/middlewares/exceptions.middleware";
-import { unknownRoutesMiddleware } from "@/common/middlewares/unknown-routes.middleware";
-import { globalThrottler } from "@/common/throttlers/global.throttler";
-import { trimMiddleware } from "@/common/middlewares/trim.middleware";
 import { rewriteIpAddressMiddleware } from "@/common/middlewares/rewrite-ip-address.middleware";
+import { trimMiddleware } from "@/common/middlewares/trim.middleware";
+import { unknownRoutesMiddleware } from "@/common/middlewares/unknown-routes.middleware";
+import { apiRoutes } from "@/routes";
+import { globalThrottler } from "@/common/throttlers/global.throttler";
 import { Logger } from "@/common/utils/logger";
-import helmet from "helmet";
 import cors from "cors";
-import { initializeSwagger } from "./common/utils/swagger";
-import { initializeI18n } from "./common/utils/i18n";
+import express from "express";
+import helmet from "helmet";
 import { initializeCrons } from "./common/cron";
-import { eventsService } from "./common/events/events.service";
 import { initializeJwtStrategy } from "./modules/auth/strategies/jwt.strategy";
+import { initializeI18n } from "./common/utils/i18n";
+import { initializeSwagger } from "./common/utils/swagger";
+import * as Sentry from "@sentry/node";
 
 const bootstrap = async () => {
   const app = express();
@@ -61,9 +62,6 @@ const bootstrap = async () => {
   // I18n
   await initializeI18n();
 
-  // App Events
-  await eventsService.initialize();
-
   // Swagger
   initializeSwagger({ app });
 
@@ -87,6 +85,7 @@ const bootstrap = async () => {
   // Errors handler
   // @important: Should be the last `app.use`
   // ----------------------------------------
+  Sentry.setupExpressErrorHandler(app);
   app.use(exceptionsMiddleware);
 
   // Log bootstrap time

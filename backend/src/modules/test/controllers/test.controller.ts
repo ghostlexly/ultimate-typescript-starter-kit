@@ -147,6 +147,14 @@ export class TestController {
       next(error);
     }
   };
+
+  sentry = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      throw new Error("My first Sentry error!");
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export const testController = new TestController();
