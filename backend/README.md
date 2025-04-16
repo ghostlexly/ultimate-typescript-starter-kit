@@ -262,13 +262,13 @@ Controller -> Use-Cases -> Services -> Repositories
 
 ### **Who Can Import What?**
 
-| **Layer**         | **Allowed to Import**                     |
-| ----------------- | ----------------------------------------- |
-| **Controller**    | Use-Case, Service                         |
-| **Use-Case**      | Service, Repository                       |
-| **Event-Handler** | Use-Case                                  |
-| **Service**       | Repository, Event-Handler                 |
-| **Repository**    | Models, Database Utilities (e.g., Prisma) |
+| **Layer**         | **Allowed to Import**                                |
+| ----------------- | ---------------------------------------------------- |
+| **Controller**    | Use-Case, Service                                    |
+| **Use-Case**      | Service, Repository, (and sometimes, other use-case) |
+| **Event-Handler** | Use-Case                                             |
+| **Service**       | Repository, Event-Handler                            |
+| **Repository**    | Models, Database Utilities (e.g., Prisma)            |
 
 1. **Controllers**
 
@@ -339,6 +339,7 @@ Operations that should stay in the service:
 - Internal utility methods
 
 **Use-Cases can't call other Use-Cases**. If you want to call a function after your update or create crud operation, it's better to add them into a service and call this service in your use-cases.
+If use-cases need to share functionality and you need to import one use-case into another, you may reference one from another. However, if this creates a circular dependency, extract the common logic into a third independent use-case that both can utilize.
 
 ## 🤝 Contributing
 
