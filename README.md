@@ -117,7 +117,7 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## 📞 Support
 
-If you have any questions or need help, please [open an issue](https://github.com/ghostlexly/ultimate-typescript-starter-kit/issues) or contact our team at hello@fenriss.com.
+If you have any questions or need help, please [open an issue](https://github.com/ghostlexly/ultimate-typescript-starter-kit/issues) or contact our team at contact@lunisoft.fr.
 
 ---
 
