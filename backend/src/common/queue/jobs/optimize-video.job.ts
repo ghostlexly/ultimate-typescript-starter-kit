@@ -31,7 +31,7 @@ export const optimizeVideoJob = async (job: SandboxedJob) => {
   );
 
   await s3Service.downloadToFile({
-    key: media.fileKey,
+    key: media.key,
     destinationPath: tempVideoFilePath,
   });
 
@@ -52,7 +52,7 @@ export const optimizeVideoJob = async (job: SandboxedJob) => {
   // -- upload the optimized video file to S3
   logger.info(`Uploading optimized video file ${mediaId}...`);
 
-  const fileKey = await s3Service.upload({
+  const newKey = await s3Service.upload({
     filePath: destVideoFilePath,
     fileName: fileNameMp4,
     mimeType: "video/mp4",
@@ -61,13 +61,13 @@ export const optimizeVideoJob = async (job: SandboxedJob) => {
   // -- update the media record with the new file key
   await prisma.media.update({
     where: { id: mediaId },
-    data: { fileKey, mimeType: "video/mp4", fileName: fileNameMp4 },
+    data: { key: newKey, mimeType: "video/mp4", fileName: fileNameMp4 },
   });
 
   // -- delete the previous file from S3
-  await s3Service.deleteFile({ key: media.fileKey });
+  await s3Service.deleteFile({ key: media.key });
 
   logger.info(
-    `Optimized video file ${mediaId} uploaded to S3 as ${fileKey} successfully.`
+    `Optimized video file ${mediaId} uploaded to S3 as ${newKey} successfully.`
   );
 };

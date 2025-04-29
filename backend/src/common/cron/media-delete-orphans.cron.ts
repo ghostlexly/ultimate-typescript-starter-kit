@@ -1,7 +1,7 @@
 import { Logger } from "@/common/utils/logger";
 import { CronJob } from "cron";
-import { sub } from "date-fns";
 import { prisma } from "@/common/database/prisma";
+import { dateUtils } from "../utils/date";
 
 const logger = new Logger("mediaDeleteOrphansCron");
 
@@ -28,7 +28,7 @@ new CronJob(
           ],
 
           createdAt: {
-            lt: sub(new Date(), { hours: 1 }), // older than 1 hour records
+            lt: dateUtils.sub(new Date(), { hours: 1 }), // older than 1 hour records
           },
         },
       });
@@ -36,7 +36,7 @@ new CronJob(
       // -- Delete the orphan media records
       for (const orphanMedia of orphanMedias) {
         logger.debug(
-          `Deleting orphan media #${orphanMedia.id} with FileKey [${orphanMedia.fileKey}]...`
+          `Deleting orphan media #${orphanMedia.id} with key [${orphanMedia.key}]...`
         );
 
         // -- Get the record from the database

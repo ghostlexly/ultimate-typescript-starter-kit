@@ -34,7 +34,7 @@ const prisma = new PrismaClient()
     query: {
       media: {
         delete: async ({ args, query }) => {
-          // -- Fetch the media record to get the fileKey
+          // -- Fetch the media record to get the key
           const media = await prisma.media.findUnique({
             where: { id: args.where.id },
           });
@@ -45,7 +45,7 @@ const prisma = new PrismaClient()
           // -- The record was deleted successfully...
           if (media) {
             // Delete the file from S3
-            await s3Service.deleteFile({ key: media.fileKey });
+            await s3Service.deleteFile({ key: media.key });
           }
 
           return queryResult;

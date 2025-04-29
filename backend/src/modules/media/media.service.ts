@@ -25,7 +25,7 @@ export class MediaService {
     const fileInfos = await filesService.getFileInfos(filePath);
 
     // -- Save the file to S3
-    const fileKey = await s3Service.upload({
+    const key = await s3Service.upload({
       filePath: filePath,
       fileName: originalFileName,
       mimeType: fileInfos.mimeType,
@@ -33,7 +33,7 @@ export class MediaService {
 
     const media = await prisma.media.create({
       data: {
-        fileKey: fileKey,
+        key: key,
         fileName: originalFileName,
         mimeType: fileInfos.mimeType,
         size: fileInfos.size,

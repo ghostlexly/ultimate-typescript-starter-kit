@@ -9,10 +9,9 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import fs from "fs";
 import path from "path";
 import { filesService } from "@/common/services/files.service";
-import { format } from "date-fns";
+import { dateUtils } from "@/common/utils/date";
 import { HttpException } from "@/common/exceptions/http-exception";
 import { env } from "@/config";
-
 class S3Service {
   private client = new S3Client({
     endpoint: env.API_S3_ENDPOINT,
@@ -33,7 +32,7 @@ class S3Service {
    * @param mimeType The MIME type of the file
    * @param storageClass The storage class of the file in S3. [STANDARD_IA] (Standard Infrequent Access) is 2x cheaper than STANDARD for still good performance || [STANDARD] is the default for frequent access
    *
-   * @returns The fileKey in S3
+   * @returns The key in S3
    */
   upload = async ({
     filePath,
@@ -50,9 +49,9 @@ class S3Service {
     const normalizedFileName = filesService.getNormalizedFileName(fileName);
 
     const key = path.join(
-      format(new Date(), "yyyy"),
-      format(new Date(), "MM"),
-      format(new Date(), "dd"),
+      dateUtils.format(new Date(), "yyyy"),
+      dateUtils.format(new Date(), "MM"),
+      dateUtils.format(new Date(), "dd"),
       normalizedFileName
     );
 
@@ -72,7 +71,7 @@ class S3Service {
 
   /**
    * Download a file from S3 to /tmp directory and return the path
-   * @param params.fileKey The key of the file in S3
+   * @param params.key The key of the file in S3
    * @param params.destinationPath The path to save the downloaded file
    * @returns The path to the downloaded file
    */
