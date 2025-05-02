@@ -23,15 +23,8 @@ RUN apt update && \
 # Install required packages
 RUN apt install -y wget xz-utils procps
 
-# Download and install ffmpeg based on the architecture
-# More files can be found here : https://johnvansickle.com/ffmpeg/
-RUN if [ "$(uname -m)" = "x86_64" ]; then \
-        wget https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz -O ffmpeg.tar.xz; \
-    else \
-        wget https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-arm64-static.tar.xz -O ffmpeg.tar.xz; \
-    fi && \
-    tar xJf ffmpeg.tar.xz --strip-components=1 -C /usr/local/bin && \
-    rm ffmpeg.tar.xz
+# Install ffmpeg using apt
+RUN apt install -y ffmpeg
 
 # Install production-only dependencies (this will ignore devDependencies)
 COPY ./package.json ./
