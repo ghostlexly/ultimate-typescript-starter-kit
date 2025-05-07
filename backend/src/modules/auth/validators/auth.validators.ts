@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client";
+import { Role } from "@/generated/prisma/client";
 import { z } from "zod";
 
 export const authSigninValidator = z.object({

@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@/generated/prisma/client";
 import { s3Service } from "../storage/s3";
 
 export type ExtendedPrismaClient = typeof prisma;

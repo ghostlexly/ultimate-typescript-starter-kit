@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client";
+import { Role } from "@/generated/prisma/client";
 import { Request, Response, NextFunction } from "express";
 import { HttpException } from "@/common/exceptions/http-exception";
 

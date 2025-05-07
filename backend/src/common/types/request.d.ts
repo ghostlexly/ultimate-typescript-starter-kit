@@ -1,4 +1,4 @@
-import { Account, Admin, Customer } from "@prisma/client";
+import { Account, Admin, Customer } from "@/generated/prisma/client";
 
 export type CustomAccount = Account & {
   admin: Admin;

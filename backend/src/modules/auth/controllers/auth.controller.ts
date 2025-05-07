@@ -2,7 +2,7 @@ import { prisma } from "@/common/database/prisma";
 import { HttpException } from "@/common/exceptions/http-exception";
 import { authService } from "@/common/services/auth.service";
 import { validateData } from "@/common/utils/validation";
-import { Admin, Customer } from "@prisma/client";
+import { Admin, Customer } from "@/generated/prisma/client";
 import { randomUUID } from "crypto";
 import { NextFunction, Request, Response } from "express";
 import {

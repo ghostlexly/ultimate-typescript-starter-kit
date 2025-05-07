@@ -1,6 +1,6 @@
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import passport from "passport";
-import { Account } from "@prisma/client";
+import { Account } from "@/generated/prisma/client";
 import { prisma } from "@/common/database/prisma";
 import { env } from "@/config";
 
