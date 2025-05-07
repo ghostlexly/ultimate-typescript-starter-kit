@@ -11,7 +11,7 @@ dotenv.config({ path: [".env", `.env.${environment}`] });
 
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]),
-  BASE_URL: z.string().url(),
+  APP_BASE_URL: z.string().url(),
   APP_PORT: z.coerce.number().default(3000),
   APP_DATABASE_CONNECTION_URL: z.string().url(),
   APP_REDIS_HOST: z.string().min(1),
