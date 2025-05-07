@@ -4,13 +4,13 @@ import { z } from "zod";
 export const authSigninValidator = z.object({
   body: z.object({
     email: z.string().email(),
-    password: z.string(),
+    password: z.string().min(1),
     role: z.nativeEnum(Role),
   }),
 });
 
 export const authRefreshTokenValidator = z.object({
   body: z.object({
-    refreshToken: z.string(),
+    refreshToken: z.string().min(1),
   }),
 });
