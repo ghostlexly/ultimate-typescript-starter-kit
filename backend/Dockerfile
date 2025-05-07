@@ -38,8 +38,5 @@ RUN npx playwright install chromium --with-deps
 COPY --from=builder /usr/src/app/dist ./dist
 COPY ./prisma ./prisma
 
-# Generate Prisma
-RUN npx prisma generate
-
 ENV NODE_ENV=production
 CMD npm run start
