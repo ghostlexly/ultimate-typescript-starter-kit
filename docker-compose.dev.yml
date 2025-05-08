@@ -31,17 +31,17 @@ services:
     ports:
       - "8081:8081"
   # ===================================================================================================================================================================================
-  mysql:
-    image: mysql:8.2
+
+  postgres:
+    image: postgres:17.2
     ports:
-      - "3306:3306"
+      - "5432:5432"
     environment:
-      - MYSQL_USER=ghostlexly
-      - MYSQL_PASSWORD=password
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=${PROJECT_NAME}
+      - POSTGRES_USER=ghostlexly
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=${PROJECT_NAME}
     volumes:
-      - ./mysql:/var/lib/mysql
+      - ./postgres:/var/lib/postgresql/data
   # ===================================================================================================================================================================================
   #  mysql_backup:
   #    image: databack/mysql-backup:8b7f6338d7af6a008d20c986b862a99310eb237d
