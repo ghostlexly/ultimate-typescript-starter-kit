@@ -10,8 +10,8 @@ export.tar
 mutagen.yml
 mutagen.yml.lock
 certbot/conf/.certbot.lock
-mysql-backups
 mysql
+postgres
 
 phpfpm/.DS_Store
 phpfpm/project-files/.DS_Store
