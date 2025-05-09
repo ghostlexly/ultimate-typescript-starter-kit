@@ -38,7 +38,7 @@ class S3Service {
     filePath,
     fileName,
     mimeType,
-    storageClass = "STANDARD_IA",
+    storageClass = "STANDARD",
   }: {
     filePath: string;
     fileName: string;
