@@ -169,7 +169,7 @@ class S3Service {
    */
   getPresignedUploadUrl = async ({
     key,
-    storageClass = "STANDARD_IA",
+    storageClass = "STANDARD",
   }: {
     key: string;
     storageClass?: StorageClass;
