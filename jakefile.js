@@ -49,6 +49,17 @@ namespace("prisma", function () {
   });
 });
 
+desc("Run CLI commands in the backend container with arguments.");
+task("cli", async (...taskArgs) => {
+  const args = taskArgs.join(" ");
+  const command = `docker compose exec backend npm run cli -- ${args}`;
+  await asyncSpawn(command);
+  // If asyncSpawn completes without throwing, the command was successfully executed.
+  // Exit to prevent Jake from interpreting subsequent arguments as tasks.
+  log("CLI command processed successfully. Exiting Jake.");
+  process.exit(0);
+});
+
 // ----------------------------------------------
 // Helper functions
 // ----------------------------------------------
