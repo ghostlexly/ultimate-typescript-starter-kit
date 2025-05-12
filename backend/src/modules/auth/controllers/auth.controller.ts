@@ -22,13 +22,19 @@ export class AuthController {
       if (body.role === "ADMIN") {
         user = await prisma.admin.findFirst({
           where: {
-            email: body.email,
+            email: {
+              equals: body.email,
+              mode: "insensitive",
+            },
           },
         });
       } else if (body.role === "CUSTOMER") {
         user = await prisma.customer.findFirst({
           where: {
-            email: body.email,
+            email: {
+              equals: body.email,
+              mode: "insensitive",
+            },
           },
         });
       }
