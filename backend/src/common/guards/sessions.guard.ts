@@ -39,8 +39,7 @@ export const sessionsGuard = async (
       // We provide 401 status code so the frontend can redirect to the login page
       if (!user) {
         return next(
-          new HttpException({
-            status: 401,
+          HttpException.unauthorized({
             message:
               "Authentication required. Please provide a valid access token.",
           })

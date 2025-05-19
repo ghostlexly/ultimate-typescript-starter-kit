@@ -1,14 +1,15 @@
+import { NextFunction, Request, Response } from "express";
 import { prisma } from "@/common/database/prisma";
 import { HttpException } from "@/common/exceptions/http-exception";
+import { Customer } from "@/generated/prisma/client";
+import { Admin } from "@/generated/prisma/client";
 import { authService } from "@/common/services/auth.service";
 import { validateData } from "@/common/utils/validation";
-import { Admin, Customer } from "@/generated/prisma/client";
-import { randomUUID } from "crypto";
-import { NextFunction, Request, Response } from "express";
 import {
   authRefreshTokenValidator,
   authSigninValidator,
-} from "../validators/auth.validators";
+} from "../validators/auth.validator";
+import { authConfig } from "../auth.config";
 
 export class AuthController {
   signIn = async (req: Request, res: Response, next: NextFunction) => {
@@ -23,7 +24,7 @@ export class AuthController {
         user = await prisma.admin.findFirst({
           where: {
             email: {
-              equals: body.email,
+              contains: body.email,
               mode: "insensitive",
             },
           },
@@ -32,7 +33,7 @@ export class AuthController {
         user = await prisma.customer.findFirst({
           where: {
             email: {
-              equals: body.email,
+              contains: body.email,
               mode: "insensitive",
             },
           },
@@ -41,7 +42,7 @@ export class AuthController {
 
       if (!user) {
         throw HttpException.badRequest({
-          message: "Invalid credentials.",
+          message: "Mot de passe ou e-mail incorrect.",
         });
       }
 
@@ -60,20 +61,25 @@ export class AuthController {
 
       if (!validPassword) {
         throw HttpException.badRequest({
-          message: "Invalid credentials.",
+          message: "Mot de passe ou e-mail incorrect.",
         });
       }
 
-      const accessToken = await authService.generateAccessToken({
-        accountId: user.accountId,
+      // Generate an access token
+      const { accessToken, refreshToken } =
+        await authService.generateAuthenticationTokens({
+          accountId: user.accountId,
+        });
+
+      res.cookie("ghostlexly_access_token", accessToken, {
+        secure: process.env.NODE_ENV === "production",
+        maxAge: authConfig.accessTokenExpirationMinutes * 60 * 1000, // Convert minutes to milliseconds
       });
 
-      const refreshToken = randomUUID();
-      await prisma.session.create({
-        data: {
-          accountId: user.accountId,
-          refreshToken: refreshToken,
-        },
+      res.cookie("ghostlexly_refresh_token", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: authConfig.refreshTokenExpirationMinutes * 60 * 1000, // Convert minutes to milliseconds
       });
 
       return res.json({
@@ -91,24 +97,39 @@ export class AuthController {
         body: req.body,
       });
 
-      const session = await prisma.session.findFirst({
-        where: {
-          refreshToken: body.refreshToken,
-        },
-      });
+      let previousRefreshToken =
+        body.refreshToken ?? req.cookies?.ghostlexly_refresh_token;
 
-      if (!session) {
+      if (!previousRefreshToken) {
         throw HttpException.badRequest({
-          message: "Invalid or expired refresh token.",
+          message:
+            "Refresh token not found. Please set it in the body parameter or in your cookies.",
         });
       }
+      const { accessToken, refreshToken } = await authService
+        .refreshAuthenticationTokens({
+          refreshToken: previousRefreshToken,
+        })
+        .catch((error) => {
+          throw HttpException.badRequest({
+            message: error.message,
+          });
+        });
 
-      const accessToken = await authService.generateAccessToken({
-        accountId: session.accountId,
+      res.cookie("ghostlexly_access_token", accessToken, {
+        secure: process.env.NODE_ENV === "production",
+        maxAge: authConfig.accessTokenExpirationMinutes * 60 * 1000, // Convert minutes to milliseconds
+      });
+
+      res.cookie("ghostlexly_refresh_token", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: authConfig.refreshTokenExpirationMinutes * 60 * 1000, // Convert minutes to milliseconds
       });
 
       return res.json({
         accessToken,
+        refreshToken,
       });
     } catch (error) {
       next(error);

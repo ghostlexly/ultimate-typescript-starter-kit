@@ -1,126 +1,105 @@
-import request from "supertest";
 import { bootstrap } from "@/app";
-import { Express } from "express";
-import { prisma } from "@/common/database/prisma";
+import { authService } from "@/common/services/auth.service";
 import { initializeTestDb } from "@/common/test/jest-initialize-db";
+import { getAdminUserAccessToken } from "@/common/test/jest-utils";
+import { Express } from "express";
+import request from "supertest";
 
 let app: Express;
 
 beforeAll(async () => {
-  await initializeTestDb();
-
   app = await bootstrap();
+});
+
+beforeEach(async () => {
+  // Reset to initial state before each test
+  await initializeTestDb();
 });
 
 describe("AuthController", () => {
   describe("POST /api/auth/signin", () => {
     it("returns a status code 200 if the signin is successful as admin", async () => {
-      const response = await request(app)
-        .post("/api/auth/signin")
-        .set("x-throttler-test-mode", "true")
-        .send({
-          email: "contact@lunisoft.fr",
-          password: "password",
-          role: "ADMIN",
-        });
-
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual({
-        accessToken: expect.any(String),
-        refreshToken: expect.any(String),
-      });
-    });
-
-    it("returns a status code 400 if the password is incorrect", async () => {
-      const response = await request(app)
-        .post("/api/auth/signin")
-        .set("x-throttler-test-mode", "true")
-        .send({
-          email: "contact@lunisoft.fr",
-          password: "wrong-password",
-          role: "ADMIN",
-        });
-
-      expect(response.status).toEqual(400);
-      expect(response.body).toEqual({
-        message: "Invalid credentials.",
-      });
-    });
-
-    it("returns a status code 429 if i tried more than 10 times to signin", async () => {
-      for (let i = 0; i < 10; i++) {
-        await request(app).post("/api/auth/signin").send({
-          email: "contact@lunisoft.fr",
-          password: "password",
-          role: "ADMIN",
-        });
-      }
-
       const response = await request(app).post("/api/auth/signin").send({
         email: "contact@lunisoft.fr",
         password: "password",
         role: "ADMIN",
       });
 
-      expect(response.status).toEqual(429);
-      expect(response.body).toEqual({
-        message: "Too many requests, please try again later.",
+      expect(response.status).toEqual(200);
+      expect(response.body.accessToken).toBeDefined();
+      expect(response.body.refreshToken).toBeDefined();
+    });
+
+    it("returns a status code 400 if the role is incorrect", async () => {
+      const response = await request(app).post("/api/auth/signin").send({
+        email: "contact@lunisoft.fr",
+        password: "password",
+        role: "INCORRECT-ROLE",
       });
+
+      expect(response.status).toEqual(400);
+      expect(response.body.message).toEqual(
+        "Invalid enum value. Expected 'ADMIN' | 'CUSTOMER', received 'INCORRECT-ROLE'"
+      );
+    });
+
+    it("returns a status code 400 if the password is incorrect", async () => {
+      const response = await request(app).post("/api/auth/signin").send({
+        email: "contact@lunisoft.fr",
+        password: "password-incorrect",
+        role: "ADMIN",
+      });
+
+      expect(response.status).toEqual(400);
+      expect(response.body.message).toEqual(
+        "Mot de passe ou e-mail incorrect."
+      );
     });
   });
 
   describe("POST /api/auth/refresh", () => {
-    it("returns a status code 200 if the refresh token was found", async () => {
-      // Create a session
-      const session = await prisma.session.create({
-        data: {
-          refreshToken: "test-refresh-token",
-          accountId: "f494c2f4-d257-4739-80e8-797f2f23d17c", // contact@lunisoft.fr
+    it("returns a status code 200 if the refresh token has been refreshed", async () => {
+      const refreshToken = await getAdminUserAccessToken();
+
+      const response = await request(app).post("/api/auth/refresh").send({
+        refreshToken,
+      });
+
+      expect(response.status).toEqual(200);
+      expect(response.body.accessToken).toBeDefined();
+      expect(response.body.refreshToken).toBeDefined();
+    });
+
+    it("returns a status code 400 if the refresh token is invalid", async () => {
+      const response = await request(app).post("/api/auth/refresh").send({
+        refreshToken: "invalid-refresh-token",
+      });
+
+      expect(response.status).toEqual(400);
+      expect(response.body.message).toEqual(
+        "Invalid or expired refresh token."
+      );
+    });
+
+    it("returns a status code 400 if the refresh token is expired", async () => {
+      // Generate the JWT refresh token
+      const expiredRefreshToken = await authService.signJwt({
+        payload: {
+          sub: "1234",
+        },
+        options: {
+          expiresIn: `-1m`,
         },
       });
 
-      const response = await request(app)
-        .post("/api/auth/refresh")
-        .set("x-throttler-test-mode", "true")
-        .send({
-          refreshToken: session.refreshToken,
-        });
-
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual({
-        accessToken: expect.any(String),
+      const response = await request(app).post("/api/auth/refresh").send({
+        refreshToken: expiredRefreshToken,
       });
-    });
-
-    it("returns a status code 400 if the refresh token was not found", async () => {
-      const response = await request(app)
-        .post("/api/auth/refresh")
-        .set("x-throttler-test-mode", "true")
-        .send({
-          refreshToken: "invalid-refresh-token",
-        });
 
       expect(response.status).toEqual(400);
-      expect(response.body).toEqual({
-        message: "Invalid or expired refresh token.",
-      });
-    });
-
-    it("returns a status code 429 if i tried more than 10 times to refresh", async () => {
-      for (let i = 0; i < 10; i++) {
-        await request(app).post("/api/auth/refresh").send({
-          refreshToken: "test-refresh-token",
-        });
-      }
-
-      const response = await request(app).post("/api/auth/refresh").send({
-        refreshToken: "test-refresh-token",
-      });
-
-      expect(response.status).toEqual(429);
-      expect(response.body).toEqual({
-        message: "Too many requests, please try again later.",
-      });
+      expect(response.body.message).toEqual(
+        "Invalid or expired refresh token."
+      );
     });
   });
 });

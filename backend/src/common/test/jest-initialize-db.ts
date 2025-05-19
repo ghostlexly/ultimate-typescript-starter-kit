@@ -8,22 +8,27 @@ export const initializeTestDb = async () => {
 };
 
 const cleanupTestDb = async () => {
-  // Session
-  await prisma.session.deleteMany();
+  // Delete in reverse order of dependencies to avoid foreign key conflicts
+  const tables = [
+    // Customers
+    "Customer",
 
-  // Customer
-  await prisma.customer.deleteMany();
+    // Admins
+    "Admin",
 
-  // Admin
-  await prisma.admin.deleteMany();
+    // Sessions (should be the last)
+    "Session",
+    "Account",
+  ];
 
-  // Account
-  await prisma.account.deleteMany();
+  // Delete all tables in a transaction
+  await prisma.$transaction(tables.map((table) => prisma[table].deleteMany()));
 };
 
-export const seedAdminId = "03f76f80-30ee-4db5-a542-de207d8ac7c5";
+export const seedCustomerId = "dada5771-b561-4dd6-9118-13543ae35169";
+export const seedAdminId = "826b57af-f17b-4eb8-9302-a743b1b1e707";
 
-const seedTestDb = async () => {
+const seedAdmin = async () => {
   const hashedPassword = await authService.hashPassword({
     password: "password",
   });
@@ -35,10 +40,37 @@ const seedTestDb = async () => {
       password: hashedPassword,
       account: {
         create: {
-          id: "f494c2f4-d257-4739-80e8-797f2f23d17c",
           role: "ADMIN",
         },
       },
     },
   });
+};
+
+const seedCustomer = async () => {
+  const hashedPassword = await authService.hashPassword({
+    password: "password",
+  });
+
+  // Seed Customer
+  await prisma.customer.create({
+    data: {
+      id: seedCustomerId,
+      email: "customer@lunisoft.fr",
+      password: hashedPassword,
+      account: {
+        create: {
+          role: "CUSTOMER",
+        },
+      },
+    },
+  });
+};
+
+const seedTestDb = async () => {
+  // Seed Admin
+  await seedAdmin();
+
+  // Seed Customer
+  await seedCustomer();
 };

@@ -4,8 +4,40 @@ import { prisma } from "../database/prisma";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
 import { env } from "@/config";
+import { dateUtils } from "../utils/date";
+import { Role } from "@/generated/prisma/client";
 
 class AuthService {
+  signJwt = ({
+    payload,
+    options,
+  }: {
+    payload: string | Buffer | object;
+    options: jwt.SignOptions;
+  }): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      jwt.sign(payload, env.APP_JWT_SECRET, options, (err, token) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(token as string);
+        }
+      });
+    });
+  };
+
+  getJwtPayload = (token: string): Promise<{ sub: string; role: Role }> => {
+    return new Promise((resolve, reject) => {
+      jwt.verify(token, env.APP_JWT_SECRET, (err, payload) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(payload as { sub: string; role: Role });
+        }
+      });
+    });
+  };
+
   /**
    *  Method to generate a secure unique token
    */
@@ -29,69 +61,118 @@ class AuthService {
   };
 
   /**
-   * Authenticate a token and return the user
-   */
-  authenticateToken = async (token: string) => {
-    try {
-      // Verify and decode the JWT token
-      const payload = jwt.verify(token, env.APP_JWT_SECRET) as { sub: string };
-
-      // Get account by id
-      const account = await prisma.account.findFirst({
-        include: {
-          admin: true,
-          customer: true,
-        },
-        where: { id: payload.sub },
-      });
-
-      // Check if the account is valid
-      if (!account) {
-        throw new Error("Invalid token.");
-      }
-
-      return account;
-    } catch {
-      return null;
-    }
-  };
-
-  /**
    * Generate a JWT access token for a given account id.
    */
-  generateAccessToken = async ({
+  generateAuthenticationTokens = async ({
     accountId,
   }: {
     accountId: string;
-  }): Promise<string> => {
-    // -- Get the user
+  }): Promise<{ accessToken: string; refreshToken: string }> => {
+    // Get the user
     const account = await prisma.account.findUnique({
       where: { id: accountId },
     });
 
     if (!account) {
-      throw new Error("Account not found.");
+      throw new Error("Account does not exist.");
     }
 
-    // -- Generate the JWT token
-    const token = await new Promise<string>((resolve, reject) => {
-      jwt.sign(
-        {
-          sub: accountId,
-          role: account.role,
-        },
-        env.APP_JWT_SECRET,
-        {
-          expiresIn: `${authConfig.accessTokenExpirationMinutes}m`,
-        },
-        (err, token) => {
-          if (err) reject(err);
-          else resolve(token as string);
-        }
-      );
+    // Create a new session
+    const session = await prisma.session.create({
+      data: {
+        expiresAt: dateUtils.add(new Date(), {
+          minutes: authConfig.refreshTokenExpirationMinutes,
+        }),
+        accountId,
+      },
     });
 
-    return token;
+    // Generate the JWT access token
+    const accessToken = await this.signJwt({
+      payload: {
+        sub: session.id,
+        role: account.role,
+      },
+      options: {
+        expiresIn: `${authConfig.accessTokenExpirationMinutes}m`,
+      },
+    });
+
+    // Generate the JWT refresh token
+    const refreshToken = await this.signJwt({
+      payload: {
+        sub: session.id,
+      },
+      options: {
+        expiresIn: `${authConfig.refreshTokenExpirationMinutes}m`,
+      },
+    });
+
+    return {
+      accessToken,
+      refreshToken,
+    };
+  };
+
+  refreshAuthenticationTokens = async ({
+    refreshToken,
+  }: {
+    refreshToken: string;
+  }) => {
+    const payload = await this.getJwtPayload(refreshToken).catch(() => {
+      throw new Error("Invalid or expired refresh token.");
+    });
+
+    if (!payload) {
+      throw new Error("Invalid or expired refresh token.");
+    }
+
+    const session = await prisma.session.findUnique({
+      include: {
+        account: true,
+      },
+      where: { id: payload.sub },
+    });
+
+    if (!session) {
+      throw new Error("This session does not exist.");
+    }
+
+    // Generate the JWT access token
+    const accessToken = await this.signJwt({
+      payload: {
+        sub: session.id,
+        role: session.account.role,
+      },
+      options: {
+        expiresIn: `${authConfig.accessTokenExpirationMinutes}m`,
+      },
+    });
+
+    // Generate the JWT refresh token
+    const newRefreshToken = await this.signJwt({
+      payload: {
+        sub: session.id,
+      },
+      options: {
+        expiresIn: `${authConfig.refreshTokenExpirationMinutes}m`,
+      },
+    });
+
+    // Update the expiration date of the session
+    await prisma.session.update({
+      where: { id: session.id },
+      data: {
+        expiresAt: dateUtils.add(new Date(), {
+          minutes: authConfig.refreshTokenExpirationMinutes,
+        }),
+      },
+    });
+
+    return {
+      accessToken,
+      refreshToken: newRefreshToken,
+    };
   };
 }
 

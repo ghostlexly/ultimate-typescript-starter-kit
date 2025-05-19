@@ -16,13 +16,15 @@ export const initializeJwtStrategy = async () => {
         done: (error: Error | null, account?: Account | false) => void
       ) => {
         try {
+          const sessionId = payload.sub;
+
           // Get account by id
           const account = await prisma.account.findFirst({
             include: {
               admin: true,
               customer: true,
             },
-            where: { id: payload.sub },
+            where: { session: { some: { id: sessionId } } },
           });
 
           if (!account) {

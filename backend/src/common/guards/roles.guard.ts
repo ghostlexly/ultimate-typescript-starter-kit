@@ -13,8 +13,7 @@ export const rolesGuard =
      */
     if (!account) {
       return next(
-        new HttpException({
-          status: 401,
+        HttpException.unauthorized({
           message:
             "Authentication required. Please provide a valid access token.",
         })
@@ -28,8 +27,7 @@ export const rolesGuard =
      */
     if (!roles.includes(account.role)) {
       return next(
-        new HttpException({
-          status: 403,
+        HttpException.forbidden({
           message: "You don't have permission to access this resource.",
         })
       );
