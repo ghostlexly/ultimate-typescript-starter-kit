@@ -131,7 +131,12 @@ class AuthService {
       include: {
         account: true,
       },
-      where: { id: payload.sub },
+      where: {
+        id: payload.sub,
+        expiresAt: {
+          gt: new Date(),
+        },
+      },
     });
 
     if (!session) {
