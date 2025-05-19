@@ -17,11 +17,21 @@ export const sessionsGuard = async (
   // Extract Authorization header
   const authHeader = req.headers.authorization;
 
-  // If the authorization header is not present, try to get the token from the url query params
+  // If the authorization header is not present, try to get the token from the url query params or cookies
   if (!authHeader) {
-    const token = req.query?.["token"];
-    if (token) {
-      req.headers.authorization = `Bearer ${token}`;
+    // Try to get the token from the url query params
+    const queryToken = req.query?.["token"];
+    if (queryToken) {
+      req.headers.authorization = `Bearer ${queryToken}`;
+    }
+
+    // Try to get the token from the cookies
+    if (!queryToken) {
+      const cookieToken = req.cookies?.["lunisoft_access_token"];
+
+      if (cookieToken) {
+        req.headers.authorization = `Bearer ${cookieToken}`;
+      }
     }
   }
 

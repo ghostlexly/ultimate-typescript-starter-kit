@@ -71,12 +71,12 @@ export class AuthController {
           accountId: user.accountId,
         });
 
-      res.cookie("ghostlexly_access_token", accessToken, {
+      res.cookie("lunisoft_access_token", accessToken, {
         secure: process.env.NODE_ENV === "production",
         maxAge: authConfig.accessTokenExpirationMinutes * 60 * 1000, // Convert minutes to milliseconds
       });
 
-      res.cookie("ghostlexly_refresh_token", refreshToken, {
+      res.cookie("lunisoft_refresh_token", refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         maxAge: authConfig.refreshTokenExpirationMinutes * 60 * 1000, // Convert minutes to milliseconds
@@ -98,7 +98,7 @@ export class AuthController {
       });
 
       let previousRefreshToken =
-        body.refreshToken ?? req.cookies?.ghostlexly_refresh_token;
+        body.refreshToken ?? req.cookies?.lunisoft_refresh_token;
 
       if (!previousRefreshToken) {
         throw HttpException.badRequest({
@@ -116,12 +116,12 @@ export class AuthController {
           });
         });
 
-      res.cookie("ghostlexly_access_token", accessToken, {
+      res.cookie("lunisoft_access_token", accessToken, {
         secure: process.env.NODE_ENV === "production",
         maxAge: authConfig.accessTokenExpirationMinutes * 60 * 1000, // Convert minutes to milliseconds
       });
 
-      res.cookie("ghostlexly_refresh_token", refreshToken, {
+      res.cookie("lunisoft_refresh_token", refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         maxAge: authConfig.refreshTokenExpirationMinutes * 60 * 1000, // Convert minutes to milliseconds
