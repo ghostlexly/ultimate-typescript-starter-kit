@@ -64,7 +64,10 @@ const runCommand = async (): Promise<void> => {
 
     LOGGER.info(`Seeding finished successfully.`);
   } catch (error) {
-    LOGGER.error(error, "Error on seeding countries !");
+    LOGGER.error("Error occured on seeding countries.", {
+      error: error?.message,
+      stack: error?.stack,
+    });
   }
 
   process.exit(0);

@@ -69,7 +69,10 @@ new CronJob(
 
       logger.debug("All orphan medias are been removed successfully.");
     } catch (error) {
-      logger.error("Error during orphan media removal:", error);
+      logger.error("Error during orphan media removal.", {
+        error: error?.message,
+        stack: error?.stack,
+      });
     }
   },
   null,

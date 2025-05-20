@@ -17,7 +17,7 @@ class RedisService {
     });
 
     this.client.on("error", (err) => {
-      logger.error("Redis error", { error: err });
+      logger.error("Redis error occured.", { error: err });
     });
   }
 

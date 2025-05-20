@@ -16,7 +16,10 @@ const runCommand = async (): Promise<void> => {
     await redisService.flushall();
     LOGGER.info("All Redis keys have been cleared successfully.");
   } catch (error) {
-    LOGGER.error("Error clearing Redis keys:", error);
+    LOGGER.error("An error occured during Redis keys clearing.", {
+      error: error?.message,
+      stack: error?.stack,
+    });
   }
 
   process.exit(0);

@@ -37,7 +37,10 @@ const initializeEventEmitter = async () => {
     // -- load all listeners
     await Promise.all(files.map((file) => loadListener(modulesPath, file)));
   } catch (error) {
-    logger.error(error, "Failed to initialize EventEmitter !");
+    logger.error("Failed to initialize EventEmitter !", {
+      error: error?.message,
+      stack: error?.stack,
+    });
     throw error;
   }
 };
@@ -54,7 +57,10 @@ const loadListener = async (
       logger.info(`Loaded [${file}] events listener(s).`);
     }
   } catch (error) {
-    logger.error(error, `Failed to load listener ${file} !`);
+    logger.error(`Failed to load listener ${file} !`, {
+      error: error?.message,
+      stack: error?.stack,
+    });
   }
 };
 

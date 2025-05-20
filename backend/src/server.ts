@@ -14,7 +14,10 @@ const setup = async () => {
       logger.info(`🚀 Server ready on port: ${PORT}`);
     });
   } catch (error) {
-    logger.error(error);
+    logger.error("An error occured on the server.", {
+      error: error?.message,
+      stack: error?.stack,
+    });
     process.exit(1);
   }
 };
