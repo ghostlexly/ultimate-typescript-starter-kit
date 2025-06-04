@@ -14,10 +14,9 @@ import express from "express";
 import helmet from "helmet";
 import { initializeCrons } from "./common/cron";
 import { initializeJwtStrategy } from "./modules/auth/strategies/jwt.strategy";
-import { initializeI18n } from "./common/utils/i18n";
-import { initializeSwagger } from "./common/utils/swagger";
 import cookieParser from "cookie-parser";
 import * as Sentry from "@sentry/node";
+import { initializeZod } from "./common/utils/zod";
 
 const bootstrap = async () => {
   const app = express();
@@ -63,14 +62,11 @@ const bootstrap = async () => {
   // Passport strategies
   await initializeJwtStrategy();
 
-  // I18n
-  await initializeI18n();
-
-  // Swagger
-  initializeSwagger({ app });
-
   // Crons
   initializeCrons();
+
+  // Zod
+  initializeZod();
 
   // Static assets
   // We are using them in the PDF views
