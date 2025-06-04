@@ -93,74 +93,76 @@ const zodFrenchErrorMap = (issue, ctx) => {
 
     case z.ZodIssueCode.invalid_string:
       if (issue.validation === "email") {
-        return { message: "L'adresse e-mail n'est pas valide" };
+        return { message: "Ce champ doit être une adresse e-mail valide" };
       }
       if (issue.validation === "url") {
-        return { message: "L'adresse web (URL) n'est pas valide" };
+        return { message: "Ce champ doit être une adresse web (URL) valide" };
       }
       if (issue.validation === "emoji") {
         return { message: "Ce champ doit contenir un emoji valide" };
       }
       if (issue.validation === "uuid") {
-        return { message: "L'identifiant unique (UUID) n'est pas valide" };
-      }
-      if (issue.validation === "nanoid") {
-        return { message: "L'identifiant NanoID n'est pas valide" };
-      }
-      if (issue.validation === "cuid") {
-        return { message: "L'identifiant CUID n'est pas valide" };
-      }
-      if (issue.validation === "cuid2") {
-        return { message: "L'identifiant CUID2 n'est pas valide" };
-      }
-      if (issue.validation === "ulid") {
-        return { message: "L'identifiant ULID n'est pas valide" };
-      }
-      if (issue.validation === "datetime") {
-        return { message: "Le format de date et heure n'est pas valide" };
-      }
-      if (issue.validation === "date") {
-        return { message: "Le format de date n'est pas valide" };
-      }
-      if (issue.validation === "time") {
-        return { message: "Le format d'heure n'est pas valide" };
-      }
-      if (issue.validation === "duration") {
-        return { message: "Le format de durée n'est pas valide" };
-      }
-      if (issue.validation === "ip") {
-        return { message: "L'adresse IP n'est pas valide" };
-      }
-      if (issue.validation === "base64") {
-        return { message: "Le format Base64 n'est pas valide" };
-      }
-      if (issue.validation === "startsWith") {
-        return { message: `Le texte doit commencer par "${issue.startsWith}"` };
-      }
-      if (issue.validation === "endsWith") {
-        return { message: `Le texte doit se terminer par "${issue.endsWith}"` };
-      }
-      if (issue.validation === "regex") {
         return {
-          message: "Le format du texte n'est pas conforme aux règles attendues",
+          message: "Ce champ doit être un identifiant unique (UUID) valide",
         };
       }
-      if (issue.validation === "includes") {
-        return { message: `Le texte doit contenir "${issue.includes}"` };
+      if (issue.validation === "nanoid") {
+        return { message: "Ce champ doit être un identifiant NanoID valide" };
       }
-      return { message: "Le format du texte n'est pas valide" };
+      if (issue.validation === "cuid") {
+        return { message: "Ce champ doit être un identifiant CUID valide" };
+      }
+      if (issue.validation === "cuid2") {
+        return { message: "Ce champ doit être un identifiant CUID2 valide" };
+      }
+      if (issue.validation === "ulid") {
+        return { message: "Ce champ doit être un identifiant ULID valide" };
+      }
+      if (issue.validation === "datetime") {
+        return {
+          message: "Ce champ doit respecter le format de date et heure",
+        };
+      }
+      if (issue.validation === "date") {
+        return { message: "Ce champ doit respecter le format de date" };
+      }
+      if (issue.validation === "time") {
+        return { message: "Ce champ doit respecter le format d'heure" };
+      }
+      if (issue.validation === "duration") {
+        return { message: "Ce champ doit respecter le format de durée" };
+      }
+      if (issue.validation === "ip") {
+        return { message: "Ce champ doit être une adresse IP valide" };
+      }
+      if (issue.validation === "base64") {
+        return { message: "Ce champ doit être au format Base64 valide" };
+      }
+      if (issue.validation === "startsWith") {
+        return { message: `Ce champ doit commencer par "${issue.startsWith}"` };
+      }
+      if (issue.validation === "endsWith") {
+        return { message: `Ce champ doit se terminer par "${issue.endsWith}"` };
+      }
+      if (issue.validation === "regex") {
+        return { message: "Ce champ ne respecte pas le format attendu" };
+      }
+      if (issue.validation === "includes") {
+        return { message: `Ce champ doit contenir "${issue.includes}"` };
+      }
+      return { message: "Ce champ n'a pas un format valide" };
 
     case z.ZodIssueCode.too_small:
       if (issue.type === "array") {
         if (issue.exact) {
           return {
-            message: `La liste doit contenir exactement ${
+            message: `Ce champ doit contenir exactement ${
               issue.minimum
             } élément${issue.minimum > 1 ? "s" : ""}`,
           };
         }
         return {
-          message: `La liste doit contenir au moins ${issue.minimum} élément${
+          message: `Ce champ doit contenir au moins ${issue.minimum} élément${
             issue.minimum > 1 ? "s" : ""
           }`,
         };
@@ -168,13 +170,13 @@ const zodFrenchErrorMap = (issue, ctx) => {
       if (issue.type === "string") {
         if (issue.exact) {
           return {
-            message: `Le texte doit contenir exactement ${
+            message: `Ce champ doit contenir exactement ${
               issue.minimum
             } caractère${issue.minimum > 1 ? "s" : ""}`,
           };
         }
         return {
-          message: `Le texte doit contenir au moins ${issue.minimum} caractère${
+          message: `Ce champ doit contenir au moins ${issue.minimum} caractère${
             issue.minimum > 1 ? "s" : ""
           }`,
         };
@@ -182,16 +184,16 @@ const zodFrenchErrorMap = (issue, ctx) => {
       if (issue.type === "number") {
         if (issue.exact) {
           return {
-            message: `Le nombre doit être exactement ${issue.minimum}`,
+            message: `Ce champ doit être exactement ${issue.minimum}`,
           };
         }
         return {
-          message: `Le nombre doit être supérieur ou égal à ${issue.minimum}`,
+          message: `Ce champ doit être supérieur ou égal à ${issue.minimum}`,
         };
       }
       if (issue.type === "date") {
         return {
-          message: `La date doit être postérieure ou égale au ${new Date(
+          message: `Ce champ doit être postérieur ou égal au ${new Date(
             issue.minimum
           ).toLocaleDateString("fr-FR")}`,
         };
@@ -199,26 +201,26 @@ const zodFrenchErrorMap = (issue, ctx) => {
       if (issue.type === "bigint") {
         if (issue.exact) {
           return {
-            message: `Le grand nombre doit être exactement ${issue.minimum}`,
+            message: `Ce champ doit être exactement ${issue.minimum}`,
           };
         }
         return {
-          message: `Le grand nombre doit être supérieur ou égal à ${issue.minimum}`,
+          message: `Ce champ doit être supérieur ou égal à ${issue.minimum}`,
         };
       }
-      return { message: "La valeur est trop petite" };
+      return { message: "Ce champ a une valeur trop petite" };
 
     case z.ZodIssueCode.too_big:
       if (issue.type === "array") {
         if (issue.exact) {
           return {
-            message: `La liste doit contenir exactement ${
+            message: `Ce champ doit contenir exactement ${
               issue.maximum
             } élément${issue.maximum > 1 ? "s" : ""}`,
           };
         }
         return {
-          message: `La liste doit contenir au maximum ${issue.maximum} élément${
+          message: `Ce champ doit contenir au maximum ${issue.maximum} élément${
             issue.maximum > 1 ? "s" : ""
           }`,
         };
@@ -226,13 +228,13 @@ const zodFrenchErrorMap = (issue, ctx) => {
       if (issue.type === "string") {
         if (issue.exact) {
           return {
-            message: `Le texte doit contenir exactement ${
+            message: `Ce champ doit contenir exactement ${
               issue.maximum
             } caractère${issue.maximum > 1 ? "s" : ""}`,
           };
         }
         return {
-          message: `Le texte doit contenir au maximum ${
+          message: `Ce champ doit contenir au maximum ${
             issue.maximum
           } caractère${issue.maximum > 1 ? "s" : ""}`,
         };
@@ -240,16 +242,16 @@ const zodFrenchErrorMap = (issue, ctx) => {
       if (issue.type === "number") {
         if (issue.exact) {
           return {
-            message: `Le nombre doit être exactement ${issue.maximum}`,
+            message: `Ce champ doit être exactement ${issue.maximum}`,
           };
         }
         return {
-          message: `Le nombre doit être inférieur ou égal à ${issue.maximum}`,
+          message: `Ce champ doit être inférieur ou égal à ${issue.maximum}`,
         };
       }
       if (issue.type === "date") {
         return {
-          message: `La date doit être antérieure ou égale au ${new Date(
+          message: `Ce champ doit être antérieur ou égal au ${new Date(
             issue.maximum
           ).toLocaleDateString("fr-FR")}`,
         };
@@ -257,14 +259,14 @@ const zodFrenchErrorMap = (issue, ctx) => {
       if (issue.type === "bigint") {
         if (issue.exact) {
           return {
-            message: `Le grand nombre doit être exactement ${issue.maximum}`,
+            message: `Ce champ doit être exactement ${issue.maximum}`,
           };
         }
         return {
-          message: `Le grand nombre doit être inférieur ou égal à ${issue.maximum}`,
+          message: `Ce champ doit être inférieur ou égal à ${issue.maximum}`,
         };
       }
-      return { message: "La valeur est trop grande" };
+      return { message: "Ce champ a une valeur trop grande" };
 
     case z.ZodIssueCode.invalid_intersection_types:
       return {
@@ -273,11 +275,11 @@ const zodFrenchErrorMap = (issue, ctx) => {
 
     case z.ZodIssueCode.not_multiple_of:
       return {
-        message: `Le nombre doit être un multiple de ${issue.multipleOf}`,
+        message: `Ce champ doit être un multiple de ${issue.multipleOf}`,
       };
 
     case z.ZodIssueCode.not_finite:
-      return { message: "Le nombre doit être fini (pas infini)" };
+      return { message: "Ce champ doit être un nombre fini (pas infini)" };
 
     case z.ZodIssueCode.custom:
       if (issue.message) {
