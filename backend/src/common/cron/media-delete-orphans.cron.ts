@@ -28,7 +28,7 @@ new CronJob(
           ],
 
           createdAt: {
-            lt: dateUtils.sub(new Date(), { hours: 1 }), // older than 1 hour records
+            lt: dateUtils.sub(new Date(), { hours: 24 }), // older than 24 hours records
           },
         },
       });
