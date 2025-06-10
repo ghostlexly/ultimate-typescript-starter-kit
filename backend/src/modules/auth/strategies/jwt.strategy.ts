@@ -9,7 +9,8 @@ export const initializeJwtStrategy = async () => {
     new JwtStrategy(
       {
         jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-        secretOrKey: env.APP_JWT_SECRET,
+        algorithms: ["RS256"], // Recommended algorithm for JWT (Asymmetric, uses a private key to sign and a public key to verify.). The default one is HS256 (Symmetric, uses a single secret key for both signing and verifying).
+        secretOrKey: env.APP_JWT_PUBLIC_KEY,
       },
       async (
         payload: { sub: string },

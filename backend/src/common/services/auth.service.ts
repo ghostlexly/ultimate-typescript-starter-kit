@@ -16,19 +16,27 @@ class AuthService {
     options: jwt.SignOptions;
   }): Promise<string> => {
     return new Promise((resolve, reject) => {
-      jwt.sign(payload, env.APP_JWT_SECRET, options, (err, token) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(token as string);
+      jwt.sign(
+        payload,
+        env.APP_JWT_SECRET_KEY,
+        {
+          algorithm: "RS256", // Recommended algorithm for JWT (Asymmetric, uses a private key to sign and a public key to verify.). The default one is HS256 (Symmetric, uses a single secret key for both signing and verifying).
+          ...options,
+        },
+        (err, token) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(token as string);
+          }
         }
-      });
+      );
     });
   };
 
   getJwtPayload = (token: string): Promise<{ sub: string; role: Role }> => {
     return new Promise((resolve, reject) => {
-      jwt.verify(token, env.APP_JWT_SECRET, (err, payload) => {
+      jwt.verify(token, env.APP_JWT_PUBLIC_KEY, (err, payload) => {
         if (err) {
           reject(err);
         } else {
