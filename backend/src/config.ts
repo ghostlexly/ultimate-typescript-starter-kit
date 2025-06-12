@@ -16,7 +16,7 @@ const envSchema = z.object({
   APP_DATABASE_CONNECTION_URL: z.string().url(),
   APP_REDIS_HOST: z.string().min(1),
   APP_REDIS_PORT: z.coerce.number().default(6379),
-  APP_JWT_SECRET_KEY: z.string().min(1),
+  APP_JWT_PRIVATE_KEY: z.string().min(1),
   APP_JWT_PUBLIC_KEY: z.string().min(1),
   API_S3_ENDPOINT: z.string().url(),
   API_S3_ACCESS_KEY: z.string().min(1),

@@ -8,6 +8,15 @@ import { dateUtils } from "../utils/date";
 import { Role } from "@/generated/prisma/client";
 
 class AuthService {
+  private jwtPrivateKey: string = Buffer.from(
+    env.APP_JWT_PRIVATE_KEY,
+    "base64"
+  ).toString("utf8");
+  private jwtPublicKey: string = Buffer.from(
+    env.APP_JWT_PUBLIC_KEY,
+    "base64"
+  ).toString("utf8");
+
   signJwt = ({
     payload,
     options,
@@ -18,7 +27,7 @@ class AuthService {
     return new Promise((resolve, reject) => {
       jwt.sign(
         payload,
-        env.APP_JWT_SECRET_KEY,
+        this.jwtPrivateKey,
         {
           algorithm: "RS256", // Recommended algorithm for JWT (Asymmetric, uses a private key to sign and a public key to verify.). The default one is HS256 (Symmetric, uses a single secret key for both signing and verifying).
           ...options,
@@ -36,7 +45,7 @@ class AuthService {
 
   getJwtPayload = (token: string): Promise<{ sub: string; role: Role }> => {
     return new Promise((resolve, reject) => {
-      jwt.verify(token, env.APP_JWT_PUBLIC_KEY, (err, payload) => {
+      jwt.verify(token, this.jwtPublicKey, (err, payload) => {
         if (err) {
           reject(err);
         } else {
