@@ -144,10 +144,7 @@ class AuthService {
       throw new Error("Invalid or expired refresh token.");
     }
 
-    const session = await prisma.session.findUnique({
-      include: {
-        account: true,
-      },
+    const previousSession = await prisma.session.findUnique({
       where: {
         id: payload.sub,
         expiresAt: {
@@ -156,15 +153,32 @@ class AuthService {
       },
     });
 
-    if (!session) {
+    if (!previousSession) {
       throw new Error("This session does not exist.");
     }
+
+    // Refresh Token Rotation - Delete the previous session and create a new one
+    await prisma.session.delete({
+      where: { id: previousSession.id },
+    });
+
+    const newSession = await prisma.session.create({
+      include: {
+        account: true,
+      },
+      data: {
+        expiresAt: dateUtils.add(new Date(), {
+          minutes: authConfig.refreshTokenExpirationMinutes,
+        }),
+        accountId: previousSession.accountId,
+      },
+    });
 
     // Generate the JWT access token
     const accessToken = await this.signJwt({
       payload: {
-        sub: session.id,
-        role: session.account.role,
+        sub: newSession.id,
+        role: newSession.account.role,
       },
       options: {
         expiresIn: `${authConfig.accessTokenExpirationMinutes}m`,
@@ -174,20 +188,10 @@ class AuthService {
     // Generate the JWT refresh token
     const newRefreshToken = await this.signJwt({
       payload: {
-        sub: session.id,
+        sub: newSession.id,
       },
       options: {
         expiresIn: `${authConfig.refreshTokenExpirationMinutes}m`,
-      },
-    });
-
-    // Update the expiration date of the session
-    await prisma.session.update({
-      where: { id: session.id },
-      data: {
-        expiresAt: dateUtils.add(new Date(), {
-          minutes: authConfig.refreshTokenExpirationMinutes,
-        }),
       },
     });
 
