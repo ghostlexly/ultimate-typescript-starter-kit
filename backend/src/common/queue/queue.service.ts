@@ -1,46 +1,77 @@
 import { REDIS_CONNECTION } from "@/common/services/redis.service";
 import { bullmqService } from "@/common/queue/bullmq";
-import { Queue, Worker } from "bullmq";
+import { Queue, Worker, WorkerOptions } from "bullmq";
 import path from "path";
 
 class QueueService {
-  private queue: Queue;
-  private worker: Worker;
+  public queues: Map<string, Queue> = new Map();
+  private workers: Map<string, Worker> = new Map();
 
   constructor() {
-    this.queue = new Queue("app", {
+    // Create separate queues and workers for each job type with specific concurrency
+    this.createQueueAndWorker("optimizeVideoJob", {
+      concurrency: 1,
+    });
+    this.createQueueAndWorker("testingJob", {
+      concurrency: 1,
+    });
+  }
+
+  private createQueueAndWorker(
+    jobName: string,
+    options: Partial<WorkerOptions>
+  ) {
+    // Create dedicated queue for this job type
+    const queue = new Queue(jobName, {
       connection: REDIS_CONNECTION,
     });
 
-    this.worker = new Worker(
-      "app", // queue name
+    // Create dedicated worker for this job type
+    const worker = new Worker(
+      jobName, // queue name matches job type
       path.join(__dirname, "app.worker.js"),
       {
         connection: REDIS_CONNECTION,
         removeOnComplete: { count: 10 },
+        ...options,
       }
     );
 
+    this.queues.set(jobName, queue);
+    this.workers.set(jobName, worker);
+
     // -- Worker Events
     bullmqService.initWorkerEventsLogger({
-      worker: this.worker,
+      worker,
     });
   }
 
   public close = async () => {
-    await this.worker.close();
-    await this.worker.disconnect();
+    // Close all workers
+    for (const worker of this.workers.values()) {
+      await worker.close();
+      await worker.disconnect();
+    }
 
-    await this.queue.close();
-    await this.queue.disconnect();
-  };
-
-  public addTestingJob = (message: string) => {
-    this.queue.add("testingJob", { message });
+    // Close all queues
+    for (const queue of this.queues.values()) {
+      await queue.close();
+      await queue.disconnect();
+    }
   };
 
   public addOptimizeVideoJob = (mediaId: string) => {
-    this.queue.add("optimizeVideoJob", { mediaId });
+    const queue = this.queues.get("optimizeVideoJob");
+    if (queue) {
+      queue.add("optimizeVideoJob", { mediaId });
+    }
+  };
+
+  public addTestingJob = (message: string) => {
+    const queue = this.queues.get("testingJob");
+    if (queue) {
+      queue.add("testingJob", { message });
+    }
   };
 }
 
