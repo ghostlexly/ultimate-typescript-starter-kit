@@ -4,10 +4,15 @@ import { Queue, Worker, WorkerOptions } from "bullmq";
 import path from "path";
 
 class QueueService {
+  private isInitialized = false;
   public queues: Map<string, Queue> = new Map();
-  private workers: Map<string, Worker> = new Map();
+  public workers: Map<string, Worker> = new Map();
 
-  constructor() {
+  initialize = () => {
+    if (this.isInitialized) {
+      return;
+    }
+
     // Create separate queues and workers for each job type with specific concurrency
     this.createQueueAndWorker("optimizeVideoJob", {
       concurrency: 1,
@@ -15,12 +20,14 @@ class QueueService {
     this.createQueueAndWorker("testingJob", {
       concurrency: 1,
     });
-  }
 
-  private createQueueAndWorker(
+    this.isInitialized = true;
+  };
+
+  private createQueueAndWorker = (
     jobName: string,
     options: Partial<WorkerOptions>
-  ) {
+  ) => {
     // Create dedicated queue for this job type
     const queue = new Queue(jobName, {
       connection: REDIS_CONNECTION,
@@ -44,7 +51,7 @@ class QueueService {
     bullmqService.initWorkerEventsLogger({
       worker,
     });
-  }
+  };
 
   public close = async () => {
     // Close all workers

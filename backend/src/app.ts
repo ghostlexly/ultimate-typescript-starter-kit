@@ -17,6 +17,7 @@ import { initializeJwtStrategy } from "./modules/auth/strategies/jwt.strategy";
 import cookieParser from "cookie-parser";
 import * as Sentry from "@sentry/node";
 import { initializeZod } from "./common/utils/zod";
+import { queueService } from "./common/queue/queue.service";
 
 const bootstrap = async () => {
   const app = express();
@@ -67,6 +68,9 @@ const bootstrap = async () => {
 
   // Zod
   initializeZod();
+
+  // Queue Service (BullMQ workers and queues)
+  queueService.initialize();
 
   // Static assets
   // We are using them in the PDF views
