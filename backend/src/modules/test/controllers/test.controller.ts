@@ -4,7 +4,7 @@ import { queueService } from "@/common/queue/queue.service";
 import { pdfService } from "@/common/services/pdf.service";
 import { getAppDir } from "@/common/utils/app-dir";
 import { validateData } from "@/common/utils/validation";
-import { testWriteTextUseCase } from "@/core/use-cases/test-write-text.usecase";
+import { testWriteTextUseCase } from "@/core/use-cases/test/test-write-text.usecase";
 import ejs from "ejs";
 import { NextFunction, Request, Response } from "express";
 import fs from "fs/promises";
