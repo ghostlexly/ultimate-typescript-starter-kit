@@ -112,6 +112,7 @@ npm run cli
 Project Root
 ├── core/                          # Core application logic and shared use cases
 │   └── use-cases/                 # Contains pure business logic implementations
+|   └── event-handlers/           # Events that can be called
 │                                 # Independent of external frameworks/libraries
 │
 ├── modules/                       # Modular feature-specific implementations
