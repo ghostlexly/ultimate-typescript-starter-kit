@@ -1,4 +1,4 @@
-class TestWriteTextUseCase {
+class WriteTextUseCase {
   execute = () => {
     // Add very complex business logic here.
     // You can call services, repositories, etc. from multiple modules.
@@ -6,4 +6,4 @@ class TestWriteTextUseCase {
   };
 }
 
-export const testWriteTextUseCase = new TestWriteTextUseCase();
+export const writeTextUseCase = new WriteTextUseCase();

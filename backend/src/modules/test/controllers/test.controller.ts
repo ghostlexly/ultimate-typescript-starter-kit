@@ -4,12 +4,12 @@ import { queueService } from "@/common/queue/queue.service";
 import { pdfService } from "@/common/services/pdf.service";
 import { getAppDir } from "@/common/utils/app-dir";
 import { validateData } from "@/common/utils/validation";
-import { testWriteTextUseCase } from "@/core/use-cases/test/test-write-text.usecase";
+import { writeTextUseCase } from "@/modules/test/use-cases/write-text.use-case";
 import ejs from "ejs";
 import { NextFunction, Request, Response } from "express";
 import fs from "fs/promises";
 import path from "path";
-import { toAccountDto } from "../dtos/account.dto";
+import { toAccountDto } from "../dtos/test.dto";
 import { testConfig } from "../test.config";
 import { testService } from "../test.service";
 import { updateAccountValidator } from "../validators/test.validators";
@@ -138,7 +138,7 @@ export class TestController {
     next: NextFunction
   ) => {
     try {
-      const result = testWriteTextUseCase.execute();
+      const result = writeTextUseCase.execute();
 
       return res.json({
         message: result,
