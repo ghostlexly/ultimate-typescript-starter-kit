@@ -40,21 +40,23 @@ class Builder {
    * Copy non-TypeScript files to the dist directory
    */
   copyNonTsFiles = async () => {
-    const nonTsFiles = await glob("**/*", {
-      ignore: ["**/*.{ts,tsx,js,jsx}", "**/node_modules/**", "dist/**"],
-      nodir: true,
-      cwd: "src",
-    });
+    const foldersToProcess = ["prisma", "src"];
 
-    for (const file of nonTsFiles) {
-      const sourcePath = path.join("src", file);
-      const destPath = path.join("dist", "src", file);
+    for (const folder of foldersToProcess) {
+      const nonTsFiles = await glob(`${folder}/**/*`, {
+        nodir: true,
+      });
 
-      // Ensure the destination directory exists
-      await fs.mkdir(path.dirname(destPath), { recursive: true });
+      for (const file of nonTsFiles) {
+        const sourcePath = file;
+        const destPath = path.join("dist", file);
 
-      // Copy the file
-      await fs.copyFile(sourcePath, destPath);
+        // Ensure the destination directory exists
+        await fs.mkdir(path.dirname(destPath), { recursive: true });
+
+        // Copy the file
+        await fs.copyFile(sourcePath, destPath);
+      }
     }
   };
 
