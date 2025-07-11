@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "start": "node dist/src/server.js",
     "start:dev": "nodemon",
+    "seed": "node dist/prisma/seed.js",
     "cli": "node dist/src/cli/cli.js",
     "madge": "madge . -c --ts-config ./tsconfig.json --extensions ts --warning",
     "format": "prettier --write \"src/**/*.ts\"",
