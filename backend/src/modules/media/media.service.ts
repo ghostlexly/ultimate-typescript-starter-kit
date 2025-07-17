@@ -60,7 +60,7 @@ export class MediaService {
     allowedMimeTypes: string[];
     maxFileSize: number;
   }) => {
-    const maxFileSizeInBytes = maxFileSize * 1024 * 1024; // Convert Mo to bytes
+    const maxFileSizeInBytes = maxFileSize * 1_000_000; // Convert Mb to bytes
     const fileInfos = await filesService.getFileInfos(file.path);
 
     if (!allowedMimeTypes.includes(fileInfos.mimeType)) {
@@ -73,7 +73,7 @@ export class MediaService {
     if (file.size > maxFileSizeInBytes) {
       throw new HttpException({
         status: 413,
-        message: `The file size must not exceed ${maxFileSize} Mo.`,
+        message: `The file size must not exceed ${maxFileSize} Mb.`,
       });
     }
 
