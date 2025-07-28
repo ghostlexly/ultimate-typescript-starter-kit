@@ -38,10 +38,8 @@ services:
       - NODE_ENV=production
     restart: always
   # ===================================================================================================================================================================================
-  nginx:
-    image: fenrisshq/terracapital:nginx
-    build:
-      context: ./nginx
+  caddy:
+    image: caddy:2.10-alpine
     ports:
       - mode: host
         protocol: tcp
@@ -52,7 +50,10 @@ services:
         published: 443
         target: 443
     volumes:
-      - ./nginx/logs:/var/log/nginx:z
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy/logs:/var/log/caddy:z
+      - caddy_data:/data
+      - caddy_config:/config
     depends_on:
       - backend
       - frontend
@@ -69,3 +70,5 @@ services:
 
 volumes:
   redis_data:
+  caddy_data:
+  caddy_config:

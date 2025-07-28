@@ -1,0 +1,53 @@
+{
+    # Disable admin API for security
+    admin off
+    
+    # Use local certificates for self-signed SSL (works with Cloudflare Full mode)
+    local_certs
+}
+
+# Handles localhost (dev), Docker service name (caddy), and production domains
+localhost, caddy, :80, :443 {
+    # File upload size limit - 100MB for large file uploads
+    request_body {
+        max_size 100MB
+    }
+
+    # Security and custom headers
+    header {
+        # Your custom branding
+        X-Powered-By "LUNISOFT - contact@lunisoft.fr"
+        
+        # Security headers
+        X-Frame-Options "SAMEORIGIN"
+        X-Content-Type-Options "nosniff"
+        X-XSS-Protection "1; mode=block"
+        
+        # Hide Caddy server info
+        -Server
+    }
+
+    # Gzip compression for better performance
+    encode {
+        gzip
+        minimum_length 1024
+    }
+
+    # API routes → ExpressJS backend
+    handle /api/* {
+        reverse_proxy backend:3000
+    }
+
+    # All other routes → NextJS frontend
+    handle {
+        reverse_proxy frontend:3000
+    }
+
+    # Error handling
+    handle_errors {
+        @5xx expression `{http.error.status_code} >= 500`
+        handle @5xx {
+            respond "Service temporarily unavailable" 503
+        }
+    }
+} 

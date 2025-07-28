@@ -7,10 +7,6 @@ services:
     volumes:
       - ./backend:/usr/src/app
       - /usr/src/app/node_modules
-    restart: "on-failure"
-  # ===================================================================================================================================================================================
-  nginx:
-    restart: "on-failure"
   # ===================================================================================================================================================================================
   frontend:
     command: npm run dev
@@ -20,7 +16,6 @@ services:
     volumes:
       - ./frontend:/usr/src/app
       - /usr/src/app/node_modules
-    restart: "on-failure"
   # ===================================================================================================================================================================================
   redis-commander:
     image: ghcr.io/joeferner/redis-commander:latest
@@ -41,23 +36,3 @@ services:
       - POSTGRES_DB=${PROJECT_NAME}
     volumes:
       - ./postgres:/var/lib/postgresql/data
-  # ===================================================================================================================================================================================
-  #  mysql_backup:
-  #    image: databack/mysql-backup:8b7f6338d7af6a008d20c986b862a99310eb237d
-  #    volumes:
-  #      - ./mysql-backups:/db:z
-  #    environment:
-  #      - DB_DUMP_TARGET=/db
-  #      - DB_NAMES=${PROJECT_NAME}
-  #      - DB_USER=root
-  #      - DB_PASS=hnLcqbLjGfruHlHN
-  #      - DB_SERVER=mysql
-  #      - DB_PORT=3306
-  #      - DB_DUMP_FREQ=360 # In minutes
-  #      - DB_DUMP_BEGIN=0000 # HHMM OR +10 to start 10 minutes after run
-  #      - NICE=true
-  #    user: "0"
-  #    depends_on:
-  #      - mysql
-  #    restart: always
-  # ===================================================================================================================================================================================

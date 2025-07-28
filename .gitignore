@@ -1,7 +1,5 @@
 *.Dockerfile
 *.docker
-phpfpm_docker/project-files/
-nginx_docker/project-files/
 .idea/
 .php_cs.cache
 logs/
@@ -12,11 +10,7 @@ mutagen.yml.lock
 certbot/conf/.certbot.lock
 mysql
 postgres
-
-phpfpm/.DS_Store
-phpfpm/project-files/.DS_Store
 .DS_Store
-
 .env
 .env.local
 .env.prod
