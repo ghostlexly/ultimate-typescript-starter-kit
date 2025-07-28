@@ -3,16 +3,10 @@
 .idea/
 .php_cs.cache
 logs/
-saves/
-export.tar
-mutagen.yml
-mutagen.yml.lock
-certbot/conf/.certbot.lock
 mysql
 postgres
 .DS_Store
 .env
 .env.local
 .env.prod
-Taskfile.yaml
 node_modules
