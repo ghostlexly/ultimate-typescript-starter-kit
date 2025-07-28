@@ -7,9 +7,7 @@ task("default", function () {
 
 desc("Start the development environment.");
 task("dev", async () => {
-  await asyncSpawn(
-    "docker compose -f docker-compose.yml -f docker-compose.dev.yml up --renew-anon-volumes"
-  );
+  await asyncSpawn("docker compose up --renew-anon-volumes");
 });
 
 // -- PRISMA --

@@ -33,7 +33,7 @@ jobs:
           host: 15.237.74.17
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "docker-compose.yml,.env"
+          source: "compose.yml,.env"
           target: "~/docker"
 
       - name: Deploy on production server

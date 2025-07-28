@@ -90,7 +90,7 @@ Welcome to the Ultimate TypeScript Full Stack Starter! This comprehensive toolki
 4. **Start the development environment**
 
    ```
-   docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+   docker compose up
    ```
 
 5. **Access the application**
