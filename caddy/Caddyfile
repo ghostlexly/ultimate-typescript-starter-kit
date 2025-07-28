@@ -7,7 +7,7 @@
 }
 
 # Handles localhost (dev), Docker service name (caddy), and production domains
-localhost, caddy, :80, :443 {
+localhost, caddy, dispomenage.fr, www.dispomenage.fr, :80, :443 {
     # File upload size limit - 100MB for large file uploads
     request_body {
         max_size 100MB

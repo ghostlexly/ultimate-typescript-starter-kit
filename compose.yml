@@ -39,7 +39,9 @@ services:
     restart: always
   # ===================================================================================================================================================================================
   caddy:
-    image: caddy:2.10-alpine
+    image: fenrisshq/terracapital:caddy
+    build:
+      context: ./caddy
     ports:
       - mode: host
         protocol: tcp
@@ -50,7 +52,6 @@ services:
         published: 443
         target: 443
     volumes:
-      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - ./caddy/logs:/var/log/caddy:z
       - caddy_data:/data
       - caddy_config:/config
