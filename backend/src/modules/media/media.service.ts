@@ -22,7 +22,10 @@ export class MediaService {
     filePath: string;
     originalFileName: string;
   }) => {
-    const fileInfos = await filesService.getFileInfos(filePath);
+    const fileInfos = await filesService.getFileInfos({
+      filePath,
+      originalFileName,
+    });
 
     // -- Save the file to S3
     const key = await s3Service.upload({
@@ -61,7 +64,10 @@ export class MediaService {
     maxFileSize: number;
   }) => {
     const maxFileSizeInBytes = maxFileSize * 1_000_000; // Convert Mb to bytes
-    const fileInfos = await filesService.getFileInfos(file.path);
+    const fileInfos = await filesService.getFileInfos({
+      filePath: file.path,
+      originalFileName: file.originalname,
+    });
 
     if (!allowedMimeTypes.includes(fileInfos.mimeType)) {
       throw new HttpException({
@@ -97,7 +103,7 @@ export class MediaService {
     allowedMimeTypes: string[];
     maxFileSize: number;
   }) => {
-    const maxFileSizeInBytes = maxFileSize * 1024 * 1024; // Convert Mo to bytes
+    const maxFileSizeInBytes = maxFileSize * 1_000_000; // Convert Mb to bytes
 
     const media = await prisma.media.findUnique({
       where: {

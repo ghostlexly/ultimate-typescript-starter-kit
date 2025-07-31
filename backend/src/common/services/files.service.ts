@@ -3,16 +3,43 @@ import fs from "fs";
 import FileType from "file-type"; // version 16.5.4
 import crypto from "crypto";
 
-const getFileInfos = async (filePath: string) => {
+const getMimeTypeFromExtension = (filePath: string): string => {
+  const extension = path.extname(filePath).toLowerCase();
+
+  const mimeTypes: { [key: string]: string } = {
+    ".csv": "text/csv",
+    ".txt": "text/plain",
+    ".json": "application/json",
+    ".xml": "application/xml",
+    ".html": "text/html",
+    ".css": "text/css",
+    ".js": "application/javascript",
+  };
+
+  return mimeTypes[extension] || "application/octet-stream";
+};
+
+const getFileInfos = async ({
+  filePath,
+  originalFileName,
+}: {
+  filePath: string;
+  originalFileName?: string;
+}) => {
   try {
     const stats = fs.statSync(filePath);
-    const fileType = await FileType.fromFile(filePath);
+    const fileTypeFromFile = await FileType.fromFile(filePath);
+    let mimeType: string = fileTypeFromFile?.mime ?? "application/octet-stream";
+
+    if (!fileTypeFromFile?.mime && originalFileName) {
+      mimeType = getMimeTypeFromExtension(originalFileName);
+    }
 
     return {
       filename: path.basename(filePath),
       path: filePath,
       size: stats.size,
-      mimeType: fileType ? fileType.mime : "application/octet-stream",
+      mimeType: mimeType,
     };
   } catch (error) {
     console.error("Error getting file details:", error);
@@ -48,4 +75,8 @@ const getNormalizedFileName = (filename: string, appendRandom = true) => {
   return normalizedFilename;
 };
 
-export const filesService = { getFileInfos, getNormalizedFileName };
+export const filesService = {
+  getFileInfos,
+  getMimeTypeFromExtension,
+  getNormalizedFileName,
+};
