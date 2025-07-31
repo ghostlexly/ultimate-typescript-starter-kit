@@ -249,16 +249,13 @@ const GhostDropzone = ({
           {
             id: tempId,
             isUploading: true,
-            ...file,
+            path: file.name,
           },
         ]);
 
-        const formData = new FormData();
-        formData.append("file", file);
-
         wolfios
-          .post(uploadUrl, {
-            body: formData,
+          .postForm(uploadUrl, {
+            file: file,
           })
           .then((res) => res.data)
           .then((data) => {
@@ -279,9 +276,9 @@ const GhostDropzone = ({
           })
           .catch((err) => {
             // Handle file rejected error (server side)
-            if (err.data?.message) {
-              toast.error(err.data?.message);
-            } else if (err.response.status === 413) {
+            if (err.response?.data?.message) {
+              toast.error(err.response?.data?.message);
+            } else if (err.response?.status === 413) {
               // 413 = Payload Too Large
               toast.error(ERROR_MESSAGES.FILE_TOO_LARGE);
             } else {
