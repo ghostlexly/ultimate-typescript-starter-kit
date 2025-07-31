@@ -1,4 +1,5 @@
 /* TailwindCSS */
+@layer theme, base, mui, components, utilities;
 @import "tailwindcss";
 
 @theme inline {
@@ -126,6 +127,10 @@
 }
 
 @layer base {
+  * {
+    @apply border-border;
+  }
+
   body {
     @apply bg-background text-foreground;
 
