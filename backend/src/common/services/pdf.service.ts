@@ -43,7 +43,13 @@ class PdfService {
    * Generate a PDF from an HTML string
    * @param html - The HTML string to generate a PDF from
    */
-  htmlToPdf = async ({ html }: { html: string }) => {
+  htmlToPdf = async ({
+    html,
+    footerHtml,
+  }: {
+    html: string;
+    footerHtml?: string;
+  }) => {
     // -- Launch browser
     const context = await this.getContext();
     const page = await context.newPage();
@@ -63,10 +69,13 @@ class PdfService {
       margin: {
         top: "20px",
         right: "20px",
-        bottom: "20px",
+        bottom: "60px", // Increased bottom margin to accommodate footer
         left: "20px",
       },
       printBackground: true,
+      displayHeaderFooter: footerHtml ? true : false,
+      footerTemplate: footerHtml,
+      headerTemplate: "<div></div>", // Empty header template to avoid default header
     });
 
     // -- Close page
