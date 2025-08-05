@@ -29,14 +29,3 @@ services:
       - REDIS_PASSWORD=GhostLexly.7
     ports:
       - "8081:8081"
-  # ===================================================================================================================================================================================
-  postgres:
-    image: postgres:17.2
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=ghostlexly
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=${PROJECT_NAME}
-    volumes:
-      - ./postgres:/var/lib/postgresql/data

@@ -68,8 +68,22 @@ services:
     volumes:
       - redis_data:/bitnami/redis/data
     restart: always
+  # ===================================================================================================================================================================================
+  postgres:
+    image: postgres:17.2
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_INITDB_ARGS=--data-checksums --wal-level=replica
+      - POSTGRES_USER=ghostlexly
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${PROJECT_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
 
 volumes:
+  postgres_data:
   redis_data:
   caddy_data:
   caddy_config:
