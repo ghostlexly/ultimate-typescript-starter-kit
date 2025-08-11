@@ -28,7 +28,7 @@ services:
     depends_on:
       - redis
     tty: true
-    restart: always
+    restart: unless-stopped
   # ===================================================================================================================================================================================
   frontend:
     image: fenrisshq/terracapital:frontend
@@ -36,7 +36,7 @@ services:
       context: ./frontend
     environment:
       - NODE_ENV=production
-    restart: always
+    restart: unless-stopped
   # ===================================================================================================================================================================================
   caddy:
     image: fenrisshq/terracapital:caddy
@@ -58,7 +58,7 @@ services:
     depends_on:
       - backend
       - frontend
-    restart: always
+    restart: unless-stopped
   # ===================================================================================================================================================================================
   redis:
     image: bitnami/redis:7.0.8
@@ -67,7 +67,7 @@ services:
       - ALLOW_EMPTY_PASSWORD=yes
     volumes:
       - redis_data:/bitnami/redis/data
-    restart: always
+    restart: unless-stopped
   # ===================================================================================================================================================================================
   postgres:
     image: postgres:17.2
@@ -80,7 +80,7 @@ services:
       - POSTGRES_DB=${PROJECT_NAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    restart: always
+    restart: unless-stopped
 
 volumes:
   postgres_data:
