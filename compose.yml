@@ -75,7 +75,7 @@ services:
       - "127.0.0.1:5432:5432"
     environment:
       - POSTGRES_INITDB_ARGS=--data-checksums
-      - POSTGRES_USER=ghostlexly
+      - POSTGRES_USER=lunisoft
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${PROJECT_NAME}
     volumes:
