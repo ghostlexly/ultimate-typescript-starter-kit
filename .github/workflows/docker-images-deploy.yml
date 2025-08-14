@@ -55,7 +55,7 @@ jobs:
             # Backup postgres database before stopping containers
             mkdir -p ~/docker/auto-backups
             if sudo docker compose ps postgres | grep -q "Up"; then
-              sudo docker compose exec postgres pg_dump -U ghostlexly dispomenage > ~/docker/auto-backups/backup-$(date +%Y-%m-%d--%H-%M).sql
+              sudo docker compose exec postgres pg_dump -U lunisoft dispomenage > ~/docker/auto-backups/backup-$(date +%Y-%m-%d--%H-%M).sql
             else
               echo "PostgreSQL not running, skipping backup"
             fi
@@ -69,7 +69,7 @@ jobs:
             # Wait for PostgreSQL server readiness with timeout
             echo "Waiting for PostgreSQL server readiness..."
             ATTEMPTS=0
-            until sudo docker compose exec postgres pg_isready -h localhost -U ghostlexly -d dispomenage; do
+            until sudo docker compose exec postgres pg_isready -h localhost -U lunisoft -d dispomenage; do
               ATTEMPTS=$((ATTEMPTS+1))
               if [ "$ATTEMPTS" -ge 60 ]; then
                 echo "PostgreSQL did not become ready in time" >&2
