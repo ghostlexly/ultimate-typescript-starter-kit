@@ -30,7 +30,7 @@ jobs:
       - name: Transfer files to production server
         uses: appleboy/scp-action@master
         with:
-          host: 51.38.230.113
+          host: 51.75.22.229
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "compose.yml,.env"
@@ -39,7 +39,7 @@ jobs:
       - name: Deploy on production server
         uses: appleboy/ssh-action@master
         with:
-          host: 51.38.230.113
+          host: 51.75.22.229
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
@@ -55,7 +55,7 @@ jobs:
             # Backup postgres database before stopping containers
             mkdir -p ~/docker/auto-backups
             if sudo docker compose ps postgres | grep -q "Up"; then
-              sudo docker compose exec postgres pg_dump -U ghostlexly pharmaflow > ~/docker/auto-backups/backup-$(date +%Y-%m-%d--%H-%M).sql
+              sudo docker compose exec postgres pg_dump -U ghostlexly dispomenage > ~/docker/auto-backups/backup-$(date +%Y-%m-%d--%H-%M).sql
             else
               echo "PostgreSQL not running, skipping backup"
             fi
@@ -66,10 +66,24 @@ jobs:
             # Start new containers
             sudo docker compose up -d
 
+            # Wait for PostgreSQL server readiness with timeout
+            echo "Waiting for PostgreSQL server readiness..."
+            ATTEMPTS=0
+            until sudo docker compose exec postgres pg_isready -h localhost -U ghostlexly -d dispomenage; do
+              ATTEMPTS=$((ATTEMPTS+1))
+              if [ "$ATTEMPTS" -ge 60 ]; then
+                echo "PostgreSQL did not become ready in time" >&2
+                exit 1
+              fi
+              echo "PostgreSQL not ready yet ($ATTEMPTS) - waiting..."
+              sleep 2
+            done
+            echo "PostgreSQL is ready!"
+
       - name: Run migrations on production server
         uses: appleboy/ssh-action@master
         with:
-          host: 51.38.230.113
+          host: 51.75.22.229
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
@@ -79,10 +93,23 @@ jobs:
             # Run migrations
             sudo docker compose exec backend npx prisma migrate deploy
 
+      - name: Run sentry sourcemaps on production server
+        uses: appleboy/ssh-action@master
+        with:
+          host: 51.75.22.229
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Go to backend directory
+            cd ~/docker
+
+            # Run sentry sourcemaps
+            sudo docker compose exec backend npm run sentry:sourcemaps
+
       - name: Prune untagged docker images
         uses: appleboy/ssh-action@master
         with:
-          host: 51.38.230.113
+          host: 51.75.22.229
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
