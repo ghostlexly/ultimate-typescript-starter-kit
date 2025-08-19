@@ -26,6 +26,7 @@ services:
     volumes:
       - ./backend/logs:/usr/src/app/logs
     depends_on:
+      - postgres
       - redis
     tty: true
     restart: unless-stopped
