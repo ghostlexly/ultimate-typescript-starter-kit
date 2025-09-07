@@ -1,8 +1,11 @@
-import { Browser, BrowserContext, chromium, devices } from "playwright";
+import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
+import { Browser, BrowserContext, chromium, devices } from 'playwright';
 
-class PdfService {
-  private browser: Browser;
-  private context: BrowserContext;
+@Injectable()
+export class PdfService implements OnModuleDestroy {
+  private readonly logger = new Logger(PdfService.name);
+  private browser?: Browser;
+  private context?: BrowserContext;
 
   /**
    * Get the browser instance
@@ -28,7 +31,7 @@ class PdfService {
     if (!this.context) {
       const browser = await this.getBrowser();
       this.context = await browser.newContext({
-        ...devices["Desktop Chrome"],
+        ...devices['Desktop Chrome'],
         viewport: {
           width: 1920,
           height: 1080,
@@ -50,39 +53,59 @@ class PdfService {
     html: string;
     footerHtml?: string;
   }) => {
-    // -- Launch browser
+    // Launch browser
     const context = await this.getContext();
     const page = await context.newPage();
 
-    // -- Set content and wait for loading
-    await page.setContent(html, { waitUntil: "load" });
+    // Set content and wait for loading
+    await page.setContent(html, { waitUntil: 'load' });
 
-    // -- Wait for fonts to load
+    // Wait for fonts to load
     await page.evaluate(async () => {
-      // eslint-disable-next-line no-undef
       await document.fonts.ready;
     });
 
-    // -- Generate PDF
+    // Generate PDF
     const pdfBuffer = await page.pdf({
-      format: "A4",
+      format: 'A4',
       margin: {
-        top: "20px",
-        right: "20px",
-        bottom: "60px", // Increased bottom margin to accommodate footer
-        left: "20px",
+        top: '20px',
+        right: '20px',
+        bottom: '60px', // Increased bottom margin to accommodate footer
+        left: '20px',
       },
       printBackground: true,
       displayHeaderFooter: footerHtml ? true : false,
       footerTemplate: footerHtml,
-      headerTemplate: "<div></div>", // Empty header template to avoid default header
+      headerTemplate: '<div></div>', // Empty header template to avoid default header
     });
 
-    // -- Close page
+    // Close page
     await page.close();
 
     return pdfBuffer;
   };
-}
 
-export const pdfService = new PdfService();
+  /**
+   * Ensure Playwright resources are released when the Nest module is destroyed
+   * (e.g., on hot-reload or graceful shutdown)
+   */
+  async onModuleDestroy() {
+    try {
+      if (this.context) {
+        await this.context.close();
+        this.context = undefined;
+      }
+    } catch (error) {
+      this.logger.warn(`Error closing Playwright context - ${error.message}`);
+    }
+    try {
+      if (this.browser) {
+        await this.browser.close();
+        this.browser = undefined;
+      }
+    } catch (error) {
+      this.logger.warn(`Error closing Playwright browser - ${error.message}`);
+    }
+  }
+}

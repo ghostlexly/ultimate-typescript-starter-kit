@@ -1,0 +1,21 @@
+<html>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>Invoice</title>
+    <link
+      rel='stylesheet'
+      href='http://localhost:3000/public/assets/css/tailwindcss.css'
+    />
+  </head>
+  <body>
+    <div class='text-3xl font-bold underline text-red-500'>Hello world!</div>
+    You can use any tailwindcss library classes to style your invoice !
+    <br />
+    <br />
+    {{#if name}}
+      Here is the name you provided:
+      {{name}}
+    {{/if}}
+  </body>
+</html>

@@ -1,43 +1,25 @@
 {
   "compilerOptions": {
-    "target": "es2022",
-    "module": "commonjs",
-
-    // -- Base
-    "rootDir": ".", // set root dir for source files (this is the path we will start building from in the output dir)
-    "outDir": "./dist", // set output dir for build files
-
-    // -- Aliases
-    "baseUrl": ".", // set base url for paths
-    "paths": {
-      "@/*": ["./src/*"]
-    },
-
-    // -- Misc
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "resolvePackageJsonExports": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "sourceMap": true, // help with debugging by mapping the compiled code back to the original source
-    "incremental": true, // incremental build to speed up the build process
-    "skipLibCheck": true, // ignore node_modules
-    "strictNullChecks": true, // allow null checks for Zod infers to work
-    "noImplicitAny": false, // allow any type
-    "strictBindCallApply": false, // allow bind, call and apply to work
-    "resolveJsonModule": true, // allow import json
-    "esModuleInterop": true, // allow import es modules
-    "allowJs": true, // allow .js files
-
-    // Set `sourceRoot` to  "/" to strip the build path prefix from generated source code references.
-    // This improves issue grouping in Sentry.
-    "sourceRoot": "/",
-
-    // -- Types
-    "declaration": true,
-    "declarationMap": true,
-    "types": ["node", "express", "jest"],
-    "typeRoots": ["./node_modules/@types", "./src/common/types"]
-  },
-  "include": ["src/**/*", "prisma/**/*"],
-  "exclude": ["node_modules", "dist"]
+    "target": "ES2023",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "noFallthroughCasesInSwitch": false
+  }
 }

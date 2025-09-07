@@ -1,37 +1,32 @@
-import { Role } from "@/generated/prisma/client";
-import { Request, Response, NextFunction } from "express";
-import { HttpException } from "@/common/exceptions/http-exception";
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { ROLES_KEY } from '../decorators/roles.decorator';
+import { User } from '../types/request';
 
-export const rolesGuard =
-  (roles: Role[]) => (req: Request, res: Response, next: NextFunction) => {
-    const account = req.context?.account;
+@Injectable()
+export class RolesGuard implements CanActivate {
+  constructor(private readonly reflector: Reflector) {}
 
-    /**
-     * Check if the user is logged in
-     * otherwise, throw an Unauthorized error (401).
-     * This status code indicates that the client is not authenticated.
-     */
-    if (!account) {
-      return next(
-        HttpException.unauthorized({
-          message:
-            "Authentication required. Please provide a valid access token.",
-        })
-      );
+  canActivate(context: ExecutionContext): boolean {
+    const request = context.switchToHttp().getRequest();
+    const user: User = request.user;
+
+    const roles = this.reflector.getAllAndOverride(ROLES_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    // If no roles are required, ignore the guard
+    if (!roles) {
+      return true;
     }
 
-    /**
-     * Check if the user has the required role otherwise, throw a Forbidden error (403).
-     * This status code indicates that the client is authenticated,
-     * but it does not have the necessary permissions for the resource.
-     */
-    if (!roles.includes(account.role)) {
-      return next(
-        HttpException.forbidden({
-          message: "You don't have permission to access this resource.",
-        })
-      );
+    // Check if the user has the required roles
+    if (roles.includes(user.role)) {
+      return true;
     }
 
-    next();
-  };
+    // If the user does not have the required roles or is not authenticated, return false
+    return false;
+  }
+}

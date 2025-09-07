@@ -20,9 +20,9 @@ import {
   startOfMonth,
   lastDayOfMonth,
   endOfMonth,
-} from "date-fns";
-import { setDefaultOptions } from "date-fns";
-import { fr } from "date-fns/locale";
+} from 'date-fns';
+import { setDefaultOptions } from 'date-fns';
+import { fr } from 'date-fns/locale';
 setDefaultOptions({ locale: fr });
 
 /**
@@ -37,7 +37,7 @@ const minutesToHoursHr = (minutes) => {
   // get remaining time
   const minRemaining = minutes % 60;
 
-  return `${hours}h${minRemaining ? minRemaining : ""}`;
+  return `${hours}h${minRemaining ? minRemaining : ''}`;
 };
 
 /**
@@ -51,7 +51,7 @@ const minutesToHoursHr = (minutes) => {
 const eachTimeOfInterval = (
   startTime: Date,
   endTime: Date,
-  nearestTo: NearestMinutes = 30
+  nearestTo: NearestMinutes = 30,
 ): string[] => {
   const output: string[] = [];
   let start = startTime;
