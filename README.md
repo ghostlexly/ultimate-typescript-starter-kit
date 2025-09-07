@@ -2,68 +2,56 @@
 
 ## 🌟 Overview
 
-Welcome to the Ultimate TypeScript Full Stack Starter! This comprehensive toolkit provides a robust foundation for building scalable, feature-rich applications using the MERN (MySQL, Express, React, Node.js) stack with TypeScript.
+Welcome to the Ultimate TypeScript Full Stack Starter! This toolkit provides a robust foundation for building scalable, feature‑rich applications using NestJS, Next.js, PostgreSQL, and Prisma — all written in TypeScript.
 
 ### 🎯 Why Choose This Starter?
 
-- **Full Stack**: Covers both backend (Express.js) and frontend (Next.js) development
-- **TypeScript**: Enjoy the benefits of static typing and improved developer experience
-- **Batteries Included**: Packed with essential features and best practices
-- **Scalable**: Designed to grow with your project needs
-- **Modern**: Utilizes the latest technologies and patterns
+- **Full Stack**: Backend (NestJS) + Frontend (Next.js)
+- **TypeScript**: Static typing and great DX
+- **Batteries Included**: Production‑minded defaults
+- **Scalable**: Modular architecture and modern tooling
 
 ## 🛠 Tech Stack
 
-- **Database**: MySQL with Prisma ORM
-- **Backend**: Express.js
-- **Frontend**: Next.js (Server-side rendering, Static site generation, Client-side rendering)
+- **Database**: PostgreSQL with Prisma ORM
+- **Backend**: NestJS (running on Express platform)
+- **Frontend**: Next.js (SSR/SSG/CSR)
 - **Language**: TypeScript
-- **Containerization**: Docker
+- **Containers/Proxy**: Docker + Caddy
 
 ## 🔑 Key Features
 
 ### 🖥 Backend
 
-- **Authentication**: Secure bearer sessions and OAuth (Google, Facebook, Twitter, GitHub) via Passport.js
-- **Authorization**: Fine-grained access control with CASL
-- **Validation**: Request validation using Zod
-- **Error Handling**: Comprehensive error management system
-- **Logging**: Advanced logging with Pino and log rotation
+- **Authentication**: JWT with `@nestjs/passport` and `passport-jwt`
+- **Authorization**: Role‑based via custom `RolesGuard` and `@Roles` decorator
+- **Validation**: Zod via `ZodValidationPipe`
+- **Error Handling**: Centralized `UnhandledExceptionsFilter`
+- **Observability**: Sentry integration
 - **File Management**: S3 integration for file and video uploads
-- **Video Processing**: Conversion to browser-compatible formats with FFmpeg
-- **Caching**: Redis integration for improved performance
-- **Rate Limiting**: API protection with express-rate-limit
-- **Background Processing**: Efficient task handling with BullMQ and node-cron
-- **Internationalization**: Multi-language support with i18n
-- **API Documentation**: Swagger integration
-- **Events**: Powerful event handling with EventEmitter2
+- **Video Processing**: FFmpeg encoding for web‑compatible formats
+- **Caching**: Redis via `@nestjs/cache-manager`
+- **Rate Limiting**: `@nestjs/throttler` with proxy support
+- **Background Jobs**: BullMQ queues and workers
 
 ### 🎨 Frontend
 
-- **UI Framework**: React with Next.js
-- **Styling**: Tailwind CSS
-- **State Management**: zustand
-- **Form Handling**: React Hook Form
+- **Framework**: React 19 with Next.js 15
+- **Styling**: Tailwind CSS and MUI
+- **Data/Forms**: TanStack Query and React Hook Form
 
 ### 🔒 Security
 
-- CORS protection
-- Secure authentication
-- Request validation
-- Rate limiting
+- Sensible security headers (Helmet)
+- JWT‑based auth
+- Input validation
+- Throttling
 
-### ⚡ Performance
+### ⚡ Developer Experience
 
-- `esbuild` bundling for faster builds
-- Hot-reload for rapid development
-- Redis caching
-- Optimized architecture
-
-### 💻 Developer Experience
-
-- Docker support for easy setup and deployment
-- Code formatting with `Prettier`
-- Linting with `ESLint`
+- Docker Compose for local dev (Caddy reverse proxy)
+- ESLint + Prettier
+- Hot‑reload for backend and frontend
 
 ## 🚀 Getting Started
 
@@ -74,33 +62,56 @@ Welcome to the Ultimate TypeScript Full Stack Starter! This comprehensive toolki
    cd ultimate-typescript-starter-kit
    ```
 
-2. **Set up environment variables**
-   Copy `.env.template` to `.env` and fill in your values
-
-3. **Install dependencies**
+2. **Create a .env file (repo root)**
+   Provide the variables used by `compose.yml` (examples):
 
    ```
-   cd backend
-   npm install
-
-   cd ../frontend
-   npm install
+   APP_PORT=3000
+   APP_BASE_URL=http://localhost
+   APP_DATABASE_CONNECTION_URL=postgresql://lunisoft:${POSTGRES_PASSWORD}@postgres:5432/${PROJECT_NAME}
+   APP_REDIS_HOST=redis
+   APP_REDIS_PORT=6379
+   APP_JWT_PRIVATE_KEY=base64-encoded-private-key
+   APP_JWT_PUBLIC_KEY=base64-encoded-public-key
+   API_S3_ENDPOINT=http://minio:9000
+   API_S3_ACCESS_KEY=changeme
+   API_S3_SECRET_KEY=changeme
+   API_S3_BUCKET=uploads
+   API_GOOGLE_CLIENT_ID=
+   API_GOOGLE_CLIENT_SECRET=
+   POSTGRES_PASSWORD=changeme
+   PROJECT_NAME=ultimate_ts_starter
    ```
 
-4. **Start the development environment**
+3. **Install dependencies (optional for local non‑Docker runs)**
+
+   ```
+   cd backend && npm install
+   cd ../frontend && npm install
+   ```
+
+4. **Start the stack**
 
    ```
    docker compose up
    ```
 
-5. **Access the application**
+5. **Initialize the database schema**
+
+   ```
+   docker compose exec backend npx prisma migrate deploy
+   ```
+
+6. **Access the application**
    - Frontend: http://localhost
-   - Backend: http://localhost/api/
-   - Swagger Docs: http://localhost/api/swagger
+   - Backend: http://localhost/api
 
 ## 📚 Documentation
 
-For detailed documentation on each feature and how to use this starter kit, please refer to our [Wiki](https://github.com/ghostlexly/ultimate-typescript-starter-kit/wiki).
+For detailed docs, see:
+
+- Backend [README](./backend/README.md)
+- Frontend [README](./frontend/README.md)
 
 ## 🤝 Contributing
 
@@ -109,11 +120,6 @@ We welcome contributions!
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).
-
-## 🙏 Acknowledgements
-
-- See backend [README](./backend/README.md) for more details.
-- See frontend [README](./frontend/README.md) for more details.
 
 ## 📞 Support
 
