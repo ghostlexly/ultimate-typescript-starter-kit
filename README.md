@@ -23,7 +23,7 @@ Welcome to the Ultimate TypeScript Full Stack Starter! This toolkit provides a r
 
 ### 🖥 Backend
 
-- **Authentication**: JWT with `@nestjs/passport` and `passport-jwt`
+- **Authentication**: JWT (with rotating tokens) with `@nestjs/passport` and `passport-jwt`
 - **Authorization**: Role‑based via custom `RolesGuard` and `@Roles` decorator
 - **Validation**: Zod via `ZodValidationPipe`
 - **Error Handling**: Centralized `UnhandledExceptionsFilter`
@@ -43,7 +43,7 @@ Welcome to the Ultimate TypeScript Full Stack Starter! This toolkit provides a r
 ### 🔒 Security
 
 - Sensible security headers (Helmet)
-- JWT‑based auth
+- JWT‑based auth with tokens rotation
 - Input validation
 - Throttling
 
