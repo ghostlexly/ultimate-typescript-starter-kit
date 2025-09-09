@@ -6,6 +6,7 @@ import {
   Get,
   Inject,
   Post,
+  Query,
   Res,
   SerializeOptions,
   UseInterceptors,
@@ -32,6 +33,13 @@ import {
   CacheTTL,
 } from '@nestjs/cache-manager';
 import { DemosSerializeTestDto } from '../dto/demos.dto';
+import {
+  buildQueryParams,
+  type PageQueryInput,
+  pageQuerySchema,
+  transformWithPagination,
+} from 'src/common/utils/page-query';
+import { Prisma } from 'src/generated/prisma/client';
 
 @Controller('demos')
 export class DemosController {
@@ -215,5 +223,65 @@ export class DemosController {
     await this.cacheManager.set(cacheKey, data, 5000);
 
     return data;
+  }
+
+  @Get('paginated-data')
+  @Public()
+  async getPaginatedData(
+    @Query(new ZodValidationPipe(pageQuerySchema)) query: PageQueryInput,
+
+    // filters (example)
+    @Query('id') id: string,
+  ) {
+    const filterConditions: Prisma.CustomerWhereInput[] = [
+      {
+        account: {
+          role: 'CUSTOMER',
+        },
+      },
+    ];
+
+    const { pagination, orderBy, includes } = buildQueryParams({
+      query,
+      defaultSort: { createdAt: 'desc' },
+      allowedSortFields: ['createdAt', 'id', 'barcodeAnalysis.productName'],
+    });
+
+    // --------------------------------------
+    // Filters
+    // --------------------------------------
+    if (id) {
+      filterConditions.push({
+        id: {
+          equals: id,
+        },
+      });
+    }
+
+    // --------------------------------------
+    // Query
+    // --------------------------------------
+    const { data, count } = await this.db.prisma.customer.findManyAndCount({
+      include: {
+        ...(includes.has('account') && { account: true }),
+      },
+      where: {
+        AND: filterConditions,
+      },
+      orderBy: (orderBy as
+        | Prisma.CustomerOrderByWithRelationInput
+        | Prisma.CustomerOrderByWithRelationInput[]) ?? {
+        createdAt: 'desc',
+      },
+      take: pagination.take,
+      skip: pagination.skip,
+    });
+
+    return transformWithPagination({
+      data: data,
+      count,
+      page: pagination.currentPage,
+      first: pagination.itemsPerPage,
+    });
   }
 }
