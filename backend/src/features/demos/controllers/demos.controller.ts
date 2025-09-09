@@ -94,16 +94,14 @@ export class DemosController {
     type: DemosSerializeTestDto,
     excludeExtraneousValues: true,
   })
-  serializeWithPipe() {
+  serializeWithPipe(): DemosSerializeTestDto {
     return {
       firstName: 'John',
       lastName: 'Doe',
       password: '123456',
       age: 30,
-      extraValue: 'extra value',
       person: {
         name: 'John Doe',
-        extraValue: 'extra value',
       },
     };
   }
