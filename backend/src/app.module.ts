@@ -7,15 +7,15 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { SentryModule } from '@sentry/nestjs/setup';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './features/auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { UnhandledExceptionsFilter } from './common/filters/unhandled-exceptions.filter';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { ThrottlerBehindProxyGuard } from './common/guards/throttler-behind-proxy.guard';
 import { TrimStringsPipe } from './common/pipes/trim-strings.pipe';
-import { MediaModule } from './media/media.module';
-import { DemosModule } from './demos/demos.module';
+import { MediaModule } from './features/media/media.module';
+import { DemosModule } from './features/demos/demos.module';
 
 @Global()
 @Module({
