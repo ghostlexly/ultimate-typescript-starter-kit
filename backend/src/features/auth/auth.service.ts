@@ -98,7 +98,10 @@ export class AuthService {
       throw new Error('This token does not provide a payload.');
     }
 
-    const previousSession = await this.db.prisma.session.findUnique({
+    const session = await this.db.prisma.session.findUnique({
+      include: {
+        account: true,
+      },
       where: {
         id: jwt.payload.sub,
         expiresAt: {
@@ -107,32 +110,28 @@ export class AuthService {
       },
     });
 
-    if (!previousSession) {
+    if (!session) {
       throw new Error('This session does not exist.');
     }
 
-    // Refresh Token Rotation - Delete the previous session and create a new one
-    await this.db.prisma.session.delete({
-      where: { id: previousSession.id },
-    });
-
-    const newSession = await this.db.prisma.session.create({
-      include: {
-        account: true,
-      },
+    /**
+     * Refresh Token Rotation
+     * We update the expiration date of the session to prevent the session from expiring
+     */
+    await this.db.prisma.session.update({
+      where: { id: session.id },
       data: {
         expiresAt: dateUtils.add(new Date(), {
           minutes: authConstants.refreshTokenExpirationMinutes,
         }),
-        accountId: previousSession.accountId,
       },
     });
 
     // Generate the JWT access token
     const accessToken = await this.jwtService.signAsync({
       payload: {
-        sub: newSession.id,
-        role: newSession.account.role,
+        sub: session.id,
+        role: session.account.role,
       },
       options: {
         expiresIn: `${authConstants.accessTokenExpirationMinutes}m`,
@@ -142,7 +141,7 @@ export class AuthService {
     // Generate the JWT refresh token
     const newRefreshToken = await this.jwtService.signAsync({
       payload: {
-        sub: newSession.id,
+        sub: session.id,
       },
       options: {
         expiresIn: `${authConstants.refreshTokenExpirationMinutes}m`,
