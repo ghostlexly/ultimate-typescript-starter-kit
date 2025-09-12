@@ -125,7 +125,7 @@ export class AuthController {
 
   @Post('refresh')
   @Public()
-  @Throttle({ long: { limit: 10 } })
+  @Throttle({ long: { limit: 50 } })
   @UsePipes(new ZodValidationPipe(authRefreshTokenSchema))
   async refreshToken(
     @Req() req: Request,
@@ -133,7 +133,7 @@ export class AuthController {
     @Body() body: AuthRefreshTokenDto,
   ) {
     const previousRefreshToken =
-      body.refreshToken ?? req.cookies?.lunisoft_refresh_token;
+      body?.refreshToken ?? req.cookies?.lunisoft_refresh_token;
 
     if (!previousRefreshToken) {
       throw new HttpException(
