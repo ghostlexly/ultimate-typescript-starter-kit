@@ -20,7 +20,7 @@ export const pageQuerySchema = z
     sort: z.string().optional(),
     include: z.union([z.string(), z.array(z.string())]).optional(),
   })
-  .loose();
+  .catchall(z.any());
 
 export type PageQueryInput = z.infer<typeof pageQuerySchema> & {
   [key: string]: unknown;
