@@ -56,7 +56,7 @@ export class DemosController {
   @Get()
   @Public()
   async findAll() {
-    return await this.db.prisma.account.findMany();
+    return await this.db.prisma.account.findManyAndCount({});
   }
 
   /**
@@ -259,7 +259,7 @@ export class DemosController {
     // --------------------------------------
     // Query
     // --------------------------------------
-    const prismaQuery = {
+    const { data, count } = await this.db.prisma.customer.findManyAndCount({
       include: {
         ...(includes.has('account') && { account: true }),
       },
@@ -273,14 +273,7 @@ export class DemosController {
       },
       take: pagination.take,
       skip: pagination.skip,
-    } satisfies Prisma.CustomerFindManyArgs;
-
-    const [data, count] = await this.db.prisma.$transaction([
-      this.db.prisma.customer.findMany(prismaQuery),
-      this.db.prisma.customer.count({
-        where: prismaQuery.where,
-      }),
-    ]);
+    });
 
     return transformWithPagination({
       data: data,
