@@ -266,11 +266,7 @@ export class DemosController {
       where: {
         AND: filterConditions,
       },
-      orderBy: (orderBy as
-        | Prisma.CustomerOrderByWithRelationInput
-        | Prisma.CustomerOrderByWithRelationInput[]) ?? {
-        createdAt: 'desc',
-      },
+      orderBy: orderBy,
       take: pagination.take,
       skip: pagination.skip,
     });
