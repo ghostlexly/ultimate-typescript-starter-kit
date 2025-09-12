@@ -29,6 +29,10 @@ export class AuthService {
     return Boolean(await bcrypt.compare(password, hashedPassword));
   }
 
+  hashPassword = async ({ password }: { password: string }) => {
+    return await bcrypt.hash(password, 10);
+  };
+
   /**
    * Generate a JWT access token for a given account id.
    */
