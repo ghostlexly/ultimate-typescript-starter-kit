@@ -1,12 +1,17 @@
-import { PipeTransform } from '@nestjs/common';
+import { ArgumentMetadata, PipeTransform } from '@nestjs/common';
 import { ZodError, ZodType } from 'zod';
 import { ValidationException } from '../exceptions/validation.exception';
 
 export class ZodValidationPipe implements PipeTransform {
   constructor(private schema: ZodType) {}
 
-  transform(value: unknown) {
+  transform(value: unknown, metadata: ArgumentMetadata) {
     try {
+      // If not body, return as-is (prevent validation of query parameters or params)
+      if (metadata.type !== 'body') {
+        return value;
+      }
+
       const parsedValue = this.schema.parse(value);
       return parsedValue;
     } catch (error) {
