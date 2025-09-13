@@ -10,7 +10,7 @@ import { S3Service } from 'src/common/services/s3.service';
 
 @Processor('media')
 export class MediaConsumer extends WorkerHost {
-  private readonly logger = new Logger(MediaConsumer.name);
+  private logger = new Logger(MediaConsumer.name);
 
   constructor(
     private db: DatabaseService,

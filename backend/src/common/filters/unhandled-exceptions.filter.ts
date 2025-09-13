@@ -5,7 +5,7 @@ import type { ArgumentsHost } from '@nestjs/common';
 
 @Catch()
 export class UnhandledExceptionsFilter extends BaseExceptionFilter {
-  private readonly logger = new Logger(UnhandledExceptionsFilter.name);
+  private logger = new Logger(UnhandledExceptionsFilter.name);
 
   constructor() {
     super();

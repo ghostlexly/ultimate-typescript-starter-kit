@@ -3,7 +3,7 @@ import { Browser, BrowserContext, chromium, devices } from 'playwright';
 
 @Injectable()
 export class PdfService implements OnModuleDestroy {
-  private readonly logger = new Logger(PdfService.name);
+  private logger = new Logger(PdfService.name);
   private browser?: Browser;
   private context?: BrowserContext;
 

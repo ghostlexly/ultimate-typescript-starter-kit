@@ -4,7 +4,7 @@ import { Job } from 'bullmq';
 
 @Processor('demo')
 export class DemoConsumer extends WorkerHost {
-  private readonly logger = new Logger(DemoConsumer.name);
+  private logger = new Logger(DemoConsumer.name);
 
   async process(job: Job<any, any, string>): Promise<any> {
     let progress = 0;
