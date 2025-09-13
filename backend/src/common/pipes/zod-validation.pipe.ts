@@ -7,8 +7,8 @@ export class ZodValidationPipe implements PipeTransform {
 
   transform(value: unknown, metadata: ArgumentMetadata) {
     try {
-      // If not body, return as-is (prevent validation of query parameters or params)
-      if (metadata.type !== 'body') {
+      // If not body or query, return as-is (prevent validation of params)
+      if (metadata.type !== 'body' && metadata.type !== 'query') {
         return value;
       }
 

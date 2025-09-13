@@ -1,3 +1,4 @@
+import { pageQuerySchema } from 'src/common/utils/page-query';
 import { z } from 'zod';
 
 export const demoTestPlayerSchema = z.object({
@@ -9,3 +10,15 @@ export const demoTestPlayerSchema = z.object({
 });
 
 export type DemoTestPlayerDto = z.infer<typeof demoTestPlayerSchema>;
+
+export const demoGetPaginatedDataSchema = pageQuerySchema.and(
+  z
+    .object({
+      id: z.uuid(),
+    })
+    .partial(),
+);
+
+export type DemoGetPaginatedDataDto = z.infer<
+  typeof demoGetPaginatedDataSchema
+>;

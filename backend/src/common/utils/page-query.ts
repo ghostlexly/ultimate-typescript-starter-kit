@@ -1,26 +1,11 @@
 import { z } from 'zod';
 
-export const pageQuerySchema = z
-  .object({
-    page: z
-      .union([z.string(), z.number()])
-      .optional()
-      .transform((v) => {
-        const n = Number(v ?? 1);
-        return Number.isFinite(n) && n >= 1 ? n : 1;
-      }),
-    first: z
-      .union([z.string(), z.number()])
-      .optional()
-      .transform((v) => {
-        const n = Number(v ?? 50);
-        const clamped = Number.isFinite(n) ? Math.min(Math.max(n, 1), 100) : 50;
-        return clamped;
-      }),
-    sort: z.string().optional(),
-    include: z.union([z.string(), z.array(z.string())]).optional(),
-  })
-  .catchall(z.string());
+export const pageQuerySchema = z.object({
+  page: z.coerce.number().min(1).optional(),
+  first: z.coerce.number().min(1).optional(),
+  sort: z.string().optional(),
+  include: z.union([z.string(), z.array(z.string())]).optional(),
+});
 
 export type PageQueryInput = z.infer<typeof pageQuerySchema> & {
   [key: string]: unknown;

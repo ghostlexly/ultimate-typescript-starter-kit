@@ -1,5 +1,12 @@
 import { InjectQueue } from '@nestjs/bullmq';
 import {
+  Cache,
+  CACHE_MANAGER,
+  CacheInterceptor,
+  CacheKey,
+  CacheTTL,
+} from '@nestjs/cache-manager';
+import {
   Body,
   ClassSerializerInterceptor,
   Controller,
@@ -15,31 +22,26 @@ import {
 import { Throttle } from '@nestjs/throttler';
 import { Queue } from 'bullmq';
 import type { Response } from 'express';
+import fs from 'fs/promises';
+import handlebars from 'handlebars';
+import path from 'path';
 import { Public } from 'src/common/decorators/is-public.decorator';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { ZodValidationPipe } from 'src/common/pipes/zod-validation.pipe';
 import { DatabaseService } from 'src/common/services/database.service';
 import { PdfService } from 'src/common/services/pdf.service';
-import type { DemoTestPlayerDto } from '../validators/demo.validators';
-import { demoTestPlayerSchema } from '../validators/demo.validators';
-import fs from 'fs/promises';
-import path from 'path';
-import handlebars from 'handlebars';
-import {
-  Cache,
-  CACHE_MANAGER,
-  CacheInterceptor,
-  CacheKey,
-  CacheTTL,
-} from '@nestjs/cache-manager';
-import { DemoSerializeTestDto } from '../dto/demo.dto';
 import {
   buildQueryParams,
-  type PageQueryInput,
-  pageQuerySchema,
   transformWithPagination,
 } from 'src/common/utils/page-query';
 import { Prisma } from 'src/generated/prisma/client';
+import { DemoSerializeTestDto } from '../dto/demo.dto';
+import {
+  type DemoGetPaginatedDataDto,
+  type DemoTestPlayerDto,
+  demoGetPaginatedDataSchema,
+  demoTestPlayerSchema,
+} from '../validators/demo.validators';
 
 @Controller('demos')
 export class DemoController {
@@ -226,10 +228,8 @@ export class DemoController {
   @Get('paginated-data')
   @Public()
   async getPaginatedData(
-    @Query(new ZodValidationPipe(pageQuerySchema)) query: PageQueryInput,
-
-    // filters (example)
-    @Query('id') id: string,
+    @Query(new ZodValidationPipe(demoGetPaginatedDataSchema))
+    query: DemoGetPaginatedDataDto,
   ) {
     const filterConditions: Prisma.CustomerWhereInput[] = [
       {
@@ -248,10 +248,10 @@ export class DemoController {
     // --------------------------------------
     // Filters
     // --------------------------------------
-    if (id) {
+    if (query.id) {
       filterConditions.push({
         id: {
-          equals: id,
+          equals: query.id,
         },
       });
     }
