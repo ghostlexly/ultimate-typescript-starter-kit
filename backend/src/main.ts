@@ -13,6 +13,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.disable('x-powered-by');
   app.set('trust proxy', 'loopback'); // This is important for the throttler to work correctly behind a proxy
+  app.set('query parser', 'extended'); // Allow nested query parameters (ex: include[]=bookings&include[]=moneyAdvance)
 
   // Helmet is a collection of middlewares functions that set security-related headers
   app.use(helmet());
