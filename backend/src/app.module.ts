@@ -15,7 +15,7 @@ import { RolesGuard } from './common/guards/roles.guard';
 import { ThrottlerBehindProxyGuard } from './common/guards/throttler-behind-proxy.guard';
 import { TrimStringsPipe } from './common/pipes/trim-strings.pipe';
 import { MediaModule } from './features/media/media.module';
-import { DemosModule } from './features/demos/demos.module';
+import { DemoModule } from './features/demo/demo.module';
 
 @Global()
 @Module({
@@ -48,7 +48,7 @@ import { DemosModule } from './features/demos/demos.module';
 
     // -- Business Modules
     CommonModule,
-    DemosModule,
+    DemoModule,
     AuthModule,
     MediaModule,
   ],

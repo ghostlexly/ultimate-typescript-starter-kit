@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const demosTestPlayerSchema = z.object({
+export const demoTestPlayerSchema = z.object({
   name: z.string(),
   age: z.coerce.number(),
   person: z.object({
@@ -8,4 +8,4 @@ export const demosTestPlayerSchema = z.object({
   }),
 });
 
-export type DemosTestPlayerDto = z.infer<typeof demosTestPlayerSchema>;
+export type DemoTestPlayerDto = z.infer<typeof demoTestPlayerSchema>;

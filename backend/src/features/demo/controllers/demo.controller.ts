@@ -20,8 +20,8 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { ZodValidationPipe } from 'src/common/pipes/zod-validation.pipe';
 import { DatabaseService } from 'src/common/services/database.service';
 import { PdfService } from 'src/common/services/pdf.service';
-import type { DemosTestPlayerDto } from '../validators/demos.validators';
-import { demosTestPlayerSchema } from '../validators/demos.validators';
+import type { DemoTestPlayerDto } from '../validators/demo.validators';
+import { demoTestPlayerSchema } from '../validators/demo.validators';
 import fs from 'fs/promises';
 import path from 'path';
 import handlebars from 'handlebars';
@@ -32,7 +32,7 @@ import {
   CacheKey,
   CacheTTL,
 } from '@nestjs/cache-manager';
-import { DemosSerializeTestDto } from '../dto/demos.dto';
+import { DemoSerializeTestDto } from '../dto/demo.dto';
 import {
   buildQueryParams,
   type PageQueryInput,
@@ -42,11 +42,11 @@ import {
 import { Prisma } from 'src/generated/prisma/client';
 
 @Controller('demos')
-export class DemosController {
+export class DemoController {
   constructor(
     private db: DatabaseService,
     private pdfService: PdfService,
-    @InjectQueue('demos') private demosQueue: Queue,
+    @InjectQueue('demo') private demoQueue: Queue,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
@@ -64,8 +64,8 @@ export class DemosController {
    */
   @Post()
   @Public()
-  @UsePipes(new ZodValidationPipe(demosTestPlayerSchema))
-  create(@Body() body: DemosTestPlayerDto) {
+  @UsePipes(new ZodValidationPipe(demoTestPlayerSchema))
+  create(@Body() body: DemoTestPlayerDto) {
     return body;
   }
 
@@ -76,7 +76,7 @@ export class DemosController {
   @Public()
   @UseInterceptors(ClassSerializerInterceptor)
   serializeWithClass() {
-    return new DemosSerializeTestDto({
+    return new DemoSerializeTestDto({
       firstName: 'John',
       lastName: 'Doe',
       password: '123456',
@@ -91,10 +91,10 @@ export class DemosController {
   @Public()
   @UseInterceptors(ClassSerializerInterceptor)
   @SerializeOptions({
-    type: DemosSerializeTestDto,
+    type: DemoSerializeTestDto,
     excludeExtraneousValues: true,
   })
-  serializeWithPipe(): DemosSerializeTestDto {
+  serializeWithPipe(): DemoSerializeTestDto {
     return {
       firstName: 'John',
       lastName: 'Doe',
@@ -112,7 +112,7 @@ export class DemosController {
   @Get('queue-launch')
   @Public()
   async testQueueLaunch() {
-    await this.demosQueue.add('testingJob', { message: 'Hello World' });
+    await this.demoQueue.add('testingJob', { message: 'Hello World' });
     return {
       message: 'Job added to queue.',
     };

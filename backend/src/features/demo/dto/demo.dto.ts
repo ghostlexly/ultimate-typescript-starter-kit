@@ -5,8 +5,8 @@ class PersonDto {
   name: string;
 }
 
-export class DemosSerializeTestDto {
-  constructor(partial: Partial<DemosSerializeTestDto>) {
+export class DemoSerializeTestDto {
+  constructor(partial: Partial<DemoSerializeTestDto>) {
     Object.assign(this, partial);
   }
 
