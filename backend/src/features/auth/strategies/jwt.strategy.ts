@@ -16,7 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         ExtractJwt.fromAuthHeaderAsBearerToken(),
 
         // Extract the token from the cookies
-        // (req) => req?.cookies?.lunisoft_access_token as string,
+        (req) => req?.cookies?.lunisoft_access_token as string,
       ]),
       ignoreExpiration: false,
       algorithms: ['RS256'],
