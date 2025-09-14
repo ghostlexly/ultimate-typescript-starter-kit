@@ -14,8 +14,10 @@ import {
   Inject,
   Post,
   Query,
+  Req,
   Res,
   SerializeOptions,
+  UnauthorizedException,
   UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
@@ -42,6 +44,7 @@ import {
   demoGetPaginatedDataSchema,
   demoTestPlayerSchema,
 } from '../validators/demo.validators';
+import { type Request } from 'express';
 
 @Controller('demos')
 export class DemoController {
@@ -146,9 +149,16 @@ export class DemoController {
    */
   @Get('protected-route-customer')
   @Roles(['CUSTOMER'])
-  protectedRouteCustomer() {
+  protectedRouteCustomer(@Req() req: Request) {
+    const customer = req.user?.customer;
+
+    if (!customer) {
+      throw new UnauthorizedException();
+    }
+
     return {
       message: 'Protected route for customer.',
+      customerId: customer.id,
     };
   }
 
