@@ -42,6 +42,7 @@
     "cookie-parser": "^1.4.7",
     "date-fns": "^4.1.0",
     "file-type": "^16.5.4",
+    "handlebars": "^4.7.8",
     "hbs": "^4.2.0",
     "helmet": "^8.1.0",
     "passport": "^0.7.0",
