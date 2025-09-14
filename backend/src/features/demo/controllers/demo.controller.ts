@@ -192,23 +192,30 @@ export class DemoController {
 
     // Render template
     const compileTemplate = handlebars.compile(template);
-    const renderedTemplate = compileTemplate({
-      name: 'John Doe',
-      formatCurrency: (value: unknown) => {
-        const numericValue = typeof value === 'number' ? value : Number(value);
-        return new Intl.NumberFormat('fr-FR', {
-          style: 'currency',
-          currency: 'EUR',
-        }).format(numericValue);
+    const renderedTemplate = compileTemplate(
+      {
+        name: 'John Doe',
       },
-      formatDate: (date: string) => {
-        return new Intl.DateTimeFormat('fr-FR', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
-        }).format(new Date(date));
+      {
+        helpers: {
+          formatCurrency: (value: unknown) => {
+            const numericValue =
+              typeof value === 'number' ? value : Number(value);
+            return new Intl.NumberFormat('fr-FR', {
+              style: 'currency',
+              currency: 'EUR',
+            }).format(numericValue);
+          },
+          formatDate: (date: string) => {
+            return new Intl.DateTimeFormat('fr-FR', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            }).format(new Date(date));
+          },
+        },
       },
-    });
+    );
 
     // Generate PDF
     const pdfBuffer = await this.pdfService.htmlToPdf({
