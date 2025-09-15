@@ -4,6 +4,7 @@ import { DatabaseService } from 'src/common/services/database.service';
 import { authConstants, jwtConstants } from './auth.constants';
 import { JwtService } from '@nestjs/jwt';
 import { dateUtils } from 'src/common/utils/date';
+import crypto from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -29,9 +30,17 @@ export class AuthService {
     return Boolean(await bcrypt.compare(password, hashedPassword));
   }
 
-  hashPassword = async ({ password }: { password: string }) => {
+  /**
+   *  Method to generate a secure unique token
+   */
+  generateUniqueToken({ length = 32 }: { length?: number } = {}) {
+    const result = crypto.randomBytes(length);
+    return result.toString('hex');
+  }
+
+  async hashPassword({ password }: { password: string }) {
     return await bcrypt.hash(password, 10);
-  };
+  }
 
   /**
    * Generate a JWT access token for a given account id.
