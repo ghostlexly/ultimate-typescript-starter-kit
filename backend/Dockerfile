@@ -38,5 +38,8 @@ RUN npx playwright install chromium --with-deps
 COPY --from=builder /usr/src/app/dist ./dist
 COPY ./prisma ./prisma
 
+# Download Prisma binaries (will not be needed anymore in Prisma v7)
+RUN npx prisma generate
+
 ENV NODE_ENV=production
-CMD npm run start
+CMD npm run start:prod
