@@ -32,6 +32,7 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.1.6",
+    "@nestjs/schedule": "^6.0.0",
     "@nestjs/throttler": "^6.4.0",
     "@prisma/client": "^6.15.0",
     "@sentry/nestjs": "^10.10.0",
