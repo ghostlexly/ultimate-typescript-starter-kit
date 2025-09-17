@@ -2,7 +2,7 @@ import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 
-@Processor('demo')
+@Processor('demo', { removeOnComplete: { count: 10 }, concurrency: 5 })
 export class DemoConsumer extends WorkerHost {
   private logger = new Logger(DemoConsumer.name);
 
