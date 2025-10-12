@@ -20,7 +20,7 @@ import type {
   AuthRefreshTokenDto,
   AuthSigninDto,
 } from '../validators/auth.validators';
-import { DatabaseService } from 'src/common/services/database.service';
+import { DatabaseService } from 'src/features/application/services/database.service';
 import { Admin, Customer } from 'src/generated/prisma/client';
 import type { Request, Response } from 'express';
 import { Public } from 'src/common/decorators/is-public.decorator';

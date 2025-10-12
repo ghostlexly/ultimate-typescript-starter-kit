@@ -30,8 +30,8 @@ import path from 'path';
 import { Public } from 'src/common/decorators/is-public.decorator';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { ZodValidationPipe } from 'src/common/pipes/zod-validation.pipe';
-import { DatabaseService } from 'src/common/services/database.service';
-import { PdfService } from 'src/common/services/pdf.service';
+import { DatabaseService } from 'src/features/application/services/database.service';
+import { PdfService } from 'src/features/application/services/pdf.service';
 import {
   buildQueryParams,
   transformWithPagination,

@@ -2,8 +2,8 @@ import { Global, Module } from '@nestjs/common';
 import { DatabaseService } from './services/database.service';
 import { FilesService } from './services/files.service';
 import { S3Service } from './services/s3.service';
-import { FfmpegService } from './services/ffmpeg.service';
 import { PdfService } from './services/pdf.service';
+import { FfmpegService } from './services/ffmpeg.service';
 
 @Global()
 @Module({
@@ -22,4 +22,4 @@ import { PdfService } from './services/pdf.service';
     FfmpegService,
   ],
 })
-export class CommonModule {}
+export class ApplicationModule {}

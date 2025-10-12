@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { DatabaseService } from 'src/common/services/database.service';
-import { FilesService } from 'src/common/services/files.service';
-import { S3Service } from 'src/common/services/s3.service';
+import { DatabaseService } from 'src/features/application/services/database.service';
+import { FilesService } from 'src/features/application/services/files.service';
+import { S3Service } from '../application/services/s3.service';
 
 @Injectable()
 export class MediaService {

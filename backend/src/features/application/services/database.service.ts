@@ -1,5 +1,5 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { PrismaClient, Prisma } from '../../generated/prisma/client';
+import { PrismaClient, Prisma } from '../../../generated/prisma/client';
 import { S3Service } from './s3.service';
 
 export type PrismaTransactionClient = Omit<

@@ -8,7 +8,6 @@ import { SentryModule } from '@sentry/nestjs/setup';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './features/auth/auth.module';
-import { CommonModule } from './common/common.module';
 import { UnhandledExceptionsFilter } from './common/filters/unhandled-exceptions.filter';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
@@ -16,6 +15,7 @@ import { ThrottlerBehindProxyGuard } from './common/guards/throttler-behind-prox
 import { TrimStringsPipe } from './common/pipes/trim-strings.pipe';
 import { MediaModule } from './features/media/media.module';
 import { DemoModule } from './features/demo/demo.module';
+import { ApplicationModule } from './features/application/application.module';
 
 @Global()
 @Module({
@@ -47,7 +47,7 @@ import { DemoModule } from './features/demo/demo.module';
     }),
 
     // -- Business Modules
-    CommonModule,
+    ApplicationModule,
     DemoModule,
     AuthModule,
     MediaModule,

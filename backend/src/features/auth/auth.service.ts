@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import bcrypt from 'bcrypt';
-import { DatabaseService } from 'src/common/services/database.service';
+import { DatabaseService } from 'src/features/application/services/database.service';
 import { authConstants, jwtConstants } from './auth.constants';
 import { JwtService } from '@nestjs/jwt';
 import { dateUtils } from 'src/common/utils/date';

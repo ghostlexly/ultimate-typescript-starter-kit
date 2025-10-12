@@ -1,12 +1,12 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
-import { DatabaseService } from 'src/common/services/database.service';
-import { FfmpegService } from 'src/common/services/ffmpeg.service';
+import { DatabaseService } from 'src/features/application/services/database.service';
+import { FfmpegService } from 'src/features/application/services/ffmpeg.service';
 import path from 'path';
 import os from 'os';
 import crypto from 'crypto';
-import { S3Service } from 'src/common/services/s3.service';
+import { S3Service } from '../application/services/s3.service';
 
 @Processor('media')
 export class MediaConsumer extends WorkerHost {

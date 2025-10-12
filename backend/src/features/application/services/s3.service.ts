@@ -10,8 +10,8 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import fs from 'fs';
 import path from 'path';
 import { ConfigService } from '@nestjs/config';
-import { dateUtils } from '../utils/date';
 import { FilesService } from './files.service';
+import { dateUtils } from 'src/common/utils/date';
 
 @Injectable()
 export class S3Service {

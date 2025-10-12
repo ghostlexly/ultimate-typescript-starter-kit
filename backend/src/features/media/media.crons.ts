@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
-import { DatabaseService } from 'src/common/services/database.service';
+import { DatabaseService } from 'src/features/application/services/database.service';
 import { dateUtils } from 'src/common/utils/date';
 
 @Injectable()

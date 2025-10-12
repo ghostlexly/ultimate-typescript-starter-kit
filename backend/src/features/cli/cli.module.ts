@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { BasicCommand } from './basic.command';
-import { CommonModule } from 'src/common/common.module';
 import { ConfigModule } from '@nestjs/config';
 import { CacheModule } from '@nestjs/cache-manager';
 import { BullModule } from '@nestjs/bullmq';
+import { ApplicationModule } from '../application/application.module';
 
 @Module({
   imports: [
@@ -21,8 +21,7 @@ import { BullModule } from '@nestjs/bullmq';
       },
     }),
 
-    // -- Business Modules
-    CommonModule,
+    ApplicationModule,
   ],
   providers: [BasicCommand],
 })

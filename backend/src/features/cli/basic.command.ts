@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { Command, CommandRunner, Option } from 'nest-commander';
-import { DatabaseService } from 'src/common/services/database.service';
+import { DatabaseService } from 'src/features/application/services/database.service';
 
 interface BasicCommandOptions {
   string?: string;
