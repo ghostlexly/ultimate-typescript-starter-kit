@@ -5,10 +5,11 @@ export class KillDragonCommand extends Command<{
   heroId: string;
   killed: boolean;
 }> {
-  constructor(
-    public heroId: string,
-    public dragonId: string,
-  ) {
+  heroId: string;
+  dragonId: string;
+
+  constructor(data: { heroId: string; dragonId: string }) {
     super();
+    Object.assign(this, data);
   }
 }
