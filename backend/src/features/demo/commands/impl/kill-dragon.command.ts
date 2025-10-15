@@ -1,9 +1,13 @@
-import { Command } from "@nestjs/cqrs"
+import { Command } from '@nestjs/cqrs';
 
-export class KillDragonCommand extends Command<{ dragonId: string, heroId: string, killed: boolean}> {
+export class KillDragonCommand extends Command<{
+  dragonId: string;
+  heroId: string;
+  killed: boolean;
+}> {
   constructor(
-    public readonly heroId: string,
-    public readonly dragonId: string,
+    public heroId: string,
+    public dragonId: string,
   ) {
     super();
   }
