@@ -45,11 +45,14 @@ import {
   demoTestPlayerSchema,
 } from '../validators/demo.validators';
 import { type Request } from 'express';
+import { CommandBus } from '@nestjs/cqrs';
+import { KillDragonCommand } from '../commands/impl/kill-dragon.command';
 
 @Controller('demos')
 export class DemoController {
   constructor(
     private db: DatabaseService,
+    private commandBus: CommandBus,
     private pdfService: PdfService,
     @InjectQueue('demo') private demoQueue: Queue,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
@@ -311,5 +314,16 @@ export class DemoController {
       page: pagination.currentPage,
       first: pagination.itemsPerPage,
     });
+  }
+
+  @Post('cqrs-kill-dragon')
+  @Public()
+  async cqrsKillDragon() {
+    const response = await this.commandBus.execute(
+      new KillDragonCommand('17', '355'),
+    );
+    return {
+      message: `The dragon #${response.dragonId} has been killed by #${response.heroId}, confirmation: ${response.killed}.`,
+    };
   }
 }

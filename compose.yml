@@ -61,12 +61,10 @@ services:
     restart: unless-stopped
   # ===================================================================================================================================================================================
   redis:
-    image: bitnami/redis:7.0.8
-    command: /opt/bitnami/scripts/redis/run.sh --maxmemory-policy noeviction
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
+    image: redis:8.2.2
+    command: redis-server --save 60 1 --loglevel warning
     volumes:
-      - redis_data:/bitnami/redis/data
+      - redis_data:/data
     restart: unless-stopped
   # ===================================================================================================================================================================================
   postgres:

@@ -16,6 +16,7 @@ import { TrimStringsPipe } from './common/pipes/trim-strings.pipe';
 import { MediaModule } from './features/media/media.module';
 import { DemoModule } from './features/demo/demo.module';
 import { ApplicationModule } from './features/application/application.module';
+import { CqrsModule } from '@nestjs/cqrs';
 
 @Global()
 @Module({
@@ -45,6 +46,7 @@ import { ApplicationModule } from './features/application/application.module';
         },
       ],
     }),
+    CqrsModule.forRoot(),
 
     // -- Business Modules
     ApplicationModule,
