@@ -320,8 +320,9 @@ export class DemoController {
   @Public()
   async cqrsKillDragon() {
     const response = await this.commandBus.execute(
-      new KillDragonCommand('17', '355'),
+      new KillDragonCommand({dragonId: '17', heroId: '20'}),
     );
+
     return {
       message: `The dragon #${response.dragonId} has been killed by #${response.heroId}, confirmation: ${response.killed}.`,
     };
