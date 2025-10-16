@@ -320,7 +320,7 @@ export class DemoController {
   @Public()
   async cqrsKillDragon() {
     const response = await this.commandBus.execute(
-      new KillDragonCommand({dragonId: '17', heroId: '20'}),
+      new KillDragonCommand({ dragonId: '17', heroId: '20' }),
     );
 
     return {
