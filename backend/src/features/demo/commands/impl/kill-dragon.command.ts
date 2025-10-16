@@ -10,6 +10,7 @@ export class KillDragonCommand extends Command<{
 
   constructor(data: { heroId: string; dragonId: string }) {
     super();
-    Object.assign(this, data);
+    this.heroId = data.heroId;
+    this.dragonId = data.dragonId;
   }
 }
