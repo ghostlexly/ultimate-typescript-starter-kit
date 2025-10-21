@@ -5,12 +5,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { MediaService } from './media.service';
+import { MediaService } from '../media.service';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { Public } from 'src/common/decorators/is-public.decorator';
 import multer from 'multer';
-import { S3Service } from '../application/services/s3.service';
+import { S3Service } from 'src/features/application/services/s3.service';
 
 @Controller('media')
 export class MediaController {
