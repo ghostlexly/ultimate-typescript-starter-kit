@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { MediaController } from './media.controller';
 import { MediaService } from './media.service';
 import { MediaConsumer } from './media.consumer';
 import { BullModule } from '@nestjs/bullmq';
-import { MediaCrons } from './media.crons';
+import { MediaController } from './controllers/media.controller';
+import { DeleteOrphanMediasCron } from './crons/delete-orphan-medias.cron';
 
 @Module({
   imports: [
@@ -12,6 +12,6 @@ import { MediaCrons } from './media.crons';
     }),
   ],
   controllers: [MediaController],
-  providers: [MediaService, MediaConsumer, MediaCrons],
+  providers: [MediaService, MediaConsumer, DeleteOrphanMediasCron],
 })
 export class MediaModule {}
