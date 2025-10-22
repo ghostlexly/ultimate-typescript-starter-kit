@@ -1,15 +1,17 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Inject, Injectable } from '@nestjs/common';
-import { authConstants, jwtConstants } from '../auth.constants';
+import { authConstants } from '../auth.constants';
 import { DatabaseService } from 'src/features/application/services/database.service';
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 import { Account } from 'src/generated/prisma/client';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private db: DatabaseService,
+    configService: ConfigService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {
     super({
@@ -25,9 +27,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       ]),
       ignoreExpiration: false,
       algorithms: ['RS256'],
-      secretOrKey: Buffer.from(jwtConstants.publicKey, 'base64').toString(
-        'utf8',
-      ),
+      secretOrKey: Buffer.from(
+        configService.getOrThrow<string>('APP_JWT_PUBLIC_KEY'),
+        'base64',
+      ).toString('utf8'),
     });
   }
 

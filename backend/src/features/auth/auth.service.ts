@@ -1,22 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import bcrypt from 'bcrypt';
 import { DatabaseService } from 'src/features/application/services/database.service';
-import { authConstants, jwtConstants } from './auth.constants';
+import { authConstants } from './auth.constants';
 import { JwtService } from '@nestjs/jwt';
 import { dateUtils } from 'src/common/utils/date';
 import crypto from 'crypto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     private db: DatabaseService,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
   async extractJwtPayload({ token }: { token: string }): Promise<any> {
     return await this.jwtService.verifyAsync(token, {
       algorithms: ['RS256'],
-      secret: Buffer.from(jwtConstants.publicKey, 'base64').toString('utf8'),
+      secret: Buffer.from(
+        this.configService.getOrThrow<string>('APP_JWT_PUBLIC_KEY'),
+        'base64',
+      ).toString('utf8'),
     });
   }
 
