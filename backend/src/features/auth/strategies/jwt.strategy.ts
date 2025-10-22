@@ -1,6 +1,6 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { authConstants } from '../auth.constants';
 import { DatabaseService } from 'src/features/application/services/database.service';
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
@@ -9,6 +9,8 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
+  private logger = new Logger(JwtStrategy.name);
+
   constructor(
     private db: DatabaseService,
     configService: ConfigService,
@@ -34,9 +36,19 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: any) {
+  async validate(jwt: any) {
     try {
-      const sessionId = payload.sub;
+      if (!jwt.payload) {
+        this.logger.error("JWT token's payload is missing !");
+        return false;
+      }
+
+      const sessionId = jwt.payload.sub;
+
+      if (!sessionId) {
+        this.logger.error("Session ID is missing in JWT token's payload !");
+        return false;
+      }
 
       // Get account by session id from cache
       const cachedAccount = await this.cacheManager.get<Account>(

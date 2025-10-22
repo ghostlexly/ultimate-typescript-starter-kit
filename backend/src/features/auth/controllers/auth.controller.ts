@@ -8,7 +8,6 @@ import {
   Req,
   Res,
   UnauthorizedException,
-  UseGuards,
   UsePipes,
 } from '@nestjs/common';
 import { ZodValidationPipe } from 'src/common/pipes/zod-validation.pipe';
@@ -25,7 +24,6 @@ import { Admin, Customer } from 'src/generated/prisma/client';
 import type { Request, Response } from 'express';
 import { Public } from 'src/common/decorators/is-public.decorator';
 import { AuthService } from '../auth.service';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { authConstants } from '../auth.constants';
 import { Throttle } from '@nestjs/throttler';
 
@@ -174,7 +172,6 @@ export class AuthController {
     };
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('me')
   getMe(@Req() req: Request) {
     const user = req.user;
