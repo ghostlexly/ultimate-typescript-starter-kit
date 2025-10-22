@@ -37,6 +37,8 @@ RUN npx playwright install chromium --with-deps
 # Copy project specific files
 COPY --from=builder /usr/src/app/dist ./dist
 COPY ./prisma ./prisma
+COPY ./public ./public
+COPY ./views ./views
 
 # Download Prisma binaries (will not be needed anymore in Prisma v7)
 RUN npx prisma generate
