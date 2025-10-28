@@ -32,6 +32,7 @@ import {
   Sheet,
   SheetClose,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -64,7 +65,7 @@ const Header = () => {
 
 const Logo: React.FC = () => (
   <Link href="/" aria-label="Homepage">
-    <div className="relative size-14">
+    <div className="relative size-11">
       <Image
         src={LogoImg}
         alt="LUNISOFT"
@@ -332,7 +333,7 @@ const NotAuthenticatedDropdownMenu = ({
       <DropdownMenuContent className="w-56" align="start">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuGroup>
-          <Link href="/signin">
+          <Link href="/customer-area/signin">
             <DropdownMenuItem>Sign in</DropdownMenuItem>
           </Link>
           <DropdownMenuItem>Create a new account</DropdownMenuItem>
@@ -466,92 +467,74 @@ const NotLoggedSheetMenu = ({ children }: { children: React.ReactNode }) => {
       <SheetTrigger asChild>{children}</SheetTrigger>
       <SheetContent side="right" className="w-full overflow-y-auto">
         <SheetHeader>
-          <div className="mb-4">
-            <Link href="/" className="relative flex size-14 items-center">
-              <Image
-                src={LogoImg}
-                alt="LUNISOFT"
-                className="object-contain"
-                fill
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-              />
-            </Link>
-          </div>
+          <SheetTitle className="sr-only">Menu</SheetTitle>
+          <Logo />
         </SheetHeader>
 
-        <Button asChild size="lg" className="mb-4 w-full">
-          <Link href="/housekeeper-area/signup">Devenir aide ménagère</Link>
-        </Button>
+        <div className="px-4">
+          <Button asChild size="lg" className="mb-4 w-full">
+            <Link href="/housekeeper-area/signup">Devenir aide ménagère</Link>
+          </Button>
 
-        <Button asChild size="lg" className="mb-4 w-full">
-          <Link href="/">Réserver un ménage</Link>
-        </Button>
+          <Button asChild size="lg" className="mb-4 w-full">
+            <Link href="/">Réserver un ménage</Link>
+          </Button>
 
-        <Separator className="my-2" />
+          <Separator className="my-2" />
 
-        <div className="space-y-4 py-2">
-          <p className="mb-6 px-2 text-xl font-medium">Navigation</p>
+          <div className="space-y-4 py-2">
+            <p className="mb-6 px-2 text-xl font-medium">Navigation</p>
 
-          <Link href={"/who-are-we"} className="block">
-            <SheetClose className="flex items-center justify-between w-full">
-              <div className="flex items-center gap-4">
-                <UsersIcon className="size-6" />
-                Qui sommes-nous ?
-              </div>
+            <Link href={"/who-are-we"} className="block">
+              <SheetClose className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-4">
+                  <UsersIcon className="size-6" />
+                  Qui sommes-nous ?
+                </div>
 
-              <ChevronRightIcon className="size-6" />
-            </SheetClose>
-          </Link>
+                <ChevronRightIcon className="size-6" />
+              </SheetClose>
+            </Link>
 
-          <Link href={"/who-are-we"} className="block">
-            <SheetClose className="flex items-center justify-between w-full">
-              <div className="flex items-center gap-4">
-                <MailIcon className="size-6" />
-                Nous contacter
-              </div>
+            <Link href={"/who-are-we"} className="block">
+              <SheetClose className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-4">
+                  <MailIcon className="size-6" />
+                  Nous contacter
+                </div>
 
-              <ChevronRightIcon className="size-6" />
-            </SheetClose>
-          </Link>
+                <ChevronRightIcon className="size-6" />
+              </SheetClose>
+            </Link>
+          </div>
 
-          <Link href={"/housekeeper-area/signin"} className="block">
-            <SheetClose className="flex items-center justify-between w-full">
-              <div className="flex items-center gap-4">
-                <UserIcon className="size-6" />
-                Accès Aide Ménagère
-              </div>
+          <Separator className="my-6" />
 
-              <ChevronRightIcon className="size-6" />
-            </SheetClose>
-          </Link>
-        </div>
+          <div className="space-y-6 py-2">
+            <p className="mb-6 px-2 text-xl font-medium">Authentification</p>
 
-        <Separator className="my-6" />
+            <Link href={"/customer-area/signin"} className="block">
+              <SheetClose className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-4">
+                  <UserIcon className="size-6" />
+                  Se connecter
+                </div>
 
-        <div className="space-y-6 py-2">
-          <p className="mb-6 px-2 text-xl font-medium">Accès Client</p>
+                <ChevronRightIcon className="size-6" />
+              </SheetClose>
+            </Link>
 
-          <Link href={"/signin"} className="block">
-            <SheetClose className="flex items-center justify-between w-full">
-              <div className="flex items-center gap-4">
-                <UserIcon className="size-6" />
-                Se connecter
-              </div>
+            <Link href={"/signup"} className="block">
+              <SheetClose className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-4">
+                  <UserPlusIcon className="size-6" />
+                  Créer un compte
+                </div>
 
-              <ChevronRightIcon className="size-6" />
-            </SheetClose>
-          </Link>
-
-          <Link href={"/signup"} className="block">
-            <SheetClose className="flex items-center justify-between w-full">
-              <div className="flex items-center gap-4">
-                <UserPlusIcon className="size-6" />
-                Créer un compte
-              </div>
-
-              <ChevronRightIcon className="size-6" />
-            </SheetClose>
-          </Link>
+                <ChevronRightIcon className="size-6" />
+              </SheetClose>
+            </Link>
+          </div>
         </div>
       </SheetContent>
     </Sheet>
