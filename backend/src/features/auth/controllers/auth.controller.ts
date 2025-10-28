@@ -10,7 +10,7 @@ import {
   UnauthorizedException,
   UsePipes,
 } from '@nestjs/common';
-import { ZodValidationPipe } from 'src/common/pipes/zod-validation.pipe';
+import { ZodValidationPipe } from 'src/core/pipes/zod-validation.pipe';
 import {
   authRefreshTokenSchema,
   authSigninSchema,
@@ -22,7 +22,7 @@ import type {
 import { DatabaseService } from 'src/features/application/services/database.service';
 import { Admin, Customer } from 'src/generated/prisma/client';
 import type { Request, Response } from 'express';
-import { Public } from 'src/common/decorators/is-public.decorator';
+import { Public } from 'src/core/decorators/is-public.decorator';
 import { AuthService } from '../auth.service';
 import { authConstants } from '../auth.constants';
 import { Throttle } from '@nestjs/throttler';

@@ -8,7 +8,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { MediaService } from '../media.service';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
-import { Public } from 'src/common/decorators/is-public.decorator';
+import { Public } from 'src/core/decorators/is-public.decorator';
 import multer from 'multer';
 import { S3Service } from 'src/features/application/services/s3.service';
 

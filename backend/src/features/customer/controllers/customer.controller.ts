@@ -6,7 +6,7 @@ import {
   Post,
   UsePipes,
 } from '@nestjs/common';
-import { ZodValidationPipe } from '../../../common/pipes/zod-validation.pipe';
+import { ZodValidationPipe } from '../../../core/pipes/zod-validation.pipe';
 import {
   type CustomerRegisterDto,
   customerRegisterSchema,
@@ -17,9 +17,9 @@ import {
 import { DatabaseService } from 'src/features/application/services/database.service';
 import { CustomerService } from '../customer.service';
 import { AuthService } from 'src/features/auth/auth.service';
-import { dateUtils } from 'src/common/utils/date';
+import { dateUtils } from 'src/core/utils/date';
 import { authConstants } from 'src/features/auth/auth.constants';
-import { Public } from 'src/common/decorators/is-public.decorator';
+import { Public } from 'src/core/decorators/is-public.decorator';
 
 @Controller()
 @Public()

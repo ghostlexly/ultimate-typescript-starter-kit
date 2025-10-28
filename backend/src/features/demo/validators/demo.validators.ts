@@ -1,4 +1,4 @@
-import { pageQuerySchema } from 'src/common/utils/page-query';
+import { pageQuerySchema } from 'src/core/utils/page-query';
 import { z } from 'zod';
 
 export const demoTestPlayerSchema = z.object({

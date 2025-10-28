@@ -27,15 +27,15 @@ import type { Response } from 'express';
 import fs from 'fs/promises';
 import handlebars from 'handlebars';
 import path from 'path';
-import { Public } from 'src/common/decorators/is-public.decorator';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { ZodValidationPipe } from 'src/common/pipes/zod-validation.pipe';
+import { Public } from 'src/core/decorators/is-public.decorator';
+import { Roles } from 'src/core/decorators/roles.decorator';
+import { ZodValidationPipe } from 'src/core/pipes/zod-validation.pipe';
 import { DatabaseService } from 'src/features/application/services/database.service';
 import { PdfService } from 'src/features/application/services/pdf.service';
 import {
   buildQueryParams,
   transformWithPagination,
-} from 'src/common/utils/page-query';
+} from 'src/core/utils/page-query';
 import { Prisma } from 'src/generated/prisma/client';
 import { DemoSerializeTestDto } from '../dto/demo.dto';
 import {

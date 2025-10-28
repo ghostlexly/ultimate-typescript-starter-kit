@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import { DatabaseService } from 'src/features/application/services/database.service';
 import { authConstants } from './auth.constants';
 import { JwtService } from '@nestjs/jwt';
-import { dateUtils } from 'src/common/utils/date';
+import { dateUtils } from 'src/core/utils/date';
 import crypto from 'crypto';
 import { ConfigService } from '@nestjs/config';
 
