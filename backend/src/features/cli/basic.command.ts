@@ -20,6 +20,6 @@ export class BasicCommand extends CommandRunner {
     // Test the database connection from the CLI commands, will throw an error if the connection is not established
     await this.db.prisma.account.findMany();
 
-    this.logger.log(`Hello, ${name}!`);
+    this.logger.debug(`Hello, ${name}!`);
   }
 }

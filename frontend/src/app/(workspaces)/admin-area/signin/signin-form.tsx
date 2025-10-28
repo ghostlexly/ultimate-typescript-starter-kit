@@ -20,10 +20,9 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
-import { startTransition, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAppStore } from "@/hooks/use-app-store";
 
 type FormValues = {
   email: string;
@@ -36,7 +35,6 @@ export function SigninForm({
 }: React.ComponentPropsWithoutRef<"div">) {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const { previousLink } = useAppStore();
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -47,22 +45,14 @@ export function SigninForm({
 
   const handleSubmit = async (values: FormValues) => {
     try {
-      // Sign in
       await wolfios.post(`/api/auth/signin`, {
         email: values.email,
         password: values.password,
-        role: "CUSTOMER",
+        role: "ADMIN",
       });
 
-      // if previous link is provided, redirect to it
-      // (ex: when the user is redirected to login page from booking page)
-      startTransition(() => {
-        if (previousLink && previousLink !== "/") {
-          router.push(previousLink);
-        } else {
-          router.push("/");
-        }
-      });
+      // Redirect after successful login
+      router.push("/admin-area");
     } catch (error) {
       handleApiErrors({ error, form });
     }
@@ -202,13 +192,9 @@ export function SigninForm({
               </div>
 
               <div className="text-center text-sm">
-                Don&apos;t have an account?{" "}
-                <Link
-                  href="/customer-area/signup"
-                  className="underline underline-offset-4"
-                >
-                  Sign up
-                </Link>
+                Don't have an account?
+                <br />
+                Contact the technical support
               </div>
             </div>
           </form>

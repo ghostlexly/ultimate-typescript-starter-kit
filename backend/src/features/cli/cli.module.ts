@@ -4,6 +4,8 @@ import { ConfigModule } from '@nestjs/config';
 import { CacheModule } from '@nestjs/cache-manager';
 import { BullModule } from '@nestjs/bullmq';
 import { ApplicationModule } from '../application/application.module';
+import { CreateAdminAccountCommand } from './create-admin-account.command';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
@@ -22,7 +24,8 @@ import { ApplicationModule } from '../application/application.module';
     }),
 
     ApplicationModule,
+    AuthModule,
   ],
-  providers: [BasicCommand],
+  providers: [BasicCommand, CreateAdminAccountCommand],
 })
 export class CliModule {}
