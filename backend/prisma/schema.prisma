@@ -43,13 +43,14 @@ model Session {
 }
 
 model Customer {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  account   Account  @relation(fields: [accountId], references: [id])
-  accountId String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                 String               @id @default(uuid())
+  email              String               @unique
+  password           String
+  account            Account              @relation(fields: [accountId], references: [id])
+  accountId          String               @unique
+  passwordResetToken PasswordResetToken[]
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
 }
 
 model Admin {
@@ -60,6 +61,17 @@ model Admin {
   accountId String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  customer   Customer? @relation(fields: [customerId], references: [id])
+  customerId String?
 }
 
 // ------------------------------------------------------

@@ -45,6 +45,18 @@ CREATE TABLE "public"."Admin" (
 );
 
 -- CreateTable
+CREATE TABLE "public"."PasswordResetToken" (
+    "id" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "customerId" TEXT,
+
+    CONSTRAINT "PasswordResetToken_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "public"."Media" (
     "id" TEXT NOT NULL,
     "fileName" TEXT NOT NULL,
@@ -97,6 +109,9 @@ CREATE UNIQUE INDEX "Admin_email_key" ON "public"."Admin"("email");
 CREATE UNIQUE INDEX "Admin_accountId_key" ON "public"."Admin"("accountId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "PasswordResetToken_token_key" ON "public"."PasswordResetToken"("token");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Country_iso2Code_key" ON "public"."Country"("iso2Code");
 
 -- CreateIndex
@@ -116,3 +131,6 @@ ALTER TABLE "public"."Customer" ADD CONSTRAINT "Customer_accountId_fkey" FOREIGN
 
 -- AddForeignKey
 ALTER TABLE "public"."Admin" ADD CONSTRAINT "Admin_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "public"."Account"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."PasswordResetToken" ADD CONSTRAINT "PasswordResetToken_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "public"."Customer"("id") ON DELETE SET NULL ON UPDATE CASCADE;

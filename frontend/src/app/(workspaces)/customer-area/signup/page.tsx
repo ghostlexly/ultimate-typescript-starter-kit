@@ -1,8 +1,7 @@
 import { GalleryVerticalEndIcon } from "lucide-react";
+import { SignUpForm } from "./signup-form";
 
-import { SigninForm } from "@/app/(workspaces)/customer-area/signin/signin-form";
-
-export default function LoginPage() {
+export default function SignUpPage() {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10 rounded-lg bg-muted">
       <div className="flex w-full max-w-sm flex-col gap-6">
@@ -12,7 +11,7 @@ export default function LoginPage() {
           </div>
           Acme Inc.
         </a>
-        <SigninForm />
+        <SignUpForm />
       </div>
     </div>
   );

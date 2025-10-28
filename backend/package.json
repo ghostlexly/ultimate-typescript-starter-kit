@@ -37,6 +37,7 @@
     "@nestjs/throttler": "^6.4.0",
     "@prisma/client": "^6.15.0",
     "@sentry/nestjs": "^10.10.0",
+    "axios": "^1.13.0",
     "bcrypt": "^6.0.0",
     "bullmq": "^5.58.5",
     "cache-manager": "^7.2.4",

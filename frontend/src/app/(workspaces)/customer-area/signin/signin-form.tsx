@@ -21,13 +21,14 @@ import {
 } from "@/components/ui/input-group";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useState } from "react";
+import Link from "next/link";
 
 type FormValues = {
   email: string;
   password: string;
 };
 
-export function LoginForm({
+export function SigninForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
@@ -94,6 +95,7 @@ export function LoginForm({
                   Or continue with
                 </span>
               </div>
+
               <div className="grid gap-6">
                 <div className="grid gap-2">
                   <Controller
@@ -175,15 +177,23 @@ export function LoginForm({
                     )}
                   />
                 </div>
-                <Button type="submit" className="w-full">
-                  Login
+                <Button
+                  type="submit"
+                  className="w-full"
+                  loading={form.formState.isSubmitting}
+                >
+                  Continue
                 </Button>
               </div>
+
               <div className="text-center text-sm">
                 Don&apos;t have an account?{" "}
-                <a href="#" className="underline underline-offset-4">
+                <Link
+                  href="/customer-area/signup"
+                  className="underline underline-offset-4"
+                >
                   Sign up
-                </a>
+                </Link>
               </div>
             </div>
           </form>

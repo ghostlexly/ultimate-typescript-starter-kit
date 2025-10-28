@@ -1,7 +1,7 @@
 services:
   # ===================================================================================================================================================================================
   backend:
-    image: fenrisshq/terracapital:backend
+    image: lunisoft/terracapital:backend
     build:
       context: ./backend
     environment:
@@ -22,6 +22,7 @@ services:
       - API_GOOGLE_CLIENT_ID=${API_GOOGLE_CLIENT_ID}
       - API_GOOGLE_CLIENT_SECRET=${API_GOOGLE_CLIENT_SECRET}
       - APP_PLAYWRIGHT_HEADLESS=${APP_PLAYWRIGHT_HEADLESS}
+      - API_BREVO_API_KEY=${API_BREVO_API_KEY}
     volumes:
       - ./backend/logs:/usr/src/app/logs
     depends_on:
@@ -31,7 +32,7 @@ services:
     restart: unless-stopped
   # ===================================================================================================================================================================================
   frontend:
-    image: fenrisshq/terracapital:frontend
+    image: lunisoft/terracapital:frontend
     build:
       context: ./frontend
     environment:
@@ -39,7 +40,7 @@ services:
     restart: unless-stopped
   # ===================================================================================================================================================================================
   caddy:
-    image: fenrisshq/terracapital:caddy
+    image: lunisoft/terracapital:caddy
     build:
       context: ./caddy
     ports:

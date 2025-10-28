@@ -19,7 +19,7 @@ jobs:
       - name: Login to docker registry
         uses: docker/login-action@v2
         with:
-          username: fenrisshq
+          username: lunisoft
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and push docker images
@@ -47,7 +47,7 @@ jobs:
             cd ~/docker
 
             # Login to docker registry
-            sudo docker login -u fenrisshq -p ${{ secrets.DOCKER_PASSWORD }}
+            sudo docker login -u lunisoft -p ${{ secrets.DOCKER_PASSWORD }}
 
             # Pull new images
             sudo docker compose pull

@@ -17,6 +17,7 @@ import { MediaModule } from './features/media/media.module';
 import { DemoModule } from './features/demo/demo.module';
 import { ApplicationModule } from './features/application/application.module';
 import { CqrsModule } from '@nestjs/cqrs';
+import { CustomerModule } from './features/customer/customer.module';
 
 @Global()
 @Module({
@@ -53,6 +54,7 @@ import { CqrsModule } from '@nestjs/cqrs';
     DemoModule,
     AuthModule,
     MediaModule,
+    CustomerModule,
   ],
   controllers: [AppController],
   providers: [
