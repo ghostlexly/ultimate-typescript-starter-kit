@@ -19,14 +19,30 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { ChevronsUpDown, EyeIcon, EyeOffIcon } from "lucide-react";
 import { startTransition, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAppStore } from "@/hooks/use-app-store";
+import {
+  Combobox,
+  ComboboxCommand,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxGroup,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxItemIndicator,
+  ComboboxList,
+  ComboboxTrigger,
+} from "@/components/ui/combobox";
+import { useQuery } from "@tanstack/react-query";
+import { CenteredLoadingSpinner } from "@/components/ui/centered-loading-spinner";
+import { QueryErrorMessage } from "@/components/ui/query-error-message";
 
 type FormValues = {
   email: string;
+  country: string;
   password: string;
 };
 
@@ -37,6 +53,10 @@ export function SignUpForm({
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const { previousLink } = useAppStore();
+  const countries = useQuery({
+    queryKey: ["countries"],
+    queryFn: () => wolfios.get("/api/countries").then((res) => res.data),
+  });
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -52,6 +72,7 @@ export function SignUpForm({
         email: values.email,
         password: values.password,
         role: "CUSTOMER",
+        country: values.country,
       });
 
       // Sign in
@@ -76,6 +97,12 @@ export function SignUpForm({
       handleApiErrors({ error, form });
     }
   };
+
+  if (countries.isLoading) {
+    return <CenteredLoadingSpinner />;
+  } else if (countries.isError) {
+    return <QueryErrorMessage message={countries.error.message} />;
+  }
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -153,6 +180,81 @@ export function SignUpForm({
 
                 <div className="grid gap-2">
                   <Controller
+                    name="country"
+                    control={form.control}
+                    render={({ field, fieldState }) => (
+                      <>
+                        <Label
+                          htmlFor="country"
+                          aria-invalid={fieldState.invalid}
+                        >
+                          Country
+                        </Label>
+
+                        <Combobox>
+                          <ComboboxTrigger asChild>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              className="justify-between"
+                            >
+                              {field.value
+                                ? countries.data?.find(
+                                    (country: any) =>
+                                      country.countryCode === field.value
+                                  )?.countryName
+                                : "Select country..."}
+                              <ChevronsUpDown className="size-4 shrink-0 opacity-50" />
+                            </Button>
+                          </ComboboxTrigger>
+                          <ComboboxContent>
+                            <ComboboxCommand>
+                              <ComboboxInput placeholder="Search country..." />
+                              <ComboboxList>
+                                <ComboboxEmpty>No country found.</ComboboxEmpty>
+                                <ComboboxGroup>
+                                  {countries.data?.map((country: any) => (
+                                    <ComboboxItem
+                                      key={country.countryCode}
+                                      value={country.countryCode}
+                                      keywords={[
+                                        country.countryName,
+                                        country.countryCode,
+                                      ]}
+                                      onSelect={(currentValue) => {
+                                        field.onChange(
+                                          currentValue === field.value
+                                            ? ""
+                                            : currentValue
+                                        );
+                                      }}
+                                    >
+                                      <ComboboxItemIndicator
+                                        checked={
+                                          field.value === country.countryCode
+                                        }
+                                      />
+                                      {country.countryName}
+                                    </ComboboxItem>
+                                  ))}
+                                </ComboboxGroup>
+                              </ComboboxList>
+                            </ComboboxCommand>
+                          </ComboboxContent>
+                        </Combobox>
+
+                        {fieldState.error && (
+                          <p className="text-sm text-red-500">
+                            {fieldState.error.message}
+                          </p>
+                        )}
+                      </>
+                    )}
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Controller
                     name="password"
                     control={form.control}
                     render={({ field, fieldState }) => (
@@ -171,6 +273,7 @@ export function SignUpForm({
                             required
                             {...field}
                             aria-invalid={fieldState.invalid}
+                            autoComplete="current-password"
                           />
                           <InputGroupAddon align="inline-end">
                             {showPassword ? (

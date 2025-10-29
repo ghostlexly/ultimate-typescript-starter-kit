@@ -168,6 +168,7 @@ export function SigninForm({
                             required
                             {...field}
                             aria-invalid={fieldState.invalid}
+                            autoComplete="current-password"
                           />
                           <InputGroupAddon align="inline-end">
                             {showPassword ? (

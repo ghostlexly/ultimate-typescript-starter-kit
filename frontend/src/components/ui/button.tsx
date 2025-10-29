@@ -78,6 +78,7 @@ function Button({
       disabled={loading || props.disabled}
       {...props}
     >
+      {/* if loading, show loading spinner */}
       {loading ? (
         <>
           <span className={"invisible"}>{children}</span>
@@ -87,6 +88,7 @@ function Button({
           </div>
         </>
       ) : (
+        // if not loading, show children
         <>{children}</>
       )}
     </Comp>
