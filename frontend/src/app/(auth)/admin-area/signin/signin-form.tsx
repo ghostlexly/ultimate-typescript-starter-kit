@@ -30,6 +30,7 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+import { useSession } from "@/lib/ghostlexly-auth/ghostlexly-auth.provider";
 
 type FormValues = {
   email: string;
@@ -42,6 +43,7 @@ export function SigninForm({
 }: React.ComponentPropsWithoutRef<"div">) {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const session = useSession();
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -57,6 +59,9 @@ export function SigninForm({
         password: values.password,
         role: "ADMIN",
       });
+
+      // Refresh the session to update authentication state
+      await session.refresh();
 
       // Redirect after successful login
       router.push("/admin-area");

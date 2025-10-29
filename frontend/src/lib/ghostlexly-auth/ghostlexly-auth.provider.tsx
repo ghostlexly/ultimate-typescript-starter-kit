@@ -21,6 +21,7 @@ type AuthContextProps = {
   status: SessionStatus;
   data: any;
   destroy: () => void;
+  refresh: () => Promise<void>;
 };
 
 // Create the context with default values
@@ -28,6 +29,7 @@ const AuthContext = createContext<AuthContextProps>({
   status: "loading",
   data: null,
   destroy: () => {},
+  refresh: async () => {},
 });
 
 // Custom hook to access auth context
@@ -47,18 +49,20 @@ const GhostlexlyAuthProvider = ({ children }: ProviderProps) => {
   useEffect(() => {
     const interval = setInterval(
       () => {
-        refreshClientTokens();
+        if (sessionData.status === "authenticated") {
+          refreshClientTokens();
+        }
       },
       1000 * 60 * 5 // 5 minutes
     );
 
     return () => clearInterval(interval);
-  }, []);
+  }, [sessionData.status]);
 
   // Load user session when component mounts or status changes to loading
   useEffect(() => {
     if (sessionData.status === "loading") {
-      getSession().then(setSessionData);
+      refresh();
     }
   }, [sessionData.status]);
 
@@ -67,12 +71,18 @@ const GhostlexlyAuthProvider = ({ children }: ProviderProps) => {
     setSessionData({ status: "unauthenticated", data: null });
   };
 
+  const refresh = async () => {
+    const newSession = await getSession();
+    setSessionData(newSession);
+  };
+
   return (
     <AuthContext.Provider
       value={{
         status: sessionData.status,
         data: sessionData.data,
         destroy,
+        refresh,
       }}
     >
       {children}

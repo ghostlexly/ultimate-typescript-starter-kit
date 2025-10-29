@@ -24,6 +24,7 @@ import { startTransition, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAppStore } from "@/hooks/use-app-store";
+import { useSession } from "@/lib/ghostlexly-auth/ghostlexly-auth.provider";
 import {
   Field,
   FieldDescription,
@@ -44,6 +45,7 @@ export function SigninForm({
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const { previousLink } = useAppStore();
+  const session = useSession();
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -60,6 +62,9 @@ export function SigninForm({
         password: values.password,
         role: "CUSTOMER",
       });
+
+      // Refresh the session to update authentication state
+      await session.refresh();
 
       // if previous link is provided, redirect to it
       // (ex: when the user is redirected to login page from booking page)

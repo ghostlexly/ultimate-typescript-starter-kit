@@ -44,6 +44,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { startTransition, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useSession } from "@/lib/ghostlexly-auth/ghostlexly-auth.provider";
 
 type FormValues = {
   email: string;
@@ -58,6 +59,7 @@ export function SignUpForm({
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const { previousLink } = useAppStore();
+  const session = useSession();
   const countries = useQuery({
     queryKey: ["countries"],
     queryFn: () => wolfios.get("/api/countries").then((res) => res.data),
@@ -89,6 +91,9 @@ export function SignUpForm({
           role: "CUSTOMER",
         })
         .then((res) => res.data);
+
+      // Refresh the session to update authentication state
+      await session.refresh();
 
       // if previous link is provided, redirect to it
       // (ex: when the user is redirected to login page from booking page)
