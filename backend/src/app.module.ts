@@ -18,6 +18,7 @@ import { DemoModule } from './features/demo/demo.module';
 import { ApplicationModule } from './features/application/application.module';
 import { CqrsModule } from '@nestjs/cqrs';
 import { CustomerModule } from './features/customer/customer.module';
+import { CountryModule } from './features/country/country.module';
 
 @Global()
 @Module({
@@ -51,6 +52,7 @@ import { CustomerModule } from './features/customer/customer.module';
 
     // -- Business Modules
     ApplicationModule,
+    CountryModule,
     DemoModule,
     AuthModule,
     MediaModule,
