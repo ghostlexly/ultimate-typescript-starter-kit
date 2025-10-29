@@ -468,17 +468,20 @@ const NotLoggedSheetMenu = ({ children }: { children: React.ReactNode }) => {
       <SheetContent side="right" className="w-full overflow-y-auto">
         <SheetHeader>
           <SheetTitle className="sr-only">Menu</SheetTitle>
-          <Logo />
         </SheetHeader>
 
-        <div className="px-4">
-          <Button asChild size="lg" className="mb-4 w-full">
-            <Link href="/housekeeper-area/signup">Devenir aide ménagère</Link>
-          </Button>
+        <div className="px-4 my-2">
+          <Link href="/">
+            <Button size="lg" className="mb-4 w-full">
+              Devenir aide ménagère
+            </Button>
+          </Link>
 
-          <Button asChild size="lg" className="mb-4 w-full">
-            <Link href="/">Réserver un ménage</Link>
-          </Button>
+          <Link href="/">
+            <Button size="lg" className="mb-4 w-full">
+              Réserver un ménage
+            </Button>
+          </Link>
 
           <Separator className="my-2" />
 

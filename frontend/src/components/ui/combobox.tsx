@@ -1,9 +1,8 @@
 "use client";
 
-import * as React from "react";
 import { Check } from "lucide-react";
+import * as React from "react";
 
-import { cn } from "@/lib/utils";
 import {
   Command,
   CommandEmpty,
@@ -17,6 +16,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { LoadingSpinner } from "./loading-spinner";
 
 /**
  * Combobox context type
@@ -24,6 +25,7 @@ import {
  */
 type ComboboxContextValue = {
   onClose: () => void;
+  loading: boolean;
 };
 
 /**
@@ -71,8 +73,9 @@ function Combobox({
   open: controlledOpen,
   onOpenChange,
   defaultOpen = false,
+  loading = false,
   ...props
-}: React.ComponentProps<typeof Popover>) {
+}: React.ComponentProps<typeof Popover> & { loading?: boolean }) {
   // Internal state for uncontrolled mode
   const [internalOpen, setInternalOpen] = React.useState(defaultOpen);
 
@@ -98,7 +101,7 @@ function Combobox({
   }, [handleOpenChange]);
 
   return (
-    <ComboboxContext.Provider value={{ onClose }}>
+    <ComboboxContext.Provider value={{ onClose, loading }}>
       <Popover
         data-slot="combobox"
         open={isOpen}
@@ -191,9 +194,33 @@ function ComboboxInput({
  * ComboboxList - Container for the list of items
  * Handles scrolling and overflow
  */
-function ComboboxList({ ...props }: React.ComponentProps<typeof CommandList>) {
-  return <CommandList data-slot="combobox-list" {...props} />;
+function ComboboxList({
+  children,
+  ...props
+}: React.ComponentProps<typeof CommandList>) {
+  const { loading } = useCombobox();
+  return (
+    <CommandList data-slot="combobox-list" {...props}>
+      {loading ? (
+        <CommandEmpty>
+          <div className="flex items-center justify-center">
+            <LoadingSpinner />
+          </div>
+        </CommandEmpty>
+      ) : (
+        children
+      )}
+    </CommandList>
+  );
 }
+<CommandGroup>
+  <CommandItem className="bg-accent animate-pulse">
+    <div className="h-5 w-full"></div>
+  </CommandItem>
+  <CommandItem className="bg-accent animate-pulse my-1">
+    <div className="h-5 w-full"></div>
+  </CommandItem>
+</CommandGroup>;
 
 /**
  * ComboboxEmpty - Displayed when no items match the search query
@@ -291,15 +318,15 @@ function ComboboxItemIndicator({
 
 export {
   Combobox,
-  ComboboxTrigger,
   ComboboxAnchor,
-  ComboboxContent,
   ComboboxCommand,
-  ComboboxInput,
-  ComboboxList,
+  ComboboxContent,
   ComboboxEmpty,
   ComboboxGroup,
+  ComboboxInput,
   ComboboxItem,
   ComboboxItemIndicator,
+  ComboboxList,
+  ComboboxTrigger,
   useCombobox,
 };
