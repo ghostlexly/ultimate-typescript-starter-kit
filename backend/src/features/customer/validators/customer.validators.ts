@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const customerRegisterSchema = z.object({
   email: z.email(),
   password: z.string().min(6).max(100),
+  country: z.string().min(1),
 });
 
 export type CustomerRegisterDto = z.infer<typeof customerRegisterSchema>;

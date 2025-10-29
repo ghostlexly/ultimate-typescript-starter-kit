@@ -23,6 +23,13 @@ import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 
 type FormValues = {
   email: string;
@@ -101,96 +108,80 @@ export function SigninForm({
                 </span>
               </div>
 
-              <div className="grid gap-6">
-                <div className="grid gap-2">
-                  <Controller
-                    name="email"
-                    control={form.control}
-                    render={({ field, fieldState }) => (
-                      <>
-                        <Label
-                          htmlFor="email"
-                          aria-invalid={fieldState.invalid}
-                        >
-                          Email
-                        </Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          placeholder="m@example.com"
-                          required
+              <FieldGroup>
+                <Controller
+                  name="email"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                      <Input
+                        {...field}
+                        id={field.name}
+                        type="email"
+                        placeholder="m@example.com"
+                        aria-invalid={fieldState.invalid}
+                        required
+                      />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+
+                <Controller
+                  name="password"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+
+                      <InputGroup>
+                        <InputGroupInput
                           {...field}
+                          id={field.name}
+                          type={showPassword ? "text" : "password"}
                           aria-invalid={fieldState.invalid}
+                          autoComplete="current-password"
+                          required
                         />
-                        {fieldState.error && (
-                          <p className="text-sm text-red-500">
-                            {fieldState.error.message}
-                          </p>
-                        )}
-                      </>
-                    )}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Controller
-                    name="password"
-                    control={form.control}
-                    render={({ field, fieldState }) => (
-                      <>
-                        <div className="flex items-center">
-                          <Label
-                            htmlFor="password"
-                            aria-invalid={fieldState.invalid}
-                          >
-                            Password
-                          </Label>
-                          <a
-                            href="#"
-                            className="ml-auto text-sm underline-offset-4 hover:underline"
-                          >
-                            Forgot your password?
-                          </a>
-                        </div>
-                        <InputGroup>
-                          <InputGroupInput
-                            id="password"
-                            type={showPassword ? "text" : "password"}
-                            required
-                            {...field}
-                            aria-invalid={fieldState.invalid}
-                            autoComplete="current-password"
-                          />
-                          <InputGroupAddon align="inline-end">
-                            {showPassword ? (
-                              <EyeOffIcon
-                                className="size-4 cursor-pointer"
-                                onClick={() => setShowPassword(false)}
-                              />
-                            ) : (
-                              <EyeIcon
-                                className="size-4 cursor-pointer"
-                                onClick={() => setShowPassword(true)}
-                              />
-                            )}
-                          </InputGroupAddon>
-                        </InputGroup>
-                        {fieldState.error && (
-                          <p className="text-sm text-red-500">
-                            {fieldState.error.message}
-                          </p>
-                        )}
-                      </>
-                    )}
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  className="w-full"
-                  loading={form.formState.isSubmitting}
-                >
-                  Continue
-                </Button>
-              </div>
+                        <InputGroupAddon align="inline-end">
+                          {showPassword ? (
+                            <EyeOffIcon
+                              className="size-4 cursor-pointer"
+                              onClick={() => setShowPassword(false)}
+                            />
+                          ) : (
+                            <EyeIcon
+                              className="size-4 cursor-pointer"
+                              onClick={() => setShowPassword(true)}
+                            />
+                          )}
+                        </InputGroupAddon>
+                      </InputGroup>
+
+                      <FieldDescription>
+                        <Link href="#">Forgot your password?</Link>
+                      </FieldDescription>
+
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+
+                <Field orientation="horizontal">
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    loading={form.formState.isSubmitting}
+                  >
+                    Continue
+                  </Button>
+                </Field>
+              </FieldGroup>
 
               <div className="text-center text-sm">
                 Don't have an account?

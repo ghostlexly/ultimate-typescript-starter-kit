@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,21 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { wolfios } from "@/lib/wolfios";
-import { handleApiErrors } from "@/lib/handle-api-errors";
-import { Controller, useForm } from "react-hook-form";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
-import { ChevronsUpDown, EyeIcon, EyeOffIcon } from "lucide-react";
-import { startTransition, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useAppStore } from "@/hooks/use-app-store";
+import { CenteredLoadingSpinner } from "@/components/ui/centered-loading-spinner";
 import {
   Combobox,
   ComboboxCommand,
@@ -36,13 +21,33 @@ import {
   ComboboxList,
   ComboboxTrigger,
 } from "@/components/ui/combobox";
-import { useQuery } from "@tanstack/react-query";
-import { CenteredLoadingSpinner } from "@/components/ui/centered-loading-spinner";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import { QueryErrorMessage } from "@/components/ui/query-error-message";
+import { useAppStore } from "@/hooks/use-app-store";
+import { handleApiErrors } from "@/lib/handle-api-errors";
+import { cn } from "@/lib/utils";
+import { wolfios } from "@/lib/wolfios";
+import { useQuery } from "@tanstack/react-query";
+import { ChevronsUpDown, EyeIcon, EyeOffIcon } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { startTransition, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 type FormValues = {
   email: string;
-  country: string;
+  country: { countryCode: string; countryName: string } | null;
   password: string;
 };
 
@@ -62,6 +67,7 @@ export function SignUpForm({
     defaultValues: {
       email: "",
       password: "",
+      country: null,
     },
   });
 
@@ -72,7 +78,7 @@ export function SignUpForm({
         email: values.email,
         password: values.password,
         role: "CUSTOMER",
-        country: values.country,
+        country: values.country?.countryCode,
       });
 
       // Sign in
@@ -147,165 +153,156 @@ export function SignUpForm({
                 </span>
               </div>
 
-              <div className="grid gap-6">
-                <div className="grid gap-2">
-                  <Controller
-                    name="email"
-                    control={form.control}
-                    render={({ field, fieldState }) => (
-                      <>
-                        <Label
-                          htmlFor="email"
-                          aria-invalid={fieldState.invalid}
-                        >
-                          Email
-                        </Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          placeholder="m@example.com"
-                          required
-                          {...field}
-                          aria-invalid={fieldState.invalid}
-                        />
-                        {fieldState.error && (
-                          <p className="text-sm text-red-500">
-                            {fieldState.error.message}
-                          </p>
-                        )}
-                      </>
-                    )}
-                  />
-                </div>
+              <FieldGroup>
+                <Controller
+                  name="email"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                      <Input
+                        {...field}
+                        id={field.name}
+                        type="email"
+                        placeholder="m@example.com"
+                        aria-invalid={fieldState.invalid}
+                        required
+                      />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
 
-                <div className="grid gap-2">
-                  <Controller
-                    name="country"
-                    control={form.control}
-                    render={({ field, fieldState }) => (
-                      <>
-                        <Label
-                          htmlFor="country"
-                          aria-invalid={fieldState.invalid}
-                        >
-                          Country
-                        </Label>
+                <Controller
+                  name="country"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor={field.name}>
+                        Where are you from?
+                      </FieldLabel>
 
-                        <Combobox>
-                          <ComboboxTrigger asChild>
-                            <Button
-                              variant="outline"
-                              role="combobox"
-                              className="justify-between"
-                            >
-                              {field.value
-                                ? countries.data?.find(
-                                    (country: any) =>
-                                      country.countryCode === field.value
-                                  )?.countryName
-                                : "Select country..."}
-                              <ChevronsUpDown className="size-4 shrink-0 opacity-50" />
-                            </Button>
-                          </ComboboxTrigger>
-                          <ComboboxContent>
-                            <ComboboxCommand>
-                              <ComboboxInput placeholder="Search country..." />
-                              <ComboboxList>
-                                <ComboboxEmpty>No country found.</ComboboxEmpty>
-                                <ComboboxGroup>
-                                  {countries.data?.map((country: any) => (
-                                    <ComboboxItem
-                                      key={country.countryCode}
-                                      value={country.countryCode}
-                                      keywords={[
-                                        country.countryName,
-                                        country.countryCode,
-                                      ]}
-                                      onSelect={(currentValue) => {
-                                        field.onChange(
-                                          currentValue === field.value
-                                            ? ""
-                                            : currentValue
-                                        );
-                                      }}
-                                    >
-                                      <ComboboxItemIndicator
-                                        checked={
-                                          field.value === country.countryCode
-                                        }
-                                      />
-                                      {country.countryName}
-                                    </ComboboxItem>
-                                  ))}
-                                </ComboboxGroup>
-                              </ComboboxList>
-                            </ComboboxCommand>
-                          </ComboboxContent>
-                        </Combobox>
-
-                        {fieldState.error && (
-                          <p className="text-sm text-red-500">
-                            {fieldState.error.message}
-                          </p>
-                        )}
-                      </>
-                    )}
-                  />
-                </div>
-
-                <div className="grid gap-2">
-                  <Controller
-                    name="password"
-                    control={form.control}
-                    render={({ field, fieldState }) => (
-                      <>
-                        <Label
-                          htmlFor="password"
-                          aria-invalid={fieldState.invalid}
-                        >
-                          Password
-                        </Label>
-
-                        <InputGroup>
-                          <InputGroupInput
-                            id="password"
-                            type={showPassword ? "text" : "password"}
-                            required
-                            {...field}
+                      <Combobox>
+                        <ComboboxTrigger asChild>
+                          <Button
+                            id={field.name}
+                            variant="outline"
+                            role="combobox"
+                            className="justify-between"
                             aria-invalid={fieldState.invalid}
-                            autoComplete="current-password"
-                          />
-                          <InputGroupAddon align="inline-end">
-                            {showPassword ? (
-                              <EyeOffIcon
-                                className="size-4 cursor-pointer"
-                                onClick={() => setShowPassword(false)}
-                              />
+                          >
+                            {field.value ? (
+                              <p>{field.value?.countryName}</p>
                             ) : (
-                              <EyeIcon
-                                className="size-4 cursor-pointer"
-                                onClick={() => setShowPassword(true)}
-                              />
+                              <p className="text-muted-foreground">
+                                Select your country...
+                              </p>
                             )}
-                          </InputGroupAddon>
-                        </InputGroup>
-                        {fieldState.error && (
-                          <p className="text-sm text-red-500">
-                            {fieldState.error.message}
-                          </p>
-                        )}
-                      </>
-                    )}
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  className="w-full"
-                  loading={form.formState.isSubmitting}
-                >
-                  Continue
-                </Button>
-              </div>
+                            <ChevronsUpDown className="size-4 shrink-0 opacity-50" />
+                          </Button>
+                        </ComboboxTrigger>
+                        <ComboboxContent>
+                          <ComboboxCommand>
+                            <ComboboxInput placeholder="Search..." />
+                            <ComboboxList>
+                              <ComboboxEmpty>
+                                No country found. Please try again.
+                              </ComboboxEmpty>
+                              <ComboboxGroup>
+                                {countries.data?.map((country: any) => (
+                                  <ComboboxItem
+                                    key={country.countryCode}
+                                    value={country.countryCode}
+                                    keywords={[
+                                      country.countryName,
+                                      country.countryCode,
+                                    ]}
+                                    onSelect={(currentValue) => {
+                                      if (
+                                        currentValue ===
+                                        field.value?.countryCode
+                                      ) {
+                                        field.onChange(null);
+                                      } else {
+                                        field.onChange({
+                                          countryCode: country.countryCode,
+                                          countryName: country.countryName,
+                                        });
+                                      }
+                                    }}
+                                  >
+                                    <ComboboxItemIndicator
+                                      checked={
+                                        field.value?.countryCode ===
+                                        country.countryCode
+                                      }
+                                    />
+                                    {country.countryName}
+                                  </ComboboxItem>
+                                ))}
+                              </ComboboxGroup>
+                            </ComboboxList>
+                          </ComboboxCommand>
+                        </ComboboxContent>
+                      </Combobox>
+
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+
+                <Controller
+                  name="password"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+
+                      <InputGroup>
+                        <InputGroupInput
+                          {...field}
+                          id={field.name}
+                          type={showPassword ? "text" : "password"}
+                          aria-invalid={fieldState.invalid}
+                          autoComplete="current-password"
+                          required
+                        />
+                        <InputGroupAddon align="inline-end">
+                          {showPassword ? (
+                            <EyeOffIcon
+                              className="size-4 cursor-pointer"
+                              onClick={() => setShowPassword(false)}
+                            />
+                          ) : (
+                            <EyeIcon
+                              className="size-4 cursor-pointer"
+                              onClick={() => setShowPassword(true)}
+                            />
+                          )}
+                        </InputGroupAddon>
+                      </InputGroup>
+
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+
+                <Field orientation="horizontal">
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    loading={form.formState.isSubmitting}
+                  >
+                    Continue
+                  </Button>
+                </Field>
+              </FieldGroup>
 
               <div className="text-center text-sm">
                 Already have an account?{" "}
