@@ -1,7 +1,7 @@
 import { GalleryVerticalEndIcon } from "lucide-react";
 import { SigninForm } from "./signin-form";
 
-export default function LoginPage() {
+export default function SigninPage() {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10 rounded-lg bg-muted">
       <div className="flex w-full max-w-sm flex-col gap-6">
