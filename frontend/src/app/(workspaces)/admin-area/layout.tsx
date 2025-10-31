@@ -1,5 +1,5 @@
 import { AdminSidebar } from "@/app/(workspaces)/admin-area/_components/admin-sidebar";
-import { SiteHeader } from "@/app/(workspaces)/admin-area/_components/site-header";
+import { Header } from "@/app/(workspaces)/admin-area/_components/header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { authGuard } from "@/lib/ghostlexly-auth/ghostlexly-auth.guard";
 import type { Metadata } from "next";
@@ -31,7 +31,7 @@ export default async function AdminAreaLayout({
     >
       <AdminSidebar variant="inset" />
       <SidebarInset>
-        <SiteHeader />
+        <Header />
 
         {children}
       </SidebarInset>
