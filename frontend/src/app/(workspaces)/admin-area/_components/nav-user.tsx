@@ -42,7 +42,9 @@ export function NavUser() {
               <Avatar className="h-8 w-8 rounded-lg grayscale">
                 <AvatarImage src={"#"} alt={session.data?.email} />
                 <AvatarFallback className="rounded-lg uppercase">
-                  {session.data?.email.slice(0, 2)}
+                  {session.data?.firstName && session.data?.lastName
+                    ? `${session.data?.firstName.charAt(0)}${session.data?.lastName.charAt(0)}`
+                    : session.data?.email.charAt(0)}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
@@ -65,7 +67,9 @@ export function NavUser() {
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={"#"} alt={session.data?.email} />
                   <AvatarFallback className="rounded-lg uppercase">
-                    {session.data?.email.slice(0, 2)}
+                    {session.data?.firstName && session.data?.lastName
+                      ? `${session.data?.firstName.charAt(0)}${session.data?.lastName.charAt(0)}`
+                      : session.data?.email.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
