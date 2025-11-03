@@ -19,11 +19,13 @@ import { ApplicationModule } from './features/application/application.module';
 import { CqrsModule } from '@nestjs/cqrs';
 import { CustomerModule } from './features/customer/customer.module';
 import { CountryModule } from './features/country/country.module';
+import { LoggerModule } from './core/logger/logger.module';
 
 @Global()
 @Module({
   imports: [
     // -- Libraries
+    LoggerModule,
     SentryModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,

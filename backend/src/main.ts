@@ -6,9 +6,13 @@ import { join } from 'path';
 import { Response } from 'express';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // Use Winston as the default logger
+  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
   app.enableShutdownHooks();
   app.setGlobalPrefix('api');
   app.disable('x-powered-by');
