@@ -3,7 +3,7 @@
 import LogoImg from "@/assets/images/logo.png";
 import { UserAvatar } from "@/components/project/user-avatar";
 import { Button } from "@/components/ui/button";
-import Container from "@/components/ui/container";
+import { Container } from "@/components/ui/container";
 import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
@@ -69,7 +69,7 @@ const MobileHeader = () => {
 
   return (
     <header className="bg-background sticky top-0 z-50 flex w-full justify-center backdrop-blur xl:hidden">
-      <Container>
+      <Container variant="centered" className="py-0 md:py-0">
         <div className="flex h-16 items-center">
           {/* Logo */}
           <div className="flex w-1/2 justify-start overflow-hidden">

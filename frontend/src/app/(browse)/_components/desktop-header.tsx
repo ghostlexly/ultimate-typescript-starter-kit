@@ -2,7 +2,7 @@
 
 import { UserAvatar } from "@/components/project/user-avatar";
 import { Button } from "@/components/ui/button";
-import Container from "@/components/ui/container";
+import { Container } from "@/components/ui/container";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -83,7 +83,7 @@ const DesktopHeader = () => {
 
   return (
     <header className="bg-background sticky top-0 z-50 hidden w-full justify-center backdrop-blur xl:flex">
-      <Container>
+      <Container variant="centered" className="py-0 md:py-0">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex w-1/4 overflow-hidden">

@@ -1,13 +1,13 @@
 import Link from "next/link";
-import Container from "@/components/ui/container";
+import { Container } from "@/components/ui/container";
 import { NoSsr } from "@/components/ui/no-ssr";
 
 const Footer = () => {
   return (
     <>
       {/* Similaire au header en terme d'espacement / width */}
-      <Container className="my-14 rounded-lg bg-[#f6f6f6] px-2 sm:px-0">
-        <footer className="px-20 py-10">
+      <Container variant="centered" className="my-14 px-0 sm:px-4 lg:px-6">
+        <footer className="px-20 py-10 rounded-lg bg-[#f6f6f6]">
           <div className="grid grid-cols-1 gap-20 md:grid-cols-3">
             {/* NAVIGATION */}
             <div className="flex flex-col gap-6">
