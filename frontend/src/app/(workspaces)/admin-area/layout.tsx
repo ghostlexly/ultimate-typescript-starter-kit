@@ -1,4 +1,4 @@
-import { AdminSidebar } from "@/app/(workspaces)/admin-area/_components/admin-sidebar";
+import { AppSidebar } from "@/app/(workspaces)/admin-area/_components/app-sidebar";
 import { Header } from "@/app/(workspaces)/admin-area/_components/header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { authGuard } from "@/lib/ghostlexly-auth/ghostlexly-auth.guard";
@@ -29,7 +29,7 @@ export default async function AdminAreaLayout({
         } as React.CSSProperties
       }
     >
-      <AdminSidebar variant="inset" />
+      <AppSidebar variant="inset" />
       <SidebarInset>
         <Header />
 
