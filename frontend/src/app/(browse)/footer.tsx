@@ -1,8 +1,12 @@
+"use client";
+
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { NoSsr } from "@/components/ui/no-ssr";
+import { useDate } from "@/hooks/use-date";
 
 const Footer = () => {
+  const dateUtils = useDate();
   return (
     <>
       {/* Similaire au header en terme d'espacement / width */}
@@ -70,11 +74,8 @@ const Footer = () => {
 
           <div>
             <p className="text-center">
-              © LUNISOFT{" "}
-              <NoSsr fallback={<span>0000</span>}>
-                {new Date().getFullYear()}
-              </NoSsr>{" "}
-              - Tous droits réservés
+              © LUNISOFT {dateUtils.format(new Date(), "EEEE yyyy")} - Tous
+              droits réservés
             </p>
           </div>
         </footer>
