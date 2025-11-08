@@ -22,7 +22,6 @@
  * ```
  */
 
-import * as React from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -70,9 +69,10 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { LoadingSpinner } from "./loading-spinner";
 import { Ban, X } from "lucide-react";
 import { Badge } from "./badge";
+import { Skeleton } from "./skeleton";
+import { useState, useMemo, useRef, useEffect } from "react";
 
 // ============================================================================
 // TYPES & INTERFACES
@@ -200,21 +200,33 @@ export function DataTable<TData, TValue>({
   // --------------------------------------------------------------------------
   // State Management - Internal state for uncontrolled usage
   // --------------------------------------------------------------------------
-  const [internalPagination, setInternalPagination] =
-    React.useState<PaginationState>({
+  const [internalPagination, setInternalPagination] = useState<PaginationState>(
+    {
       pageIndex: 0,
       pageSize: 10,
-    });
-  const [internalSorting, setInternalSorting] = React.useState<SortingState>(
-    []
+    }
   );
+  const [internalSorting, setInternalSorting] = useState<SortingState>([]);
   const [internalColumnFilters, setInternalColumnFilters] =
-    React.useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+    useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+
+  // Update display data only when not loading
+  // This prevents the layout from jumping because there is no data while the data is loading
+  const [displayData, setDisplayData] = useState<TData[]>(data);
+  useEffect(() => {
+    if (!isLoading && data.length > 0) {
+      setDisplayData(data);
+    } else if (!isLoading && data.length === 0) {
+      // If we have no data and we're not loading, it means we truly have no results
+      setDisplayData([]);
+    }
+    // When isLoading is true, we keep the previous displayData
+  }, [data, isLoading]);
 
   // Ref for scroll-to-top functionality
-  const tableContainerRef = React.useRef<HTMLDivElement>(null);
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+  const previousPageIndexRef = useRef<number | null>(null);
 
   // Use controlled state if provided, otherwise use internal state
   const pagination = controlledPagination ?? internalPagination;
@@ -227,7 +239,7 @@ export function DataTable<TData, TValue>({
   // --------------------------------------------------------------------------
   // Active Filters Logic
   // --------------------------------------------------------------------------
-  const getActiveFilters = React.useMemo(() => {
+  const getActiveFilters = useMemo(() => {
     if (!filters) return [];
 
     return Object.entries(filters)
@@ -266,20 +278,35 @@ export function DataTable<TData, TValue>({
   };
 
   // --------------------------------------------------------------------------
-  // Scroll to top on pagination change (if table not visible)
+  // Scroll to top on page change (after data loads)
   // --------------------------------------------------------------------------
-  React.useEffect(() => {
-    if (tableContainerRef.current) {
-      const rect = tableContainerRef.current.getBoundingClientRect();
-      const isVisible = rect.top >= 0 && rect.top <= window.innerHeight;
+  useEffect(() => {
+    const currentPageIndex = pagination.pageIndex;
 
-      // Only scroll if the table top is not visible
-      if (!isVisible) {
-        tableContainerRef.current.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
+    // Skip on first render (when previousPageIndexRef is null)
+    if (previousPageIndexRef.current === null) {
+      previousPageIndexRef.current = currentPageIndex;
+      return;
+    }
+
+    // Only scroll if page index actually changed
+    if (previousPageIndexRef.current !== currentPageIndex) {
+      const tableElement = tableContainerRef.current;
+      if (tableElement) {
+        const rect = tableElement.getBoundingClientRect();
+        const isVisible = rect.top >= 0 && rect.top <= window.innerHeight;
+
+        // Only scroll if the table top is not visible
+        if (!isVisible) {
+          tableElement.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
       }
+
+      // Update the ref with current page index
+      previousPageIndexRef.current = currentPageIndex;
     }
   }, [pagination.pageIndex]);
 
@@ -287,7 +314,7 @@ export function DataTable<TData, TValue>({
   // Table Instance Configuration
   // --------------------------------------------------------------------------
   const table = useReactTable({
-    data,
+    data: displayData,
     columns,
     pageCount: pageCount,
     state: {
@@ -322,7 +349,7 @@ export function DataTable<TData, TValue>({
           {onFiltersClick && (
             <Button variant="outline" size="sm" onClick={onFiltersClick}>
               <IconFilter className="size-4" />
-              <span className="hidden lg:inline">Filters</span>
+              <span className="hidden lg:inline">Filtres</span>
             </Button>
           )}
         </div>
@@ -332,7 +359,7 @@ export function DataTable<TData, TValue>({
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
                 <IconLayoutColumns className="size-4" />
-                <span className="hidden lg:inline">Columns</span>
+                <span className="hidden lg:inline">Colonnes</span>
                 <IconChevronDown className="size-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -367,7 +394,7 @@ export function DataTable<TData, TValue>({
       {getActiveFilters.length > 0 && (
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm font-medium text-muted-foreground">
-            Active filters:
+            Filtres actifs:
           </span>
           {getActiveFilters.map((filter) => (
             <Badge key={filter.key} variant="secondary" className="gap-1 pr-1">
@@ -380,7 +407,9 @@ export function DataTable<TData, TValue>({
                 onClick={() => handleRemoveFilter(filter.key)}
               >
                 <X className="h-3 w-3" />
-                <span className="sr-only">Remove {filter.label} filter</span>
+                <span className="sr-only">
+                  Supprimer le filtre {filter.label}
+                </span>
               </Button>
             </Badge>
           ))}
@@ -390,13 +419,13 @@ export function DataTable<TData, TValue>({
             className="h-7 px-2 text-xs"
             onClick={handleClearAllFilters}
           >
-            Clear all
+            Tout effacer
           </Button>
         </div>
       )}
 
       {/* Table Container */}
-      <div className="overflow-hidden rounded-lg border">
+      <div className="relative overflow-hidden rounded-lg border">
         <Table>
           {/* Table Header - Sortable columns */}
           <TableHeader className="bg-muted">
@@ -444,17 +473,17 @@ export function DataTable<TData, TValue>({
 
           {/* Table Body - Data rows with loading & empty states */}
           <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  <div className="flex items-center justify-center">
-                    <LoadingSpinner />
-                  </div>
-                </TableCell>
-              </TableRow>
+            {isLoading && displayData.length === 0 ? (
+              // Show skeleton rows when loading and no previous data
+              Array.from({ length: pagination.pageSize }).map((_, index) => (
+                <TableRow key={`skeleton-${index}`}>
+                  {columns.map((column, colIndex) => (
+                    <TableCell key={`skeleton-${index}-${colIndex}`}>
+                      <Skeleton className="h-5 w-full" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
             ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
@@ -474,7 +503,8 @@ export function DataTable<TData, TValue>({
                   }}
                   className={cn(
                     "transition-colors hover:bg-muted/50",
-                    onRowClick && "cursor-pointer"
+                    onRowClick && "cursor-pointer",
+                    isLoading && "opacity-50"
                   )}
                 >
                   {row.getVisibleCells().map((cell) => (
@@ -508,7 +538,7 @@ export function DataTable<TData, TValue>({
         <div className="flex items-center justify-between px-4">
           {/* Page info - Desktop only */}
           <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
-            Showing page {table.getState().pagination.pageIndex + 1} of{" "}
+            Affichage de la page {table.getState().pagination.pageIndex + 1} de{" "}
             {pageCount || 1}
           </div>
 
@@ -517,7 +547,7 @@ export function DataTable<TData, TValue>({
             {/* Rows per page selector - Desktop only */}
             <div className="hidden items-center gap-2 lg:flex">
               <Label htmlFor="rows-per-page" className="text-sm font-medium">
-                Rows per page
+                Lignes par page
               </Label>
               <Select
                 value={`${table.getState().pagination.pageSize}`}
@@ -542,7 +572,7 @@ export function DataTable<TData, TValue>({
 
             {/* Page info - Mobile */}
             <div className="flex w-fit items-center justify-center text-sm font-medium">
-              Page {table.getState().pagination.pageIndex + 1} of{" "}
+              Page {table.getState().pagination.pageIndex + 1} sur{" "}
               {pageCount || 1}
             </div>
 
@@ -554,7 +584,7 @@ export function DataTable<TData, TValue>({
                 onClick={() => table.setPageIndex(0)}
                 disabled={!table.getCanPreviousPage()}
               >
-                <span className="sr-only">Go to first page</span>
+                <span className="sr-only">Aller à la première page</span>
                 <IconChevronsLeft className="size-4" />
               </Button>
               <Button
@@ -564,7 +594,7 @@ export function DataTable<TData, TValue>({
                 onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
               >
-                <span className="sr-only">Go to previous page</span>
+                <span className="sr-only">Aller à la page précédente</span>
                 <IconChevronLeft className="size-4" />
               </Button>
               <Button
@@ -574,7 +604,7 @@ export function DataTable<TData, TValue>({
                 onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage()}
               >
-                <span className="sr-only">Go to next page</span>
+                <span className="sr-only">Aller à la page suivante</span>
                 <IconChevronRight className="size-4" />
               </Button>
               <Button
@@ -584,7 +614,7 @@ export function DataTable<TData, TValue>({
                 onClick={() => table.setPageIndex(pageCount - 1)}
                 disabled={!table.getCanNextPage()}
               >
-                <span className="sr-only">Go to last page</span>
+                <span className="sr-only">Aller à la dernière page</span>
                 <IconChevronsRight className="size-4" />
               </Button>
             </div>
