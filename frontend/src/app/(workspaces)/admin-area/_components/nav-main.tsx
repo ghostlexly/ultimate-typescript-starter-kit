@@ -16,9 +16,11 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { IconCirclePlusFilled, IconMail } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export function NavMain({
   items,
@@ -34,6 +36,14 @@ export function NavMain({
     }[];
   }[];
 }) {
+  const { setOpenMobile, isMobile } = useSidebar();
+
+  const handleLinkClick = () => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  };
+
   return (
     <SidebarGroup>
       <SidebarMenu>
@@ -74,13 +84,17 @@ export function NavMain({
               <CollapsibleContent>
                 <SidebarMenuSub>
                   {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild>
-                        <a href={subItem.url}>
+                    <Link
+                      href={subItem.url}
+                      key={subItem.title}
+                      onClick={handleLinkClick}
+                    >
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton asChild>
                           <span>{subItem.title}</span>
-                        </a>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    </Link>
                   ))}
                 </SidebarMenuSub>
               </CollapsibleContent>
