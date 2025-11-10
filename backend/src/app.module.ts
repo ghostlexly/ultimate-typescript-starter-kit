@@ -20,6 +20,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { CustomerModule } from './features/customer/customer.module';
 import { CountryModule } from './features/country/country.module';
 import { LoggerModule } from './core/logger/logger.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Global()
 @Module({
@@ -30,6 +31,7 @@ import { LoggerModule } from './core/logger/logger.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ScheduleModule.forRoot(),
     CacheModule.register({
       isGlobal: true,
     }),
