@@ -6,20 +6,21 @@ import {
   Post,
   UsePipes,
 } from '@nestjs/common';
+import { Public } from 'src/core/decorators/is-public.decorator';
+import { dateUtils } from 'src/core/utils/date';
+import { DatabaseService } from 'src/features/application/services/database.service';
+import { authConstants } from 'src/features/auth/auth.constants';
+import { AuthService } from 'src/features/auth/auth.service';
 import { ZodValidationPipe } from '../../../core/pipes/zod-validation.pipe';
+import { CustomerService } from '../customer.service';
 import {
   type CustomerRegisterDto,
   customerRegisterSchema,
   type CustomerRequestPasswordResetTokenDto,
   customerRequestPasswordResetTokenSchema,
   type CustomerResetPasswordDto,
+  customerResetPasswordSchema,
 } from '../validators/customer.validators';
-import { DatabaseService } from 'src/features/application/services/database.service';
-import { CustomerService } from '../customer.service';
-import { AuthService } from 'src/features/auth/auth.service';
-import { dateUtils } from 'src/core/utils/date';
-import { authConstants } from 'src/features/auth/auth.constants';
-import { Public } from 'src/core/decorators/is-public.decorator';
 
 @Controller()
 @Public()
@@ -32,7 +33,7 @@ export class CustomerController {
 
   @Post('/customers/signup')
   @UsePipes(new ZodValidationPipe(customerRegisterSchema))
-  async registerCustomer(@Body() body: CustomerRegisterDto) {
+  async registerCustomer(@Body() body: CustomerRegisterDto['body']) {
     // verify if this e-mail is already in use
     const existingCustomer = await this.customerService.verifyExistingEmail({
       email: body.email,
@@ -69,7 +70,7 @@ export class CustomerController {
   @Post('/customers/request-password-reset')
   @UsePipes(new ZodValidationPipe(customerRequestPasswordResetTokenSchema))
   async requestPasswordReset(
-    @Body() body: CustomerRequestPasswordResetTokenDto,
+    @Body() body: CustomerRequestPasswordResetTokenDto['body'],
   ) {
     // Get customer from the given email
     const customer = await this.db.prisma.customer.findFirst({
@@ -118,8 +119,11 @@ export class CustomerController {
   }
 
   @Post('/customers/reset-password')
-  @UsePipes(new ZodValidationPipe(customerRegisterSchema))
-  async resetPassword(@Body() body: CustomerResetPasswordDto) {
+  @UsePipes(new ZodValidationPipe(customerResetPasswordSchema))
+  async resetPassword(
+    @Body()
+    body: CustomerResetPasswordDto['body'],
+  ) {
     // Find the password reset token
     const passwordResetToken =
       await this.db.prisma.passwordResetToken.findFirst({

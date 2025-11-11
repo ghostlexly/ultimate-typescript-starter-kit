@@ -10,22 +10,22 @@ import {
   UnauthorizedException,
   UsePipes,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
+import type { Request, Response } from 'express';
+import { Public } from 'src/core/decorators/is-public.decorator';
 import { ZodValidationPipe } from 'src/core/pipes/zod-validation.pipe';
-import {
-  authRefreshTokenSchema,
-  authSigninSchema,
-} from '../validators/auth.validators';
+import { DatabaseService } from 'src/features/application/services/database.service';
+import { Admin, Customer } from 'src/generated/prisma/client';
+import { authConstants } from '../auth.constants';
+import { AuthService } from '../auth.service';
 import type {
   AuthRefreshTokenDto,
   AuthSigninDto,
 } from '../validators/auth.validators';
-import { DatabaseService } from 'src/features/application/services/database.service';
-import { Admin, Customer } from 'src/generated/prisma/client';
-import type { Request, Response } from 'express';
-import { Public } from 'src/core/decorators/is-public.decorator';
-import { AuthService } from '../auth.service';
-import { authConstants } from '../auth.constants';
-import { Throttle } from '@nestjs/throttler';
+import {
+  authRefreshTokenSchema,
+  authSigninSchema,
+} from '../validators/auth.validators';
 
 @Controller('auth')
 export class AuthController {
@@ -40,7 +40,7 @@ export class AuthController {
   @UsePipes(new ZodValidationPipe(authSigninSchema))
   async signIn(
     @Res({ passthrough: true }) res: Response,
-    @Body() body: AuthSigninDto,
+    @Body() body: AuthSigninDto['body'],
   ) {
     // Verify if user exists
     let user: Admin | Customer | null = null;
@@ -128,7 +128,7 @@ export class AuthController {
   async refreshToken(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
-    @Body() body: AuthRefreshTokenDto,
+    @Body() body: AuthRefreshTokenDto['body'],
   ) {
     const previousRefreshToken =
       body?.refreshToken ?? req.cookies?.lunisoft_refresh_token;

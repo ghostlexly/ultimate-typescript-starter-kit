@@ -21,22 +21,25 @@ import {
   UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
+import { CommandBus } from '@nestjs/cqrs';
 import { Throttle } from '@nestjs/throttler';
 import { Queue } from 'bullmq';
 import type { Response } from 'express';
+import { type Request } from 'express';
 import fs from 'fs/promises';
 import handlebars from 'handlebars';
 import path from 'path';
 import { Public } from 'src/core/decorators/is-public.decorator';
 import { Roles } from 'src/core/decorators/roles.decorator';
 import { ZodValidationPipe } from 'src/core/pipes/zod-validation.pipe';
-import { DatabaseService } from 'src/features/application/services/database.service';
-import { PdfService } from 'src/features/application/services/pdf.service';
 import {
   buildQueryParams,
   transformWithPagination,
 } from 'src/core/utils/page-query';
+import { DatabaseService } from 'src/features/application/services/database.service';
+import { PdfService } from 'src/features/application/services/pdf.service';
 import { Prisma } from 'src/generated/prisma/client';
+import { KillDragonCommand } from '../commands/impl/kill-dragon.command';
 import { DemoSerializeTestDto } from '../dto/demo.dto';
 import {
   type DemoGetPaginatedDataDto,
@@ -44,9 +47,6 @@ import {
   demoGetPaginatedDataSchema,
   demoTestPlayerSchema,
 } from '../validators/demo.validators';
-import { type Request } from 'express';
-import { CommandBus } from '@nestjs/cqrs';
-import { KillDragonCommand } from '../commands/impl/kill-dragon.command';
 
 @Controller('demos')
 export class DemoController {
@@ -73,8 +73,11 @@ export class DemoController {
   @Post()
   @Public()
   @UsePipes(new ZodValidationPipe(demoTestPlayerSchema))
-  create(@Body() body: DemoTestPlayerDto) {
-    return body;
+  create(
+    @Body() body: DemoTestPlayerDto['body'],
+    @Query() query: DemoTestPlayerDto['query'],
+  ) {
+    return { body, query };
   }
 
   /**
@@ -266,7 +269,7 @@ export class DemoController {
   @Public()
   async getPaginatedData(
     @Query(new ZodValidationPipe(demoGetPaginatedDataSchema))
-    query: DemoGetPaginatedDataDto,
+    query: DemoGetPaginatedDataDto['query'],
   ) {
     const filterConditions: Prisma.CustomerWhereInput[] = [
       {
