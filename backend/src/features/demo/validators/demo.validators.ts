@@ -8,7 +8,6 @@ export const demoTestPlayerSchema = z.object({
     name: z.string(),
   }),
 });
-
 export type DemoTestPlayerDto = z.infer<typeof demoTestPlayerSchema>;
 
 export const demoGetPaginatedDataSchema = pageQuerySchema.and(
@@ -18,7 +17,6 @@ export const demoGetPaginatedDataSchema = pageQuerySchema.and(
     })
     .partial(),
 );
-
 export type DemoGetPaginatedDataDto = z.infer<
   typeof demoGetPaginatedDataSchema
 >;
