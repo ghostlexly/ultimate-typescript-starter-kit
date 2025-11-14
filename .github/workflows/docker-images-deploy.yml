@@ -5,8 +5,49 @@ on:
     branches: [master, main]
 
 jobs:
+  test:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create test environment file
+        run: |
+          cat > .env <<EOF
+          POSTGRES_PASSWORD=testpassword
+          PROJECT_NAME=testdb
+          APP_DATABASE_CONNECTION_URL=postgresql://lunisoft:testpassword@postgres:5432/testdb
+          APP_REDIS_HOST=redis
+          APP_REDIS_PORT=6379
+          APP_PORT=3000
+          APP_BASE_URL=http://localhost:3000
+          APP_JWT_PRIVATE_KEY=test-private-key
+          APP_JWT_PUBLIC_KEY=test-public-key
+          APP_PLAYWRIGHT_HEADLESS=true
+          EOF
+
+      - name: Start services with docker compose
+        run: docker compose up -d postgres redis backend
+
+      - name: Wait for services to be ready
+        run: |
+          echo "Waiting for PostgreSQL to be ready..."
+          docker compose exec postgres sh -c 'until pg_isready -h localhost -U lunisoft; do sleep 1; done'
+
+      - name: Run database migrations
+        run: docker compose exec backend npx prisma migrate deploy
+
+      - name: Run tests
+        run: docker compose exec backend npm test
+
+      - name: Stop services
+        if: always()
+        run: docker compose down -v
+
   build:
     runs-on: ubuntu-24.04
+    needs: test
 
     steps:
       - name: Checkout code
