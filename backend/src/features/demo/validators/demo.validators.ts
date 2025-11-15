@@ -18,7 +18,7 @@ export const demoTestPlayerSchema = z.object({
 export type DemoTestPlayerDto = z.infer<typeof demoTestPlayerSchema>;
 
 export const demoGetPaginatedDataSchema = z.object({
-  query: pageQuerySchema.partial().and(
+  query: pageQuerySchema.and(
     z
       .object({
         id: z.uuid(),

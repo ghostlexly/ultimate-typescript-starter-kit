@@ -4,12 +4,14 @@ import { z } from 'zod';
  * Zod schema for validating common pagination/query parameters
  * Used to validate query strings from HTTP requests
  */
-export const pageQuerySchema = z.object({
-  page: z.coerce.number().min(1).optional(), // Page number (1-indexed)
-  first: z.coerce.number().min(1).optional(), // Items per page
-  sort: z.string().optional(), // Sort string (e.g., 'name:asc,email:desc')
-  include: z.union([z.string(), z.array(z.string())]).optional(), // Relations to include
-});
+export const pageQuerySchema = z
+  .object({
+    page: z.coerce.number().min(1).optional(), // Page number (1-indexed)
+    first: z.coerce.number().min(1).optional(), // Items per page
+    sort: z.string().optional(), // Sort string (e.g., 'name:asc,email:desc')
+    include: z.union([z.string(), z.array(z.string())]).optional(), // Relations to include
+  })
+  .partial();
 
 /**
  * TypeScript type inferred from the pageQuerySchema
