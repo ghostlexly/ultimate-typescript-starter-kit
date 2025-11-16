@@ -45,6 +45,7 @@ import { useRouter } from "next/navigation";
 import { startTransition, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useSession } from "@/lib/ghostlexly-auth/ghostlexly-auth.provider";
+import { PasswordInput } from "@/components/ui/password-input";
 
 type FormValues = {
   email: string;
@@ -267,29 +268,12 @@ export function SignUpForm({
                     <Field data-invalid={fieldState.invalid}>
                       <FieldLabel htmlFor={field.name}>Password</FieldLabel>
 
-                      <InputGroup>
-                        <InputGroupInput
-                          {...field}
-                          id={field.name}
-                          type={showPassword ? "text" : "password"}
-                          aria-invalid={fieldState.invalid}
-                          autoComplete="current-password"
-                          required
-                        />
-                        <InputGroupAddon align="inline-end">
-                          {showPassword ? (
-                            <EyeOffIcon
-                              className="size-4 cursor-pointer"
-                              onClick={() => setShowPassword(false)}
-                            />
-                          ) : (
-                            <EyeIcon
-                              className="size-4 cursor-pointer"
-                              onClick={() => setShowPassword(true)}
-                            />
-                          )}
-                        </InputGroupAddon>
-                      </InputGroup>
+                      <PasswordInput
+                        {...field}
+                        id={field.name}
+                        aria-invalid={fieldState.invalid}
+                        required
+                      />
 
                       {fieldState.invalid && (
                         <FieldError errors={[fieldState.error]} />
