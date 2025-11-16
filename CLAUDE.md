@@ -261,7 +261,7 @@ cd backend && npm test
 
 ## Notes for AI Assistant
 
-- Always run linting before committing changes
+- Always run linting after you made changes to check for any errors in your code
 - When modifying Prisma schema, remember to generate client and create migration
 - Use existing validators and decorators before creating new ones
 - Follow the established feature module pattern
