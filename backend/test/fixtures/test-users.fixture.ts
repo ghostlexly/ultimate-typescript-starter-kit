@@ -2,6 +2,7 @@
  * Test user fixtures
  * These are the test accounts that will be created for E2E tests
  */
+import * as bcrypt from 'bcrypt';
 
 export const TEST_USERS = {
   admin: {
@@ -26,7 +27,5 @@ export const TEST_USERS = {
  * Use this when creating users directly in the database
  */
 export async function getHashedPassword(password: string): Promise<string> {
-  const bcrypt = await import('bcrypt');
-
   return bcrypt.hash(password, 10);
 }

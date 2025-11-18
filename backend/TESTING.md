@@ -167,13 +167,10 @@ npm test -- --testNamePattern="should login"
 
 ### In Docker
 
-```bash
-# Run E2E tests in Docker
-docker compose exec backend npm run test:e2e
+Note : Run this command in the project's root directory.
 
-# Run with fresh database
-docker compose exec backend npx prisma migrate reset --force
-docker compose exec backend npm run test:e2e
+```bash
+make test
 ```
 
 ## Writing E2E Tests

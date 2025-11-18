@@ -2,6 +2,7 @@
 
 COMPOSE := docker compose
 NPM := $(COMPOSE) exec frontend npm
+POSTGRES_TEST_URL := postgresql://lunisoft:ChangeMe@postgres-test:5432/test
 
 ##———————————— Commands
 
@@ -50,6 +51,19 @@ prisma-m-deploy: ## Apply the latest Prisma migrations
 
 prisma-m-diff: ## Check if database is up to date with schema file
 	$(COMPOSE) exec backend npx prisma migrate diff --from-schema-datasource prisma/schema.prisma --to-schema-datamodel prisma/schema.prisma --script
+
+##———————————— Testing
+
+test: ## Run tests (migrate test database and run E2E tests)
+	$(COMPOSE) exec -e NODE_ENV=test -e APP_DATABASE_CONNECTION_URL=$(POSTGRES_TEST_URL) backend npx prisma migrate reset --force
+	$(COMPOSE) exec -e NODE_ENV=test -e APP_DATABASE_CONNECTION_URL=$(POSTGRES_TEST_URL) backend npm run test:e2e
+
+test-all: ## Run all tests (unit + E2E)
+	$(COMPOSE) exec -e NODE_ENV=test -e APP_DATABASE_CONNECTION_URL=$(POSTGRES_TEST_URL) backend npx prisma migrate deploy
+	$(COMPOSE) exec -e NODE_ENV=test -e APP_DATABASE_CONNECTION_URL=$(POSTGRES_TEST_URL) backend npm test
+
+test-watch: ## Run tests in watch mode
+	$(COMPOSE) exec -e NODE_ENV=test -e APP_DATABASE_CONNECTION_URL=$(POSTGRES_TEST_URL) backend npm run test:watch
 
 ##———————————— CLI Commands
 

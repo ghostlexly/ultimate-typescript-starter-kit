@@ -21,6 +21,16 @@ services:
     volumes:
       - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
   # ===================================================================================================================================================================================
+  postgres-test:
+    image: postgres:17.2
+    ports:
+      - "127.0.0.1:5433:5432"
+    environment:
+      - POSTGRES_USER=lunisoft
+      - POSTGRES_PASSWORD=ChangeMe
+      - POSTGRES_DB=test
+    restart: unless-stopped
+  # ===================================================================================================================================================================================
   redis-commander:
     image: ghcr.io/joeferner/redis-commander:latest
     environment:

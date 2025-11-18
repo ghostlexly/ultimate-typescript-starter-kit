@@ -31,43 +31,34 @@ docker compose up
 ### Working with the Backend
 
 ```bash
-# Navigate to backend directory
-cd backend
-
 # Run linting
-npm run lint
+docker compose exec backend npm run lint
 
 # Run tests
-npm test
+make test
 
 # Generate Prisma client (after schema changes)
-npx prisma generate
+make prisma-g
 
 # Create and apply database migrations
-npx prisma migrate dev --name <migration_name>
+docker compose exec backend npx prisma migrate dev --name <migration_name>
 
 # Format code
-npm run format
+docker compose exec backend npm run format
 
 # CLI commands
-npm run cli create-admin-account
-npm run cli generate-password
+docker compose exec backend npm run cli create-admin-account
+docker compose exec backend npm run cli generate-password
 ```
 
 ### Working with the Frontend
 
 ```bash
-# Navigate to frontend directory
-cd frontend
-
 # Run linting
-npm run lint
+docker compose exec frontend npm run lint
 
 # Build for production
-npm run build
-
-# Development server (runs via Docker)
-npm run dev
+cd frontend && npm run build
 ```
 
 ### Database Operations
@@ -272,6 +263,7 @@ After making ANY code changes, you MUST:
 5. **Test the build** - Make sure the project compiles successfully
 
 **Example workflow:**
+
 ```bash
 # After making changes
 npm run build          # Check TypeScript compilation

@@ -4,10 +4,10 @@ import { setupE2ETest } from './helpers/e2e-test-setup.helper';
 import { TEST_USERS, getHashedPassword } from './fixtures/test-users.fixture';
 
 describe('Authentication (e2e)', () => {
-  const { httpServer, dbHelper } = setupE2ETest();
+  const ctx = setupE2ETest();
 
   beforeEach(async () => {
-    await dbHelper.reset();
+    await ctx.dbHelper.reset();
   });
 
   describe('POST /api/auth/login', () => {
@@ -15,13 +15,13 @@ describe('Authentication (e2e)', () => {
       // Arrange: Create test admin
       const hashedPassword = await getHashedPassword(TEST_USERS.admin.password);
 
-      await dbHelper.createTestAdmin({
+      await ctx.dbHelper.createTestAdmin({
         email: TEST_USERS.admin.email,
         password: hashedPassword,
       });
 
       // Act: Login
-      const response = await request(httpServer)
+      const response = await request(ctx.httpServer)
         .post('/api/auth/login')
         .send({
           email: TEST_USERS.admin.email,
@@ -42,13 +42,13 @@ describe('Authentication (e2e)', () => {
         TEST_USERS.customer.password,
       );
 
-      await dbHelper.createTestCustomer({
+      await ctx.dbHelper.createTestCustomer({
         email: TEST_USERS.customer.email,
         password: hashedPassword,
       });
 
       // Act: Login
-      const response = await request(httpServer)
+      const response = await request(ctx.httpServer)
         .post('/api/auth/login')
         .send({
           email: TEST_USERS.customer.email,
@@ -67,13 +67,13 @@ describe('Authentication (e2e)', () => {
         TEST_USERS.customer.password,
       );
 
-      await dbHelper.createTestCustomer({
+      await ctx.dbHelper.createTestCustomer({
         email: TEST_USERS.customer.email,
         password: hashedPassword,
       });
 
       // Act: Login with wrong password
-      const response = await request(httpServer)
+      const response = await request(ctx.httpServer)
         .post('/api/auth/login')
         .send({
           email: TEST_USERS.customer.email,
@@ -87,7 +87,7 @@ describe('Authentication (e2e)', () => {
 
     it('should reject login with non-existent email', async () => {
       // Act: Login with email that doesn't exist
-      await request(httpServer)
+      await request(ctx.httpServer)
         .post('/api/auth/login')
         .send({
           email: 'nonexistent@test.com',
@@ -98,7 +98,7 @@ describe('Authentication (e2e)', () => {
 
     it('should reject login with invalid email format', async () => {
       // Act: Login with invalid email
-      await request(httpServer)
+      await request(ctx.httpServer)
         .post('/api/auth/login')
         .send({
           email: 'not-an-email',
@@ -109,7 +109,7 @@ describe('Authentication (e2e)', () => {
 
     it('should reject login with missing password', async () => {
       // Act: Login without password
-      await request(httpServer)
+      await request(ctx.httpServer)
         .post('/api/auth/login')
         .send({
           email: TEST_USERS.customer.email,
@@ -125,12 +125,12 @@ describe('Authentication (e2e)', () => {
         TEST_USERS.customer.password,
       );
 
-      await dbHelper.createTestCustomer({
+      await ctx.dbHelper.createTestCustomer({
         email: TEST_USERS.customer.email,
         password: hashedPassword,
       });
 
-      const loginResponse = await request(httpServer)
+      const loginResponse = await request(ctx.httpServer)
         .post('/api/auth/login')
         .send({
           email: TEST_USERS.customer.email,
@@ -140,7 +140,7 @@ describe('Authentication (e2e)', () => {
       const { refreshToken } = loginResponse.body;
 
       // Act: Refresh token
-      const response = await request(httpServer)
+      const response = await request(ctx.httpServer)
         .post('/api/auth/refresh')
         .send({
           refreshToken,
@@ -157,7 +157,7 @@ describe('Authentication (e2e)', () => {
 
     it('should reject refresh with invalid token', async () => {
       // Act: Try to refresh with fake token
-      await request(httpServer)
+      await request(ctx.httpServer)
         .post('/api/auth/refresh')
         .send({
           refreshToken: 'invalid-token',
@@ -173,12 +173,12 @@ describe('Authentication (e2e)', () => {
         TEST_USERS.customer.password,
       );
 
-      await dbHelper.createTestCustomer({
+      await ctx.dbHelper.createTestCustomer({
         email: TEST_USERS.customer.email,
         password: hashedPassword,
       });
 
-      const loginResponse = await request(httpServer)
+      const loginResponse = await request(ctx.httpServer)
         .post('/api/auth/login')
         .send({
           email: TEST_USERS.customer.email,
@@ -188,7 +188,7 @@ describe('Authentication (e2e)', () => {
       const { accessToken } = loginResponse.body;
 
       // Act: Access protected route
-      await request(httpServer)
+      await request(ctx.httpServer)
         .get('/api/customer/profile')
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(200);
@@ -196,12 +196,12 @@ describe('Authentication (e2e)', () => {
 
     it('should reject access to protected route without token', async () => {
       // Act: Try to access protected route without token
-      await request(httpServer).get('/api/customer/profile').expect(401);
+      await request(ctx.httpServer).get('/api/customer/profile').expect(401);
     });
 
     it('should reject access to protected route with invalid token', async () => {
       // Act: Try to access protected route with fake token
-      await request(httpServer)
+      await request(ctx.httpServer)
         .get('/api/customer/profile')
         .set('Authorization', 'Bearer invalid-token')
         .expect(401);

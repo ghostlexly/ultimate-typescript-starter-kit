@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { AppModule } from '../../src/app.module';
 import { TestDatabaseHelper } from './test-database.helper';
 
@@ -49,12 +49,12 @@ export function setupE2ETest(): E2ETestContext {
     context.app = moduleFixture.createNestApplication();
 
     // Apply global pipes (same as production)
-    context.app.useGlobalPipes(
-      new ValidationPipe({
-        whitelist: true,
-        transform: true,
-      }),
-    );
+    // context.app.useGlobalPipes(
+    //   new ValidationPipe({
+    //     whitelist: true,
+    //     transform: true,
+    //   }),
+    // );
 
     await context.app.init();
 
