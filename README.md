@@ -13,11 +13,12 @@ Welcome to the Ultimate TypeScript Full Stack Starter! This toolkit provides a r
 
 ## 🛠 Tech Stack
 
-- **Database**: PostgreSQL with Prisma ORM
+- **Database**: PostgreSQL 17 with Prisma ORM
 - **Backend**: NestJS (running on Express platform)
-- **Frontend**: Next.js (SSR/SSG/CSR)
+- **Frontend**: Next.js 15 (SSR/SSG/CSR)
 - **Language**: TypeScript
 - **Containers/Proxy**: Docker + Caddy
+- **Cache/Queue**: Redis 8
 
 ## 🔑 Key Features
 
@@ -37,8 +38,9 @@ Welcome to the Ultimate TypeScript Full Stack Starter! This toolkit provides a r
 ### 🎨 Frontend
 
 - **Framework**: React 19 with Next.js 15
-- **Styling**: Tailwind CSS and MUI
+- **Styling**: Tailwind CSS 4, Shadcn UI, Radix UI
 - **Data/Forms**: TanStack Query and React Hook Form
+- **State**: Zustand
 
 ### 🔒 Security
 
@@ -63,25 +65,21 @@ Welcome to the Ultimate TypeScript Full Stack Starter! This toolkit provides a r
    ```
 
 2. **Create a .env file (repo root)**
-   Provide the variables used by `compose.yml` (examples):
+   Provide the variables used by `compose.yml`.
+   Copy `.env.example` file to `.env` and fill in the required values.
 
+   **Generate JWT Keys:**
+   To generate the `APP_JWT_PRIVATE_KEY` and `APP_JWT_PUBLIC_KEY` values, run:
+
+   ```bash
+   # First, start the services to build the backend
+   docker compose up -d
+
+   # Generate JWT keys
+   docker compose exec backend npm run cli generate:jwt-keys
    ```
-   APP_PORT=3000
-   APP_BASE_URL=http://localhost
-   APP_DATABASE_CONNECTION_URL=postgresql://lunisoft:${POSTGRES_PASSWORD}@postgres:5432/${PROJECT_NAME}
-   APP_REDIS_HOST=redis
-   APP_REDIS_PORT=6379
-   APP_JWT_PRIVATE_KEY=base64-encoded-private-key
-   APP_JWT_PUBLIC_KEY=base64-encoded-public-key
-   API_S3_ENDPOINT=http://minio:9000
-   API_S3_ACCESS_KEY=changeme
-   API_S3_SECRET_KEY=changeme
-   API_S3_BUCKET=uploads
-   API_GOOGLE_CLIENT_ID=
-   API_GOOGLE_CLIENT_SECRET=
-   POSTGRES_PASSWORD=changeme
-   PROJECT_NAME=ultimate_ts_starter
-   ```
+
+   This will output base64-encoded RSA keys that you can copy directly into your `.env` file.
 
 3. **Install dependencies (optional for local non‑Docker runs)**
 
@@ -105,6 +103,40 @@ Welcome to the Ultimate TypeScript Full Stack Starter! This toolkit provides a r
 6. **Access the application**
    - Frontend: http://localhost
    - Backend: http://localhost/api
+
+## 🛠 Development Commands
+
+The project includes a `Makefile` with helpful commands:
+
+```bash
+# Show all available commands
+make help
+
+# Start the development environment
+make start
+
+# Run tests
+make test
+
+# Generate Prisma client
+make prisma-g
+
+# Apply migrations
+make prisma-m-deploy
+```
+
+Alternatively, you can use Docker Compose commands directly:
+
+```bash
+# Backend commands
+docker compose exec backend npm run lint
+docker compose exec backend npm run test:e2e
+docker compose exec backend npm run cli <command>
+
+# Frontend commands
+docker compose exec frontend npm run lint
+docker compose exec frontend npm run build
+```
 
 ## 📚 Documentation
 

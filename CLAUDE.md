@@ -268,7 +268,7 @@ After making ANY code changes, you MUST:
 # After making changes
 npm run build          # Check TypeScript compilation
 npm run lint           # Check code style and catch errors
-npm test              # Run tests if applicable
+make test              # Run tests if applicable
 ```
 
 ### Development Guidelines

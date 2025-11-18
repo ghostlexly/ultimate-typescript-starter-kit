@@ -8,6 +8,7 @@ import { AuthModule } from '../auth/auth.module';
 // Commands
 import { BasicCommand } from './commands/basic.command';
 import { CreateAdminAccountCommand } from './commands/create-admin-account.command';
+import { GenerateJwtKeysCommand } from './commands/generate-jwt-keys.command';
 import { SeedCommand } from './commands/seed.command';
 
 // Seeders
@@ -39,6 +40,7 @@ import { FakeDataSeeder } from './seeders/fake-data.seeder';
     SeedCommand,
     BasicCommand,
     CreateAdminAccountCommand,
+    GenerateJwtKeysCommand,
 
     // Seeders
     CountriesSeeder,

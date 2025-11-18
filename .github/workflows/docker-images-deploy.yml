@@ -12,22 +12,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup test environment file
-        run: cp .env.test .env
+      - name: Setup environment file
+        run: cp .env.example .env
 
       - name: Start services with docker compose
-        run: docker compose up -d postgres redis backend
+        run: docker compose up -d postgres-test redis backend
 
       - name: Wait for services to be ready
         run: |
-          echo "Waiting for PostgreSQL to be ready..."
-          docker compose exec postgres sh -c 'until pg_isready -h localhost -U lunisoft; do sleep 1; done'
+          echo "Waiting for PostgreSQL test database to be ready..."
+          docker compose exec postgres-test sh -c 'until pg_isready -h localhost -U lunisoft; do sleep 1; done'
 
-      - name: Run database migrations
-        run: docker compose exec backend npx prisma migrate deploy
+      - name: Run database migrations on test database
+        run: docker compose exec -e NODE_ENV=test -e APP_DATABASE_CONNECTION_URL=postgresql://lunisoft:ChangeMe@postgres-test:5432/test backend npx prisma migrate reset --force
 
       - name: Run tests
-        run: docker compose exec backend npm test
+        run: docker compose exec -e NODE_ENV=test -e APP_DATABASE_CONNECTION_URL=postgresql://lunisoft:ChangeMe@postgres-test:5432/test backend npm run test:e2e
 
       - name: Stop services
         if: always()
