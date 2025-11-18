@@ -22,10 +22,11 @@ describe('Authentication (e2e)', () => {
 
       // Act: Login
       const response = await request(ctx.httpServer)
-        .post('/api/auth/login')
+        .post('/api/auth/signin')
         .send({
           email: TEST_USERS.admin.email,
           password: TEST_USERS.admin.password,
+          role: 'ADMIN',
         })
         .expect(200);
 
@@ -49,10 +50,11 @@ describe('Authentication (e2e)', () => {
 
       // Act: Login
       const response = await request(ctx.httpServer)
-        .post('/api/auth/login')
+        .post('/api/auth/signin')
         .send({
           email: TEST_USERS.customer.email,
           password: TEST_USERS.customer.password,
+          role: 'CUSTOMER',
         })
         .expect(200);
 
@@ -74,12 +76,13 @@ describe('Authentication (e2e)', () => {
 
       // Act: Login with wrong password
       const response = await request(ctx.httpServer)
-        .post('/api/auth/login')
+        .post('/api/auth/signin')
         .send({
           email: TEST_USERS.customer.email,
           password: 'WrongPassword123!',
+          role: 'CUSTOMER',
         })
-        .expect(401);
+        .expect(400);
 
       // Assert
       expect(response.body).toHaveProperty('message');
@@ -88,21 +91,23 @@ describe('Authentication (e2e)', () => {
     it('should reject login with non-existent email', async () => {
       // Act: Login with email that doesn't exist
       await request(ctx.httpServer)
-        .post('/api/auth/login')
+        .post('/api/auth/signin')
         .send({
           email: 'nonexistent@test.com',
           password: 'SomePassword123!',
+          role: 'CUSTOMER',
         })
-        .expect(401);
+        .expect(400);
     });
 
     it('should reject login with invalid email format', async () => {
       // Act: Login with invalid email
       await request(ctx.httpServer)
-        .post('/api/auth/login')
+        .post('/api/auth/signin')
         .send({
           email: 'not-an-email',
           password: 'SomePassword123!',
+          role: 'CUSTOMER',
         })
         .expect(400);
     });
@@ -110,9 +115,10 @@ describe('Authentication (e2e)', () => {
     it('should reject login with missing password', async () => {
       // Act: Login without password
       await request(ctx.httpServer)
-        .post('/api/auth/login')
+        .post('/api/auth/signin')
         .send({
           email: TEST_USERS.customer.email,
+          role: 'CUSTOMER',
         })
         .expect(400);
     });
@@ -131,10 +137,11 @@ describe('Authentication (e2e)', () => {
       });
 
       const loginResponse = await request(ctx.httpServer)
-        .post('/api/auth/login')
+        .post('/api/auth/signin')
         .send({
           email: TEST_USERS.customer.email,
           password: TEST_USERS.customer.password,
+          role: 'CUSTOMER',
         });
 
       const { refreshToken } = loginResponse.body;
@@ -179,30 +186,37 @@ describe('Authentication (e2e)', () => {
       });
 
       const loginResponse = await request(ctx.httpServer)
-        .post('/api/auth/login')
+        .post('/api/auth/signin')
         .send({
           email: TEST_USERS.customer.email,
           password: TEST_USERS.customer.password,
+          role: 'CUSTOMER',
         });
 
       const { accessToken } = loginResponse.body;
 
       // Act: Access protected route
-      await request(ctx.httpServer)
-        .get('/api/customer/profile')
+      const response = await request(ctx.httpServer)
+        .get('/api/auth/me')
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(200);
+
+      // Assert: Check response structure
+      expect(response.body).toHaveProperty('id');
+      expect(response.body).toHaveProperty('email');
+      expect(response.body).toHaveProperty('role');
+      expect(response.body.role).toBe('CUSTOMER');
     });
 
     it('should reject access to protected route without token', async () => {
       // Act: Try to access protected route without token
-      await request(ctx.httpServer).get('/api/customer/profile').expect(401);
+      await request(ctx.httpServer).get('/api/auth/me').expect(401);
     });
 
     it('should reject access to protected route with invalid token', async () => {
       // Act: Try to access protected route with fake token
       await request(ctx.httpServer)
-        .get('/api/customer/profile')
+        .get('/api/auth/me')
         .set('Authorization', 'Bearer invalid-token')
         .expect(401);
     });

@@ -48,6 +48,9 @@ export function setupE2ETest(): E2ETestContext {
     // Create and configure app
     context.app = moduleFixture.createNestApplication();
 
+    // Apply global prefix (same as production)
+    context.app.setGlobalPrefix('api');
+
     // Apply global pipes (same as production)
     // context.app.useGlobalPipes(
     //   new ValidationPipe({
