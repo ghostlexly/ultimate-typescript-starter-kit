@@ -261,7 +261,26 @@ cd backend && npm test
 
 ## Notes for AI Assistant
 
-- Always run linting after you made changes to check for any errors in your code
+### Code Quality Checks (MANDATORY)
+
+After making ANY code changes, you MUST:
+
+1. **Check for TypeScript errors** - Run `npm run build` or check IDE diagnostics
+2. **Run linting** - Execute `npm run lint` to catch code style issues
+3. **Fix all errors** - Never leave TypeScript errors or linting errors unfixed
+4. **Verify imports** - Ensure all imports are correct (e.g., `import request from 'supertest'` not `import * as request`)
+5. **Test the build** - Make sure the project compiles successfully
+
+**Example workflow:**
+```bash
+# After making changes
+npm run build          # Check TypeScript compilation
+npm run lint           # Check code style and catch errors
+npm test              # Run tests if applicable
+```
+
+### Development Guidelines
+
 - When modifying Prisma schema, remember to generate client and create migration
 - Use existing validators and decorators before creating new ones
 - Follow the established feature module pattern
@@ -269,3 +288,12 @@ cd backend && npm test
 - Consider performance implications (caching, queue jobs)
 - Write tests for new features
 - Update this file if adding significant new patterns or tools
+
+### Common TypeScript Issues to Avoid
+
+- ❌ Wrong imports: `import * as request from 'supertest'`
+- ✅ Correct imports: `import request from 'supertest'`
+- ❌ Using functions that don't exist in imported modules
+- ✅ Verify function exports before using them
+- ❌ Ignoring TypeScript diagnostics
+- ✅ Fix all type errors immediately

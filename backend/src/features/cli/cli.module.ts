@@ -1,11 +1,19 @@
 import { Module } from '@nestjs/common';
-import { BasicCommand } from './basic.command';
 import { ConfigModule } from '@nestjs/config';
 import { CacheModule } from '@nestjs/cache-manager';
 import { BullModule } from '@nestjs/bullmq';
 import { ApplicationModule } from '../application/application.module';
-import { CreateAdminAccountCommand } from './create-admin-account.command';
 import { AuthModule } from '../auth/auth.module';
+
+// Commands
+import { BasicCommand } from './commands/basic.command';
+import { CreateAdminAccountCommand } from './commands/create-admin-account.command';
+import { SeedCommand } from './commands/seed.command';
+
+// Seeders
+import { CountriesSeeder } from './seeders/countries.seeder';
+import { UsersSeeder } from './seeders/users.seeder';
+import { FakeDataSeeder } from './seeders/fake-data.seeder';
 
 @Module({
   imports: [
@@ -26,6 +34,16 @@ import { AuthModule } from '../auth/auth.module';
     ApplicationModule,
     AuthModule,
   ],
-  providers: [BasicCommand, CreateAdminAccountCommand],
+  providers: [
+    // Commands
+    SeedCommand,
+    BasicCommand,
+    CreateAdminAccountCommand,
+
+    // Seeders
+    CountriesSeeder,
+    UsersSeeder,
+    FakeDataSeeder,
+  ],
 })
 export class CliModule {}

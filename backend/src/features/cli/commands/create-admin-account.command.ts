@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { Command, CommandRunner } from 'nest-commander';
 import { DatabaseService } from 'src/features/application/services/database.service';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from 'src/features/auth/auth.service';
 
 @Command({
   name: 'create:admin-account',
