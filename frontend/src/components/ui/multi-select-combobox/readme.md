@@ -1,0 +1,187 @@
+### Local search example
+
+```tsx
+type Country = MultiSelectComboboxItem & {
+  countryCode: string;
+  countryName: string;
+};
+
+type FormValues = {
+  email: string;
+  countries: Country[];
+  password: string;
+};
+
+const component = () => {
+  const countries = useQuery({
+    queryKey: ["countries"],
+    queryFn: () => wolfios.get("/api/countries").then((res) => res.data),
+  });
+
+  const form = useForm<FormValues>({
+    defaultValues: {
+      email: "",
+      password: "",
+      countries: [],
+    },
+  });
+
+  const handleSubmit = async (values: FormValues) => {
+    try {
+      // Register
+      await wolfios.post(`/api/customers/signup`, {
+        email: values.email,
+        password: values.password,
+        role: "CUSTOMER",
+        countries: values.countries.map((c) => c.countryCode),
+      });
+
+      // if previous link is provided, redirect to it
+      // (ex: when the user is redirected to login page from booking page)
+      startTransition(() => {
+        if (previousLink && previousLink !== "/") {
+          router.push(previousLink);
+        } else {
+          router.push("/");
+        }
+      });
+    } catch (error) {
+      handleApiErrors({ error, form });
+    }
+  };
+
+  return (
+    <Controller
+      name="countries"
+      control={form.control}
+      render={({ field, fieldState }) => (
+        <Field data-invalid={fieldState.invalid}>
+          <FieldLabel htmlFor={field.name}>Where are you from?</FieldLabel>
+
+          <MultiSelectCombobox
+            id={field.name}
+            items={
+              countries.data.map((country: any) => ({
+                value: country.countryCode,
+                label: country.countryName,
+                ...country,
+              })) || []
+            }
+            value={field.value}
+            onChange={field.onChange}
+            placeholder="Select countries..."
+            emptyMessage="No country found. Please try again."
+            searchPlaceholder="Search..."
+            getItemKeywords={(item: Country) => [
+              item.countryName,
+              item.countryCode,
+            ]}
+            loading={countries.isLoading}
+            aria-invalid={fieldState.invalid}
+          />
+
+          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+        </Field>
+      )}
+    />
+  );
+};
+```
+
+### Remote search example
+
+```tsx
+type Country = MultiSelectComboboxItem & {
+  iso2Code: string;
+  countryName: string;
+};
+
+type FormValues = {
+  email: string;
+  countries: Country[];
+  password: string;
+};
+
+const component = () => {
+  const [countrySearchTerm, setCountrySearchTerm] = useState("");
+  const debouncedCountrySearchTerm = useDebouncedValue(countrySearchTerm, 300);
+
+  const countries = useQuery({
+    queryKey: ["demos", "paginated-countries", debouncedCountrySearchTerm],
+    queryFn: () =>
+      wolfios
+        .get("/api/demos/paginated-countries", {
+          params: {
+            countryName: debouncedCountrySearchTerm,
+          },
+        })
+        .then((res) => res.data),
+  });
+
+  const form = useForm<FormValues>({
+    defaultValues: {
+      email: "",
+      password: "",
+      countries: [],
+    },
+  });
+
+  const handleSubmit = async (values: FormValues) => {
+    try {
+      // Register
+      await wolfios.post(`/api/customers/signup`, {
+        email: values.email,
+        password: values.password,
+        role: "CUSTOMER",
+        countries: values.countries.map((c) => c.iso2Code),
+      });
+
+      // if previous link is provided, redirect to it
+      // (ex: when the user is redirected to login page from booking page)
+      startTransition(() => {
+        if (previousLink && previousLink !== "/") {
+          router.push(previousLink);
+        } else {
+          router.push("/");
+        }
+      });
+    } catch (error) {
+      handleApiErrors({ error, form });
+    }
+  };
+
+  return (
+    <Controller
+      name="countries"
+      control={form.control}
+      render={({ field, fieldState }) => (
+        <Field data-invalid={fieldState.invalid}>
+          <FieldLabel htmlFor={field.name}>Where are you from?</FieldLabel>
+
+          <MultiSelectCombobox
+            id={field.name}
+            items={
+              countries.data?.nodes.map((country: any) => ({
+                value: country.iso2Code,
+                label: country.countryName,
+                ...country,
+              })) || []
+            }
+            value={field.value}
+            onChange={field.onChange}
+            onSearchChange={setCountrySearchTerm}
+            shouldFilter={false} // disable local search
+            placeholder="Select countries..."
+            emptyMessage="No country found. Please try again."
+            searchPlaceholder="Search..."
+            loading={countries.isLoading}
+            aria-invalid={fieldState.invalid}
+          />
+
+          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+        </Field>
+      )}
+    />
+  );
+};
+```

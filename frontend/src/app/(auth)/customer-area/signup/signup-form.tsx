@@ -21,7 +21,7 @@ import { QueryErrorMessage } from "@/components/ui/query-error-message";
 import {
   SingleSelectCombobox,
   SingleSelectComboboxItem,
-} from "@/components/ui/single-select-combobox";
+} from "@/components/ui/single-select-combobox/single-select-combobox";
 import { useAppStore } from "@/hooks/use-app-store";
 import { useSession } from "@/lib/ghostlexly-auth/ghostlexly-auth.provider";
 import { handleApiErrors } from "@/lib/handle-api-errors";
