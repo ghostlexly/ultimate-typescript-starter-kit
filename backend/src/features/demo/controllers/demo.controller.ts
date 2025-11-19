@@ -42,8 +42,10 @@ import { Prisma } from 'src/generated/prisma/client';
 import { KillDragonCommand } from '../commands/impl/kill-dragon.command';
 import { DemoSerializeTestDto } from '../dto/demo.dto';
 import {
+  DemoGetPaginatedCountriesDto,
   type DemoGetPaginatedDataDto,
   type DemoTestPlayerDto,
+  demoGetPaginatedCountriesSchema,
   demoGetPaginatedDataSchema,
   demoTestPlayerSchema,
 } from '../validators/demo.validators';
@@ -303,6 +305,52 @@ export class DemoController {
       include: {
         ...(includes.has('account') && { account: true }),
       },
+      where: {
+        AND: filterConditions,
+      },
+      orderBy: orderBy,
+      take: pagination.take,
+      skip: pagination.skip,
+    });
+
+    return transformWithPagination({
+      data: data,
+      count,
+      page: pagination.currentPage,
+      first: pagination.itemsPerPage,
+    });
+  }
+
+  @Get('paginated-countries')
+  @Public()
+  async getPaginatedCountries(
+    @Query(new ZodValidationPipe(demoGetPaginatedCountriesSchema))
+    query: DemoGetPaginatedCountriesDto['query'],
+  ) {
+    const filterConditions: Prisma.CountryWhereInput[] = [];
+
+    const { pagination, orderBy } = buildQueryParams({
+      query,
+      defaultSort: { countryName: 'asc' },
+      allowedSortFields: ['countryName'],
+    });
+
+    // --------------------------------------
+    // Filters
+    // --------------------------------------
+    if (query.countryName) {
+      filterConditions.push({
+        countryName: {
+          contains: query.countryName,
+          mode: 'insensitive',
+        },
+      });
+    }
+
+    // --------------------------------------
+    // Query
+    // --------------------------------------
+    const { data, count } = await this.db.prisma.country.findManyAndCount({
       where: {
         AND: filterConditions,
       },
