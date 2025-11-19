@@ -10,46 +10,37 @@ import {
 } from "@/components/ui/card";
 import { CenteredLoadingSpinner } from "@/components/ui/centered-loading-spinner";
 import {
-  Combobox,
-  ComboboxCommand,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxGroup,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxItemIndicator,
-  ComboboxList,
-  ComboboxTrigger,
-} from "@/components/ui/combobox";
-import {
   Field,
   FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
+import { PasswordInput } from "@/components/ui/password-input";
 import { QueryErrorMessage } from "@/components/ui/query-error-message";
+import {
+  SingleSelectCombobox,
+  SingleSelectComboboxItem,
+} from "@/components/ui/single-select-combobox";
 import { useAppStore } from "@/hooks/use-app-store";
+import { useSession } from "@/lib/ghostlexly-auth/ghostlexly-auth.provider";
 import { handleApiErrors } from "@/lib/handle-api-errors";
 import { cn } from "@/lib/utils";
 import { wolfios } from "@/lib/wolfios";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronsUpDown, EyeIcon, EyeOffIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { startTransition, useState } from "react";
+import { startTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useSession } from "@/lib/ghostlexly-auth/ghostlexly-auth.provider";
-import { PasswordInput } from "@/components/ui/password-input";
+
+type Country = SingleSelectComboboxItem & {
+  countryCode: string;
+  countryName: string;
+};
 
 type FormValues = {
   email: string;
-  country: { countryCode: string; countryName: string } | null;
+  country: Country | null;
   password: string;
 };
 
@@ -58,7 +49,6 @@ export function SignUpForm({
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   const router = useRouter();
-  const [showPassword, setShowPassword] = useState(false);
   const { previousLink } = useAppStore();
   const session = useSession();
   const countries = useQuery({
@@ -190,69 +180,24 @@ export function SignUpForm({
                         Where are you from?
                       </FieldLabel>
 
-                      <Combobox>
-                        <ComboboxTrigger asChild>
-                          <Button
-                            id={field.name}
-                            variant="outline"
-                            role="combobox"
-                            className="justify-between"
-                            aria-invalid={fieldState.invalid}
-                          >
-                            {field.value ? (
-                              <p>{field.value?.countryName}</p>
-                            ) : (
-                              <p className="text-muted-foreground">
-                                Select your country...
-                              </p>
-                            )}
-                            <ChevronsUpDown className="size-4 shrink-0 opacity-50" />
-                          </Button>
-                        </ComboboxTrigger>
-                        <ComboboxContent>
-                          <ComboboxCommand>
-                            <ComboboxInput placeholder="Search..." />
-                            <ComboboxList>
-                              <ComboboxEmpty>
-                                No country found. Please try again.
-                              </ComboboxEmpty>
-                              <ComboboxGroup>
-                                {countries.data?.map((country: any) => (
-                                  <ComboboxItem
-                                    key={country.countryCode}
-                                    value={country.countryCode}
-                                    keywords={[
-                                      country.countryName,
-                                      country.countryCode,
-                                    ]}
-                                    onSelect={(currentValue) => {
-                                      if (
-                                        currentValue ===
-                                        field.value?.countryCode
-                                      ) {
-                                        field.onChange(null);
-                                      } else {
-                                        field.onChange({
-                                          countryCode: country.countryCode,
-                                          countryName: country.countryName,
-                                        });
-                                      }
-                                    }}
-                                  >
-                                    <ComboboxItemIndicator
-                                      checked={
-                                        field.value?.countryCode ===
-                                        country.countryCode
-                                      }
-                                    />
-                                    {country.countryName}
-                                  </ComboboxItem>
-                                ))}
-                              </ComboboxGroup>
-                            </ComboboxList>
-                          </ComboboxCommand>
-                        </ComboboxContent>
-                      </Combobox>
+                      <SingleSelectCombobox
+                        id={field.name}
+                        items={countries.data?.map((country: any) => ({
+                          value: country.countryCode,
+                          label: country.countryName,
+                          ...country,
+                        }))}
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder="Select your country..."
+                        emptyMessage="No country found. Please try again."
+                        searchPlaceholder="Search..."
+                        getItemKeywords={(item: any) => [
+                          item.countryName,
+                          item.countryCode,
+                        ]}
+                        aria-invalid={fieldState.invalid}
+                      />
 
                       {fieldState.invalid && (
                         <FieldError errors={[fieldState.error]} />
