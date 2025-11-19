@@ -111,19 +111,19 @@ export class AuthController {
       });
 
     res.cookie('lunisoft_access_token', accessToken, {
-      httpOnly: true, // ✅ Full httpOnly for maximum security
+      httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax', // ✅ CSRF protection (lax for SSR compatibility)
       path: '/',
-      maxAge: authConstants.accessTokenExpirationMinutes * 60 * 1000, // Convert minutes to milliseconds
+      maxAge: authConstants.accessTokenExpirationMinutes * 60 * 1000,
     });
 
     res.cookie('lunisoft_refresh_token', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax', // ✅ CSRF protection
+      sameSite: 'lax', // ✅ CSRF protection (lax for SSR compatibility)
       path: '/',
-      maxAge: authConstants.refreshTokenExpirationMinutes * 60 * 1000, // Convert minutes to milliseconds
+      maxAge: authConstants.refreshTokenExpirationMinutes * 60 * 1000,
     });
 
     return {
@@ -167,19 +167,19 @@ export class AuthController {
       });
 
     res.cookie('lunisoft_access_token', accessToken, {
-      httpOnly: true, // ✅ Full httpOnly for maximum security
+      httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax', // ✅ CSRF protection (lax for SSR compatibility)
       path: '/',
-      maxAge: authConstants.accessTokenExpirationMinutes * 60 * 1000, // Convert minutes to milliseconds
+      maxAge: authConstants.accessTokenExpirationMinutes * 60 * 1000,
     });
 
     res.cookie('lunisoft_refresh_token', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax', // ✅ CSRF protection
+      sameSite: 'lax', // ✅ CSRF protection (lax for SSR compatibility)
       path: '/',
-      maxAge: authConstants.refreshTokenExpirationMinutes * 60 * 1000, // Convert minutes to milliseconds
+      maxAge: authConstants.refreshTokenExpirationMinutes * 60 * 1000,
     });
 
     return {

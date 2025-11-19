@@ -15,14 +15,16 @@ type SessionData = {
 };
 
 // Destroy session by deleting cookies
-const removeServerTokens = async () => {
+const clearAuthCookies = async () => {
   const cookieStore = await cookies();
   cookieStore.delete(ACCESS_TOKEN_COOKIE);
   cookieStore.delete(REFRESH_TOKEN_COOKIE);
 };
 
 // Get user session data from the API
-const getSession = async (userDataUrl = ME_ROUTE): Promise<SessionData> => {
+const getServerSession = async (
+  userDataUrl = ME_ROUTE
+): Promise<SessionData> => {
   const cookieStore = await cookies();
   const token =
     cookieStore.get(ACCESS_TOKEN_COOKIE) ??
@@ -58,4 +60,4 @@ const getSession = async (userDataUrl = ME_ROUTE): Promise<SessionData> => {
   }
 };
 
-export { getSession, removeServerTokens };
+export { getServerSession, clearAuthCookies };

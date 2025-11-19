@@ -1,23 +1,15 @@
 "use client";
 
-import * as React from "react";
 import {
-  IconCamera,
-  IconChartBar,
-  IconDashboard,
   IconDatabase,
-  IconFileAi,
-  IconFileDescription,
   IconFileWord,
-  IconFolder,
   IconHelp,
   IconInnerShadowTop,
-  IconListDetails,
   IconReport,
   IconSearch,
   IconSettings,
-  IconUsers,
 } from "@tabler/icons-react";
+import * as React from "react";
 
 import { NavDocuments } from "@/app/(workspaces)/admin-area/_components/nav-documents";
 import { NavMain } from "@/app/(workspaces)/admin-area/_components/nav-main";

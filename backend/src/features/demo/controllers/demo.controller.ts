@@ -148,7 +148,7 @@ export class DemoController {
   @Get('protected-route')
   protectedRoute() {
     return {
-      message: 'Public route.',
+      message: 'Protected route.',
     };
   }
 

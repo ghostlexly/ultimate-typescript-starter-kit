@@ -2,13 +2,12 @@
 
 import {
   createContext,
+  ReactNode,
   useContext,
   useEffect,
   useState,
-  ReactNode,
 } from "react";
-import { removeServerTokens, getSession } from "./ghostlexly-auth.server";
-import { wolfios } from "../wolfios";
+import { getServerSession, clearAuthCookies } from "./ghostlexly-auth.server";
 
 type SessionStatus = "loading" | "authenticated" | "unauthenticated";
 
@@ -45,20 +44,6 @@ const GhostlexlyAuthProvider = ({ children }: ProviderProps) => {
     data: null,
   });
 
-  // Automatic refresh of tokens
-  useEffect(() => {
-    const interval = setInterval(
-      async () => {
-        if (sessionData.status === "authenticated") {
-          await wolfios.post("/api/auth/refresh");
-        }
-      },
-      1000 * 60 * 5 // 5 minutes
-    );
-
-    return () => clearInterval(interval);
-  }, [sessionData.status]);
-
   // Load user session when component mounts or status changes to loading
   useEffect(() => {
     if (sessionData.status === "loading") {
@@ -67,12 +52,12 @@ const GhostlexlyAuthProvider = ({ children }: ProviderProps) => {
   }, [sessionData.status]);
 
   const destroy = () => {
-    removeServerTokens();
+    clearAuthCookies();
     setSessionData({ status: "unauthenticated", data: null });
   };
 
   const refresh = async () => {
-    const newSession = await getSession();
+    const newSession = await getServerSession();
     setSessionData(newSession);
   };
 
