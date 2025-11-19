@@ -1,7 +1,6 @@
 import { AppSidebar } from "@/app/(workspaces)/admin-area/_components/app-sidebar";
 import { Header } from "@/app/(workspaces)/admin-area/_components/header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { authGuard } from "@/lib/ghostlexly-auth/ghostlexly-auth.guard";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -15,11 +14,6 @@ export default async function AdminAreaLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  await authGuard({
-    requiredRoles: ["ADMIN"],
-    redirectPath: "/admin-area/signin",
-  });
-
   return (
     <SidebarProvider
       style={

@@ -8,7 +8,7 @@ import {
   ReactNode,
 } from "react";
 import { removeServerTokens, getSession } from "./ghostlexly-auth.server";
-import { refreshClientTokens } from "./ghostlexly-auth.client";
+import { wolfios } from "../wolfios";
 
 type SessionStatus = "loading" | "authenticated" | "unauthenticated";
 
@@ -48,9 +48,9 @@ const GhostlexlyAuthProvider = ({ children }: ProviderProps) => {
   // Automatic refresh of tokens
   useEffect(() => {
     const interval = setInterval(
-      () => {
+      async () => {
         if (sessionData.status === "authenticated") {
-          refreshClientTokens();
+          await wolfios.post("/api/auth/refresh");
         }
       },
       1000 * 60 * 5 // 5 minutes

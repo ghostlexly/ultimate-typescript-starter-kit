@@ -51,6 +51,7 @@ export function SignUpForm({
   const router = useRouter();
   const { previousLink } = useAppStore();
   const session = useSession();
+
   const countries = useQuery({
     queryKey: ["countries"],
     queryFn: () => wolfios.get("/api/countries").then((res) => res.data),

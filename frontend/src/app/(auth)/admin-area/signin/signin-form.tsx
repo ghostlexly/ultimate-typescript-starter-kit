@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,20 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { wolfios } from "@/lib/wolfios";
-import { handleApiErrors } from "@/lib/handle-api-errors";
-import { Controller, useForm } from "react-hook-form";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
-import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   Field,
   FieldDescription,
@@ -30,8 +15,15 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-import { useSession } from "@/lib/ghostlexly-auth/ghostlexly-auth.provider";
+import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
+import { useSession } from "@/lib/ghostlexly-auth/ghostlexly-auth.provider";
+import { handleApiErrors } from "@/lib/handle-api-errors";
+import { cn } from "@/lib/utils";
+import { wolfios } from "@/lib/wolfios";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Controller, useForm } from "react-hook-form";
 
 type FormValues = {
   email: string;
@@ -43,7 +35,6 @@ export function SigninForm({
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   const router = useRouter();
-  const [showPassword, setShowPassword] = useState(false);
   const session = useSession();
 
   const form = useForm<FormValues>({

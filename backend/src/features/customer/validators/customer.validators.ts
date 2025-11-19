@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const customerRegisterSchema = z.object({
   body: z.object({
     email: z.email(),
-    password: z.string().min(6).max(100),
+    password: z.string().min(8).max(100),
     country: z.string().min(1),
   }),
 });
@@ -21,7 +21,7 @@ export type CustomerRequestPasswordResetTokenDto = z.infer<
 export const customerResetPasswordSchema = z.object({
   body: z.object({
     token: z.string().min(1),
-    password: z.string().min(6).max(100),
+    password: z.string().min(8).max(100),
   }),
 });
 export type CustomerResetPasswordDto = z.infer<

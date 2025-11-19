@@ -65,6 +65,12 @@ export class AuthController {
     }
 
     if (!user) {
+      // When user doesn't exist, still hash a fake password to prevent timing-based account enumeration
+      await this.authService.comparePassword({
+        password: body.password,
+        hashedPassword: '$2a$10$fakeHashToPreventTimingAttacks',
+      });
+
       throw new HttpException(
         {
           message: 'Mot de passe ou e-mail incorrect.',
@@ -105,13 +111,18 @@ export class AuthController {
       });
 
     res.cookie('lunisoft_access_token', accessToken, {
+      httpOnly: true, // ✅ Full httpOnly for maximum security
       secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax', // ✅ CSRF protection (lax for SSR compatibility)
+      path: '/',
       maxAge: authConstants.accessTokenExpirationMinutes * 60 * 1000, // Convert minutes to milliseconds
     });
 
     res.cookie('lunisoft_refresh_token', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax', // ✅ CSRF protection
+      path: '/',
       maxAge: authConstants.refreshTokenExpirationMinutes * 60 * 1000, // Convert minutes to milliseconds
     });
 
@@ -156,13 +167,18 @@ export class AuthController {
       });
 
     res.cookie('lunisoft_access_token', accessToken, {
+      httpOnly: true, // ✅ Full httpOnly for maximum security
       secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax', // ✅ CSRF protection (lax for SSR compatibility)
+      path: '/',
       maxAge: authConstants.accessTokenExpirationMinutes * 60 * 1000, // Convert minutes to milliseconds
     });
 
     res.cookie('lunisoft_refresh_token', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax', // ✅ CSRF protection
+      path: '/',
       maxAge: authConstants.refreshTokenExpirationMinutes * 60 * 1000, // Convert minutes to milliseconds
     });
 
