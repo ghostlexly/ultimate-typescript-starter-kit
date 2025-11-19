@@ -2,6 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { AppModule } from '../../src/app.module';
 import { TestDatabaseHelper } from './test-database.helper';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
 
 export interface E2ETestContext {
   app: INestApplication;
@@ -45,19 +48,25 @@ export function setupE2ETest(): E2ETestContext {
       imports: [AppModule],
     }).compile();
 
-    // Create and configure app
-    context.app = moduleFixture.createNestApplication();
+    // Create and configure app (same as production, check main.ts file)
+    const app = moduleFixture.createNestApplication<NestExpressApplication>();
 
-    // Apply global prefix (same as production)
-    context.app.setGlobalPrefix('api');
+    // Apply global prefix
+    app.setGlobalPrefix('api');
 
-    // Apply global pipes (same as production)
-    // context.app.useGlobalPipes(
-    //   new ValidationPipe({
-    //     whitelist: true,
-    //     transform: true,
-    //   }),
-    // );
+    // Set application settings
+    app.setGlobalPrefix('api');
+    app.disable('x-powered-by');
+    app.set('trust proxy', 'loopback'); // This is important for the throttler to work correctly behind a proxy
+    app.set('query parser', 'extended'); // Allow nested query parameters (ex: include[]=bookings&include[]=moneyAdvance)
+
+    // Helmet is a collection of middlewares functions that set security-related headers
+    app.use(helmet());
+
+    // Cookie parser is a middleware function that parses the cookies of the request
+    app.use(cookieParser());
+
+    context.app = app;
 
     await context.app.init();
 

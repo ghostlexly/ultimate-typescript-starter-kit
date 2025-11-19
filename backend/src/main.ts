@@ -13,7 +13,11 @@ async function bootstrap() {
 
   // Use Winston as the default logger
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
+
+  // Enable shutdown hooks
   app.enableShutdownHooks();
+
+  // Set application settings
   app.setGlobalPrefix('api');
   app.disable('x-powered-by');
   app.set('trust proxy', 'loopback'); // This is important for the throttler to work correctly behind a proxy
