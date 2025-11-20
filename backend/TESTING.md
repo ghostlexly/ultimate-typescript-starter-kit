@@ -100,7 +100,7 @@ describe('calculateDiscount', () => {
 
 ```bash
 # .env.test
-DATABASE_URL="postgresql://user:password@localhost:5432/myapp_test"
+APP_DATABASE_CONNECTION_URL="postgresql://user:password@localhost:5432/myapp_test"
 ```
 
 2. **Run migrations on test database:**
@@ -578,12 +578,12 @@ jobs:
       - name: Run migrations
         run: npx prisma migrate deploy
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/myapp_test
+          APP_DATABASE_CONNECTION_URL: postgresql://postgres:postgres@localhost:5432/myapp_test
 
       - name: Run tests
         run: npm run test:e2e
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/myapp_test
+          APP_DATABASE_CONNECTION_URL: postgresql://postgres:postgres@localhost:5432/myapp_test
 ```
 
 ## Quick Reference

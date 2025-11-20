@@ -1,5 +1,5 @@
 # -- BUILDER
-FROM node:22.9.0-bullseye-slim AS builder
+FROM node:24-bullseye-slim AS builder
 WORKDIR /usr/src/app
 
 # Install dependencies
@@ -11,7 +11,7 @@ RUN npx prisma generate
 RUN npm run build
 
 # -- RUNNER
-FROM node:22.9.0-bullseye-slim AS base
+FROM node:24-bullseye-slim AS base
 WORKDIR /usr/src/app
 
 # Update apt and install security updates

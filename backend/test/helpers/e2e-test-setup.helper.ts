@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { AppModule } from '../../src/app.module';
 import { TestDatabaseHelper } from './test-database.helper';
+import { DatabaseService } from '../../src/features/application/services/database.service';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
@@ -39,14 +40,14 @@ export function setupE2ETest(): E2ETestContext {
   };
 
   beforeAll(async () => {
-    // Initialize database helper
-    context.dbHelper = new TestDatabaseHelper();
-    await context.dbHelper.connect();
-
     // Create testing module
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
+
+    // Get DatabaseService from the module and create helper
+    const databaseService = moduleFixture.get(DatabaseService);
+    context.dbHelper = new TestDatabaseHelper(databaseService);
 
     // Create and configure app (same as production, check main.ts file)
     const app = moduleFixture.createNestApplication<NestExpressApplication>();
@@ -77,7 +78,6 @@ export function setupE2ETest(): E2ETestContext {
   afterAll(async () => {
     // Cleanup
     await context.dbHelper.cleanDatabase();
-    await context.dbHelper.disconnect();
     await context.app.close();
   });
 

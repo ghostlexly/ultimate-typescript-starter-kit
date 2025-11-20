@@ -1,5 +1,5 @@
-import { PrismaClient } from 'src/generated/prisma/client';
 import { Logger } from '@nestjs/common';
+import { DatabaseService } from 'src/features/application/services/database.service';
 
 /**
  * Helper class for managing test database state
@@ -7,24 +7,11 @@ import { Logger } from '@nestjs/common';
  */
 export class TestDatabaseHelper {
   private readonly logger = new Logger(TestDatabaseHelper.name);
-  private prisma: PrismaClient;
 
-  constructor() {
-    this.prisma = new PrismaClient();
-  }
+  constructor(private readonly databaseService: DatabaseService) {}
 
-  async connect(): Promise<void> {
-    await this.prisma.$connect();
-    this.logger.log('Test database connected');
-  }
-
-  async disconnect(): Promise<void> {
-    await this.prisma.$disconnect();
-    this.logger.log('Test database disconnected');
-  }
-
-  getPrisma(): PrismaClient {
-    return this.prisma;
+  get prisma() {
+    return this.databaseService.prisma;
   }
 
   /**
