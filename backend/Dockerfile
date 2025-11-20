@@ -40,7 +40,7 @@ COPY ./prisma ./prisma
 COPY ./public ./public
 COPY ./views ./views
 
-# Download Prisma binaries (will not be needed anymore in Prisma v7)
+# Generate Prisma Client files
 RUN npx prisma generate
 
 ENV NODE_ENV=production
