@@ -66,9 +66,10 @@ Welcome to the Ultimate TypeScript Full Stack Starter! This toolkit provides a r
 
 2. **Create a .env file (repo root)**
    Provide the variables used by `compose.yml`.
+
    Copy `.env.example` file to `.env` and fill in the required values.
 
-   **Generate JWT Keys:**
+   **Generate JWT Keys (optional but recommanded for security):**
    To generate the `APP_JWT_PRIVATE_KEY` and `APP_JWT_PUBLIC_KEY` values, run:
 
    ```bash
@@ -81,7 +82,7 @@ Welcome to the Ultimate TypeScript Full Stack Starter! This toolkit provides a r
 
    This will output base64-encoded RSA keys that you can copy directly into your `.env` file.
 
-3. **Install dependencies (optional for local non‑Docker runs)**
+3. **Install dependencies (for local development)**
 
    ```
    cd backend && npm install
@@ -97,10 +98,20 @@ Welcome to the Ultimate TypeScript Full Stack Starter! This toolkit provides a r
 5. **Initialize the database schema**
 
    ```
+   # Generate Prisma Client for the backend
+   cd backend && npx prisma generate && cd ..
+
+   # Apply migrations
    docker compose exec backend npx prisma migrate deploy
    ```
 
-6. **Access the application**
+6. **Seed the database**
+
+   ```
+   docker compose exec backend npm run cli seed
+   ```
+
+7. **Access the application**
    - Frontend: http://localhost
    - Backend: http://localhost/api
 
