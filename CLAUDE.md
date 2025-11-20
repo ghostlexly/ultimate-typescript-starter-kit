@@ -85,7 +85,7 @@ docker compose exec backend npx prisma studio
 backend/src/
 ├── app.module.ts           # Root module with global configuration
 ├── core/                   # Shared infrastructure
-│   ├── decorators/         # Custom decorators (@Public, @Roles, etc.)
+│   ├── decorators/         # Custom decorators (@AllowAnonymous, @Roles, etc.)
 │   ├── exceptions/         # Custom exception classes
 │   ├── filters/            # Exception filters
 │   ├── guards/             # Auth guards (JwtAuthGuard, RolesGuard, ThrottlerBehindProxyGuard)
