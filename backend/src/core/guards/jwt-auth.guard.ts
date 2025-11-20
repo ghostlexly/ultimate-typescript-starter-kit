@@ -1,7 +1,7 @@
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
-import { ALLOW_ANONYMOUS_KEY } from 'src/core/decorators/allow-anonymous';
+import { ALLOW_ANONYMOUS_KEY } from 'src/core/decorators/allow-anonymous.decorator';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {

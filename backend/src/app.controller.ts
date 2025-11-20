@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
-import { AllowAnonymous } from './core/decorators/allow-anonymous';
+import { AllowAnonymous } from './core/decorators/allow-anonymous.decorator';
 
 @Controller()
 export class AppController {

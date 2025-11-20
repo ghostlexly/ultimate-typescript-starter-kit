@@ -8,7 +8,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Queue } from 'bullmq';
 import multer from 'multer';
-import { AllowAnonymous } from 'src/core/decorators/allow-anonymous';
+import { AllowAnonymous } from 'src/core/decorators/allow-anonymous.decorator';
 import { S3Service } from 'src/features/application/services/s3.service';
 import { MediaService } from '../media.service';
 

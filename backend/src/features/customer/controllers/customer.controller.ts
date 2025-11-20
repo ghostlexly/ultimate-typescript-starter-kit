@@ -6,7 +6,7 @@ import {
   Post,
   UsePipes,
 } from '@nestjs/common';
-import { AllowAnonymous } from 'src/core/decorators/allow-anonymous';
+import { AllowAnonymous } from 'src/core/decorators/allow-anonymous.decorator';
 import { dateUtils } from 'src/core/utils/date';
 import { DatabaseService } from 'src/features/application/services/database.service';
 import { authConstants } from 'src/features/auth/auth.constants';

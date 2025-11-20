@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
-import { AllowAnonymous } from 'src/core/decorators/allow-anonymous';
+import { AllowAnonymous } from 'src/core/decorators/allow-anonymous.decorator';
 import { ZodValidationPipe } from 'src/core/pipes/zod-validation.pipe';
 import { DatabaseService } from 'src/features/application/services/database.service';
 import { Admin, Customer } from 'src/generated/prisma/client';

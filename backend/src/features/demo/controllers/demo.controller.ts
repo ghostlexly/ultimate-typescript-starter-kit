@@ -29,7 +29,7 @@ import { type Request } from 'express';
 import fs from 'fs/promises';
 import handlebars from 'handlebars';
 import path from 'path';
-import { AllowAnonymous } from 'src/core/decorators/allow-anonymous';
+import { AllowAnonymous } from 'src/core/decorators/allow-anonymous.decorator';
 import { Roles } from 'src/core/decorators/roles.decorator';
 import { ZodValidationPipe } from 'src/core/pipes/zod-validation.pipe';
 import {
