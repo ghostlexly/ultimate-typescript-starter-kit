@@ -136,7 +136,7 @@ The application has 2 main roles:
 
 ### Global Guards & Pipes
 
-- `JwtAuthGuard`: Enforces authentication (use `@Public()` to bypass)
+- `JwtAuthGuard`: Enforces authentication (use `@AllowAnonymous()` to bypass)
 - `RolesGuard`: Enforces role-based access (use `@Roles()` decorator)
 - `ThrottlerBehindProxyGuard`: Rate limiting behind reverse proxy
 - `TrimStringsPipe`: Automatically trims string inputs
@@ -172,7 +172,7 @@ frontend/src/
 - Use **Zod** for all request validation
 - Controllers should be thin, delegate to services
 - Use DTOs for data transfer
-- Apply appropriate decorators (`@Public()`, `@Roles()`)
+- Apply appropriate decorators (`@AllowAnonymous()`, `@Roles()`)
 - Handle errors with custom exceptions
 - Write unit tests for services
 

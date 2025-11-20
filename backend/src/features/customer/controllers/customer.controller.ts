@@ -6,7 +6,7 @@ import {
   Post,
   UsePipes,
 } from '@nestjs/common';
-import { Public } from 'src/core/decorators/is-public.decorator';
+import { AllowAnonymous } from 'src/core/decorators/allow-anonymous';
 import { dateUtils } from 'src/core/utils/date';
 import { DatabaseService } from 'src/features/application/services/database.service';
 import { authConstants } from 'src/features/auth/auth.constants';
@@ -23,7 +23,7 @@ import {
 } from '../validators/customer.validators';
 
 @Controller()
-@Public()
+@AllowAnonymous()
 export class CustomerController {
   constructor(
     private db: DatabaseService,

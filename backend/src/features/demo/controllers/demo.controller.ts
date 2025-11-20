@@ -29,7 +29,7 @@ import { type Request } from 'express';
 import fs from 'fs/promises';
 import handlebars from 'handlebars';
 import path from 'path';
-import { Public } from 'src/core/decorators/is-public.decorator';
+import { AllowAnonymous } from 'src/core/decorators/allow-anonymous';
 import { Roles } from 'src/core/decorators/roles.decorator';
 import { ZodValidationPipe } from 'src/core/pipes/zod-validation.pipe';
 import {
@@ -43,11 +43,11 @@ import { KillDragonCommand } from '../commands/impl/kill-dragon.command';
 import { DemoSerializeTestDto } from '../dto/demo.dto';
 import {
   DemoGetPaginatedCountriesDto,
-  type DemoGetPaginatedDataDto,
-  type DemoTestPlayerDto,
   demoGetPaginatedCountriesSchema,
   demoGetPaginatedDataSchema,
   demoTestPlayerSchema,
+  type DemoGetPaginatedDataDto,
+  type DemoTestPlayerDto,
 } from '../validators/demo.validators';
 
 @Controller('demos')
@@ -64,7 +64,7 @@ export class DemoController {
    * @description Try the Prisma Client
    */
   @Get()
-  @Public()
+  @AllowAnonymous()
   async findAll() {
     return await this.db.prisma.account.findManyAndCount({});
   }
@@ -73,7 +73,7 @@ export class DemoController {
    * @description Try the Zod Validation Pipe
    */
   @Post()
-  @Public()
+  @AllowAnonymous()
   @UsePipes(new ZodValidationPipe(demoTestPlayerSchema))
   create(
     @Body() body: DemoTestPlayerDto['body'],
@@ -86,7 +86,7 @@ export class DemoController {
    * @description Try the Serialization Pipe
    */
   @Get('serialize-with-class')
-  @Public()
+  @AllowAnonymous()
   @UseInterceptors(ClassSerializerInterceptor)
   serializeWithClass() {
     return new DemoSerializeTestDto({
@@ -101,7 +101,7 @@ export class DemoController {
    * @description Try the Serialization Pipe
    */
   @Get('serialize-with-options')
-  @Public()
+  @AllowAnonymous()
   @UseInterceptors(ClassSerializerInterceptor)
   @SerializeOptions({
     type: DemoSerializeTestDto,
@@ -123,7 +123,7 @@ export class DemoController {
    * @description Launch a test job with BullMQ
    */
   @Get('queue-launch')
-  @Public()
+  @AllowAnonymous()
   async testQueueLaunch() {
     await this.demoQueue.add('testingJob', { message: 'Hello World' });
     return {
@@ -135,7 +135,7 @@ export class DemoController {
    * @description Public route that doesn't require authentication
    */
   @Get('public-route')
-  @Public()
+  @AllowAnonymous()
   publicRoute() {
     return {
       message: 'Public route.',
@@ -175,7 +175,7 @@ export class DemoController {
    * Will block the IP Address after 10 attempts.
    */
   @Get('strict-throttler')
-  @Public()
+  @AllowAnonymous()
   @Throttle({ long: { limit: 10 } })
   strictThrottler() {
     return {
@@ -184,13 +184,13 @@ export class DemoController {
   }
 
   @Get('throw-unhandled-error')
-  @Public()
+  @AllowAnonymous()
   throwUnhandledError() {
     throw new Error('Unhandled error');
   }
 
   @Get('pdf-generation')
-  @Public()
+  @AllowAnonymous()
   async testPdfGeneration(@Res() res: Response) {
     // Get template
     const template = await fs.readFile(
@@ -236,7 +236,7 @@ export class DemoController {
   }
 
   @Get('cached-by-interceptor')
-  @Public()
+  @AllowAnonymous()
   @UseInterceptors(CacheInterceptor)
   @CacheKey('cached-response')
   @CacheTTL(5000) // 5 seconds
@@ -248,7 +248,7 @@ export class DemoController {
   }
 
   @Get('cached-by-service')
-  @Public()
+  @AllowAnonymous()
   async testCachedData() {
     const cacheKey = 'cached-data';
     const cachedData = await this.cacheManager.get(cacheKey);
@@ -268,7 +268,7 @@ export class DemoController {
   }
 
   @Get('paginated-data')
-  @Public()
+  @AllowAnonymous()
   async getPaginatedData(
     @Query(new ZodValidationPipe(demoGetPaginatedDataSchema))
     query: DemoGetPaginatedDataDto['query'],
@@ -322,7 +322,7 @@ export class DemoController {
   }
 
   @Get('paginated-countries')
-  @Public()
+  @AllowAnonymous()
   async getPaginatedCountries(
     @Query(new ZodValidationPipe(demoGetPaginatedCountriesSchema))
     query: DemoGetPaginatedCountriesDto['query'],
@@ -368,7 +368,7 @@ export class DemoController {
   }
 
   @Post('cqrs-kill-dragon')
-  @Public()
+  @AllowAnonymous()
   async cqrsKillDragon() {
     const response = await this.commandBus.execute(
       new KillDragonCommand({ dragonId: '17', heroId: '20' }),

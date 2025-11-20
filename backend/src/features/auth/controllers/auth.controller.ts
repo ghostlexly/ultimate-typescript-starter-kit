@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
-import { Public } from 'src/core/decorators/is-public.decorator';
+import { AllowAnonymous } from 'src/core/decorators/allow-anonymous';
 import { ZodValidationPipe } from 'src/core/pipes/zod-validation.pipe';
 import { DatabaseService } from 'src/features/application/services/database.service';
 import { Admin, Customer } from 'src/generated/prisma/client';
@@ -35,7 +35,7 @@ export class AuthController {
   ) {}
 
   @Post('signin')
-  @Public()
+  @AllowAnonymous()
   @Throttle({ long: { limit: 10 } })
   @UsePipes(new ZodValidationPipe(authSigninSchema))
   async signIn(
@@ -133,7 +133,7 @@ export class AuthController {
   }
 
   @Post('refresh')
-  @Public()
+  @AllowAnonymous()
   @Throttle({ long: { limit: 50 } })
   @UsePipes(new ZodValidationPipe(authRefreshTokenSchema))
   async refreshToken(

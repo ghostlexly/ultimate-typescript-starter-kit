@@ -1,9 +1,9 @@
 import { Controller, Get } from '@nestjs/common';
 import * as countries from 'i18n-iso-countries';
-import { Public } from 'src/core/decorators/is-public.decorator';
+import { AllowAnonymous } from 'src/core/decorators/allow-anonymous';
 
 @Controller('countries')
-@Public()
+@AllowAnonymous()
 export class CountryController {
   @Get()
   getCountries() {

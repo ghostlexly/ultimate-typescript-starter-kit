@@ -1,3 +1,4 @@
+import { InjectQueue } from '@nestjs/bullmq';
 import {
   Controller,
   Post,
@@ -5,12 +6,11 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { MediaService } from '../media.service';
-import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
-import { Public } from 'src/core/decorators/is-public.decorator';
 import multer from 'multer';
+import { AllowAnonymous } from 'src/core/decorators/allow-anonymous';
 import { S3Service } from 'src/features/application/services/s3.service';
+import { MediaService } from '../media.service';
 
 @Controller('media')
 export class MediaController {
@@ -21,7 +21,7 @@ export class MediaController {
   ) {}
 
   @Post()
-  @Public()
+  @AllowAnonymous()
   @UseInterceptors(
     FileInterceptor('file', {
       storage: multer.diskStorage({}),
@@ -62,7 +62,7 @@ export class MediaController {
   }
 
   @Post('/video')
-  @Public()
+  @AllowAnonymous()
   @UseInterceptors(
     FileInterceptor('file', {
       storage: multer.diskStorage({}),

@@ -1,7 +1,7 @@
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
-import { IS_PUBLIC_KEY } from 'src/core/decorators/is-public.decorator';
+import { ALLOW_ANONYMOUS_KEY } from 'src/core/decorators/allow-anonymous';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -10,13 +10,13 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
 
   canActivate(context: ExecutionContext) {
-    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    const isAllowAnonymous = this.reflector.getAllAndOverride<boolean>(
+      ALLOW_ANONYMOUS_KEY,
+      [context.getHandler(), context.getClass()],
+    );
 
-    if (isPublic) {
-      // If the route has @Public() decorator, don't check for authentication
+    if (isAllowAnonymous) {
+      // If the route has @AllowAnonymous() decorator, don't check for authentication
       return true;
     }
 
