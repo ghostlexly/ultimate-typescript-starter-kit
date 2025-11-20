@@ -256,7 +256,7 @@ cd backend && npm test
 
 After making ANY code changes, you MUST:
 
-1. **Check for TypeScript errors** - Run `npm run build` or check IDE diagnostics
+1. **Check for TypeScript errors** - Check IDE diagnostics or run `npm run build`
 2. **Run linting** - Execute `npm run lint` to catch code style issues
 3. **Fix all errors** - Never leave TypeScript errors or linting errors unfixed
 4. **Verify imports** - Ensure all imports are correct (e.g., `import request from 'supertest'` not `import * as request`)
