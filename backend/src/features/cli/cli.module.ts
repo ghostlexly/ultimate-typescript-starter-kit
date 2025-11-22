@@ -4,6 +4,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { BullModule } from '@nestjs/bullmq';
 import { ApplicationModule } from '../application/application.module';
 import { AuthModule } from '../auth/auth.module';
+import { CqrsModule } from '@nestjs/cqrs';
 
 // Commands
 import { BasicCommand } from './commands/basic.command';
@@ -31,6 +32,7 @@ import { FakeDataSeeder } from './seeders/fake-data.seeder';
         port: parseInt(process.env.APP_REDIS_PORT ?? '6379'),
       },
     }),
+    CqrsModule.forRoot(),
 
     ApplicationModule,
     AuthModule,
