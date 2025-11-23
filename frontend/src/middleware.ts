@@ -108,31 +108,30 @@ function localeDetectionMiddleware(request: NextRequest): NextResponse | null {
 async function authenticationMiddleware(
   request: NextRequest
 ): Promise<NextResponse | null> {
+  const isAdminArea = request.nextUrl.pathname.startsWith("/admin-area");
   const isAdminAuthPage =
     request.nextUrl.pathname.startsWith("/admin-area/signin");
-  const isAdminArea = request.nextUrl.pathname.startsWith("/admin-area");
 
-  // Skip if not admin area
-  if (!isAdminArea && !isAdminAuthPage) {
-    return null;
-  }
+  if (isAdminArea || isAdminAuthPage) {
+    const session = await getServerSession();
 
-  const session = await getServerSession();
-
-  // Redirect unauthenticated users to signin page
-  if (isAdminArea && !isAdminAuthPage) {
-    if (session.status === "unauthenticated") {
-      return NextResponse.redirect(new URL("/admin-area/signin", request.url));
+    // Redirect unauthenticated users to signin page
+    if (isAdminArea && !isAdminAuthPage) {
+      if (session.status === "unauthenticated") {
+        return NextResponse.redirect(
+          new URL("/admin-area/signin", request.url)
+        );
+      }
     }
-  }
 
-  // Redirect authenticated admins away from signin page
-  if (isAdminAuthPage) {
-    if (
-      session.status === "authenticated" &&
-      session.data?.role.includes("ADMIN")
-    ) {
-      return NextResponse.redirect(new URL("/admin-area", request.url));
+    // Redirect authenticated admins away from signin page
+    if (isAdminAuthPage) {
+      if (
+        session.status === "authenticated" &&
+        session.data?.role.includes("ADMIN")
+      ) {
+        return NextResponse.redirect(new URL("/admin-area", request.url));
+      }
     }
   }
 
