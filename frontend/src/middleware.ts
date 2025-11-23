@@ -66,7 +66,7 @@ const defaultLocale = "fr";
 /**
  * Detects user locale from Accept-Language header and sets NEXT_LOCALE cookie
  */
-function detectLocaleMiddleware(request: NextRequest): NextResponse | null {
+function localeDetectionMiddleware(request: NextRequest): NextResponse | null {
   // Check if locale is already set in cookie
   const localeFromCookie = request.cookies.get("NEXT_LOCALE")?.value;
 
@@ -144,7 +144,7 @@ async function authenticationMiddleware(
 // =============================================================================
 
 export const middleware = chain([
-  detectLocaleMiddleware,
+  localeDetectionMiddleware,
   authenticationMiddleware,
 ]);
 
