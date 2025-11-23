@@ -2,11 +2,9 @@
 
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
-import { NoSsr } from "@/components/ui/no-ssr";
-import { useDate } from "@/hooks/use-date";
+import { dateUtils } from "@/lib/date";
 
 const Footer = () => {
-  const dateUtils = useDate();
   return (
     <>
       {/* Similaire au header en terme d'espacement / width */}
