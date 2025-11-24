@@ -1,4 +1,6 @@
-import { format, parse, isValid } from "date-fns";
+import { format, parse, isValid, setDefaultOptions } from "date-fns";
+import { fr } from "date-fns/locale/fr";
+setDefaultOptions({ locale: fr });
 
 type ParseDateOnlyProps = {
   date: string;
