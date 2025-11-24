@@ -3,7 +3,7 @@ import axios, {
   AxiosResponse,
   InternalAxiosRequestConfig,
 } from "axios";
-import { clearAuthCookies } from "./ghostlexly-auth/ghostlexly-auth.server";
+import { clearAuthCookies } from "./luni-auth/luni-auth.server";
 
 const wolfios = axios.create({
   adapter: ["fetch", "xhr", "http"],

@@ -24,7 +24,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useSession } from "@/lib/ghostlexly-auth/ghostlexly-auth.provider";
+import { useSession } from "@/lib/luni-auth/luni-auth.provider";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
@@ -43,7 +43,9 @@ export function NavUser() {
                 <AvatarImage src={"#"} alt={session.data?.email} />
                 <AvatarFallback className="rounded-lg uppercase">
                   {session.data?.firstName && session.data?.lastName
-                    ? `${session.data?.firstName.charAt(0)}${session.data?.lastName.charAt(0)}`
+                    ? `${session.data?.firstName.charAt(
+                        0
+                      )}${session.data?.lastName.charAt(0)}`
                     : session.data?.email.charAt(0)}
                 </AvatarFallback>
               </Avatar>
@@ -68,7 +70,9 @@ export function NavUser() {
                   <AvatarImage src={"#"} alt={session.data?.email} />
                   <AvatarFallback className="rounded-lg uppercase">
                     {session.data?.firstName && session.data?.lastName
-                      ? `${session.data?.firstName.charAt(0)}${session.data?.lastName.charAt(0)}`
+                      ? `${session.data?.firstName.charAt(
+                          0
+                        )}${session.data?.lastName.charAt(0)}`
                       : session.data?.email.charAt(0)}
                   </AvatarFallback>
                 </Avatar>

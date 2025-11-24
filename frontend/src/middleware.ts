@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getServerSession } from "./lib/ghostlexly-auth/ghostlexly-auth.server";
+import { getServerSession } from "./lib/luni-auth/luni-auth.server";
 
 // =============================================================================
 // Types
@@ -60,48 +60,6 @@ function chain(middlewares: MiddlewareFactory[]) {
 // Middleware Functions
 // =============================================================================
 
-const supportedLocales = ["fr", "en"];
-const defaultLocale = "fr";
-
-/**
- * Detects user locale from Accept-Language header and sets NEXT_LOCALE cookie
- */
-function localeDetectionMiddleware(request: NextRequest): NextResponse | null {
-  // Check if locale is already set in cookie
-  const localeFromCookie = request.cookies.get("NEXT_LOCALE")?.value;
-
-  if (localeFromCookie && supportedLocales.includes(localeFromCookie)) {
-    // Locale already set, continue to next middleware
-    return null;
-  }
-
-  // Detect locale from Accept-Language header
-  const acceptLanguage = request.headers.get("accept-language");
-  let detectedLocale = defaultLocale;
-
-  if (acceptLanguage) {
-    // Parse Accept-Language header (e.g., "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7")
-    const languages = acceptLanguage.split(",").map((lang) => {
-      const [code] = lang.trim().split(";");
-      return code.split("-")[0].toLowerCase();
-    });
-
-    // Find first supported language
-    detectedLocale =
-      languages.find((lang) => supportedLocales.includes(lang)) ||
-      defaultLocale;
-  }
-
-  // Set cookie with detected locale
-  const response = NextResponse.next();
-  response.cookies.set("NEXT_LOCALE", detectedLocale, {
-    maxAge: 60 * 60 * 24 * 365, // 1 year
-    path: "/",
-  });
-
-  return response;
-}
-
 /**
  * Protects admin area routes and handles authentication redirects
  */
@@ -142,10 +100,7 @@ async function authenticationMiddleware(
 // Main Middleware Export
 // =============================================================================
 
-export const middleware = chain([
-  localeDetectionMiddleware,
-  authenticationMiddleware,
-]);
+export const middleware = chain([authenticationMiddleware]);
 
 export const config = {
   matcher: ["/:path*"],

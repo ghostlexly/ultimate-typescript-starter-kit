@@ -23,7 +23,7 @@ import {
   SingleSelectComboboxItem,
 } from "@/components/ui/single-select-combobox/single-select-combobox";
 import { useAppStore } from "@/hooks/use-app-store";
-import { useSession } from "@/lib/ghostlexly-auth/ghostlexly-auth.provider";
+import { useSession } from "@/lib/luni-auth/luni-auth.provider";
 import { handleApiErrors } from "@/lib/handle-api-errors";
 import { cn } from "@/lib/utils";
 import { wolfios } from "@/lib/wolfios";

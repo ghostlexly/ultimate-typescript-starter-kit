@@ -266,13 +266,10 @@ export function DataTable<TData, TValue>({
 
   const handleClearAllFilters = () => {
     if (onFiltersChange && filters) {
-      const clearedFilters = Object.keys(filters).reduce(
-        (acc, key) => {
-          acc[key] = "";
-          return acc;
-        },
-        {} as Record<string, any>
-      );
+      const clearedFilters = Object.keys(filters).reduce((acc, key) => {
+        acc[key] = "";
+        return acc;
+      }, {} as Record<string, any>);
       onFiltersChange(clearedFilters);
     }
   };

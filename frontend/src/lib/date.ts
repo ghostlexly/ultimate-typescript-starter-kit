@@ -1,4 +1,4 @@
-import * as dateFns from "date-fns";
+import { format, parse, isValid } from "date-fns";
 
 type ParseDateOnlyProps = {
   date: string;
@@ -34,9 +34,9 @@ function minutesToHoursHr(minutes: number) {
  * @returns
  */
 function parseDateOnly({ date, format = "dd/MM/yyyy" }: ParseDateOnlyProps) {
-  const transformed = dateFns.parse(date, format, new Date());
+  const transformed = parse(date, format, new Date());
 
-  if (dateFns.isValid(transformed)) {
+  if (isValid(transformed)) {
     // -- Adjust the date to account for the timezone offset
     const offset = transformed.getTimezoneOffset();
     const adjustedDate = new Date(transformed.getTime() - offset * 60000); // offset in minutes, converted to ms
@@ -57,9 +57,9 @@ function parseDateOnly({ date, format = "dd/MM/yyyy" }: ParseDateOnlyProps) {
  * @returns
  */
 function parseTimeOnly({ time, format = "HH:mm" }: ParseTimeOnlyProps) {
-  const transformed = dateFns.parse(time, format, new Date(1970, 0, 1));
+  const transformed = parse(time, format, new Date(1970, 0, 1));
 
-  if (dateFns.isValid(transformed)) {
+  if (isValid(transformed)) {
     return transformed.toISOString();
   } else {
     return time;
@@ -70,7 +70,11 @@ function parseTimeOnly({ time, format = "HH:mm" }: ParseTimeOnlyProps) {
  * To check the available formats, see https://date-fns.org/v4.1.0/docs/format
  */
 export const dateUtils = {
-  ...dateFns,
+  format,
+  parse,
+  isValid,
+
+  // Custom functions
   parseDateOnly,
   parseTimeOnly,
   minutesToHoursHr,

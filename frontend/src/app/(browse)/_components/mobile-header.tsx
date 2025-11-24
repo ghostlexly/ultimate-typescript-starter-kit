@@ -13,7 +13,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useSession } from "@/lib/ghostlexly-auth/ghostlexly-auth.provider";
+import { useSession } from "@/lib/luni-auth/luni-auth.provider";
 import {
   ChevronRightIcon,
   MailIcon,

@@ -16,12 +16,15 @@ const localeMap = {
   en: enUS,
 };
 
-type LocaleProviderProps = {
+type LocaleProviderClientProps = {
   children: ReactNode;
   localeCode: string;
 };
 
-export function LocaleProvider({ children, localeCode }: LocaleProviderProps) {
+export function LocaleProviderClient({
+  children,
+  localeCode,
+}: LocaleProviderClientProps) {
   const locale =
     localeMap[localeCode as keyof typeof localeMap] || localeMap.fr;
 
@@ -37,8 +40,10 @@ export function LocaleProvider({ children, localeCode }: LocaleProviderProps) {
 
 export function useLocale() {
   const context = useContext(LocaleContext);
+
   if (context === undefined) {
     throw new Error("useLocale must be used within a LocaleProvider");
   }
+
   return context;
 }

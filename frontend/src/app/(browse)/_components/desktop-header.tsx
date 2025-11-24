@@ -25,7 +25,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { useSession } from "@/lib/ghostlexly-auth/ghostlexly-auth.provider";
+import { useSession } from "@/lib/luni-auth/luni-auth.provider";
 import {
   CircleCheckIcon,
   CircleHelpIcon,

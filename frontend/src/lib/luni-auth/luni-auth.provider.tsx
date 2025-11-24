@@ -7,7 +7,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { getServerSession, clearAuthCookies } from "./ghostlexly-auth.server";
+import { getServerSession, clearAuthCookies } from "./luni-auth.server";
 
 type SessionStatus = "loading" | "authenticated" | "unauthenticated";
 
@@ -38,7 +38,7 @@ type ProviderProps = {
   children: ReactNode;
 };
 
-const GhostlexlyAuthProvider = ({ children }: ProviderProps) => {
+const LuniAuthProvider = ({ children }: ProviderProps) => {
   const [sessionData, setSessionData] = useState<SessionData>({
     status: "loading",
     data: null,
@@ -75,4 +75,4 @@ const GhostlexlyAuthProvider = ({ children }: ProviderProps) => {
   );
 };
 
-export { GhostlexlyAuthProvider, useSession };
+export { LuniAuthProvider, useSession };

@@ -72,8 +72,8 @@ const Footer = () => {
 
           <div>
             <p className="text-center">
-              © LUNISOFT {dateUtils.format(new Date(), "EEEE yyyy")} - Tous
-              droits réservés
+              © LUNISOFT {dateUtils.format(new Date(), "yyyy")} - Tous droits
+              réservés
             </p>
           </div>
         </footer>

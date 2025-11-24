@@ -105,13 +105,10 @@ export function DataTableFilters({
 
   const handleReset = () => {
     // Reset to default values defined in fields
-    const resetValues = fields.reduce(
-      (acc, field) => {
-        acc[field.id] = field.defaultValue ?? "";
-        return acc;
-      },
-      {} as Record<string, any>
-    );
+    const resetValues = fields.reduce((acc, field) => {
+      acc[field.id] = field.defaultValue ?? "";
+      return acc;
+    }, {} as Record<string, any>);
 
     setLocalValues(resetValues);
     onValuesChange(resetValues);
