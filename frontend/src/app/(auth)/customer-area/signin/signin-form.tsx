@@ -21,7 +21,7 @@ import { useAppStore } from "@/hooks/use-app-store";
 import { useSession } from "@/lib/luni-auth/luni-auth.provider";
 import { handleApiErrors } from "@/lib/handle-api-errors";
 import { cn } from "@/lib/utils";
-import { wolfios } from "@/lib/wolfios";
+import { wolfios } from "@/lib/wolfios/wolfios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { startTransition } from "react";

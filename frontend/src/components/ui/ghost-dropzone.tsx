@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { wolfios } from "@/lib/wolfios";
+import { wolfios } from "@/lib/wolfios/wolfios";
 import {
   AlertCircleIcon,
   CheckCircle2Icon,

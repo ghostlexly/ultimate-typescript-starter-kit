@@ -6,7 +6,7 @@ import { SectionCards } from "@/app/(workspaces)/admin-area/_components/section-
 
 import data from "./data.json";
 import { Container } from "@/components/ui/container";
-import { wolfios } from "@/lib/wolfios";
+import { wolfios } from "@/lib/wolfios/wolfios";
 import { Button } from "@/components/ui/button";
 
 export default function Page() {

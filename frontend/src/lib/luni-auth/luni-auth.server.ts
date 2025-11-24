@@ -1,7 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { wolfiosServer } from "../wolfios.server";
+import { wolfiosServer } from "../wolfios/wolfios.server";
 
 const ACCESS_TOKEN_COOKIE = "lunisoft_access_token";
 const REFRESH_TOKEN_COOKIE = "lunisoft_refresh_token";

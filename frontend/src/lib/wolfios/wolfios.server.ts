@@ -9,7 +9,7 @@ import { cookies } from "next/headers";
  *
  * @example
  * ```ts
- * import { wolfiosServer } from "@/lib/wolfios.server";
+ * import { wolfiosServer } from "@/lib/wolfios/wolfios.server";
  *
  * export default async function Page() {
  *   const data = await wolfiosServer.get("/api/data").then(res => res.data);
