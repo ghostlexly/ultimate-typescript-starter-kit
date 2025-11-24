@@ -1,11 +1,11 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { wolfios } from "../wolfios";
+import { wolfiosServer } from "../wolfios.server";
 
 const ACCESS_TOKEN_COOKIE = "lunisoft_access_token";
 const REFRESH_TOKEN_COOKIE = "lunisoft_refresh_token";
-const ME_ROUTE = "http://caddy/api/auth/me";
+const ME_ROUTE = "/api/auth/me";
 
 type SessionStatus = "loading" | "authenticated" | "unauthenticated";
 
@@ -40,7 +40,7 @@ const getServerSession = async (
 
   // Fetch the user data
   try {
-    const data = await wolfios
+    const data = await wolfiosServer
       .get(userDataUrl, {
         headers: {
           Authorization: `Bearer ${token?.value}`,

@@ -5,6 +5,26 @@ import axios, {
 } from "axios";
 import { clearAuthCookies } from "./luni-auth/luni-auth.server";
 
+/**
+ * Wolfios - Axios instance for Client Components
+ *
+ * This instance handles automatic token refresh on 401 errors and works with browser cookies.
+ * Use this for Client Components and client-side API calls.
+ *
+ * For Server Components, use `wolfiosServer` from "@/lib/wolfios.server" instead.
+ *
+ * @example
+ * ```tsx
+ * 'use client';
+ * import { wolfios } from "@/lib/wolfios";
+ *
+ * export function MyComponent() {
+ *   const fetchData = async () => {
+ *     const data = await wolfios.get("/api/data").then(res => res.data);
+ *   };
+ * }
+ * ```
+ */
 const wolfios = axios.create({
   adapter: ["fetch", "xhr", "http"],
   timeout: 30000,

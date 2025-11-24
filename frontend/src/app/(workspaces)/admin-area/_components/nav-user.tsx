@@ -25,9 +25,11 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useSession } from "@/lib/luni-auth/luni-auth.provider";
+import { useRouter } from "next/navigation";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
+  const router = useRouter();
   const session = useSession();
 
   return (
@@ -102,7 +104,12 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => session.destroy()}>
+            <DropdownMenuItem
+              onClick={() => {
+                session.destroy();
+                router.push("/admin-area/signin");
+              }}
+            >
               <IconLogout />
               Log out
             </DropdownMenuItem>
