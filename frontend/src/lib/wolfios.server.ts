@@ -30,10 +30,12 @@ wolfiosServer.interceptors.request.use(async (request) => {
   // Auto-forward cookies from the incoming request
   try {
     const cookieStore = await cookies();
-    const cookieHeader = cookieStore.toString();
+    const token =
+      cookieStore.get("lunisoft_access_token") ??
+      cookieStore.get("lunisoft_refresh_token");
 
-    if (cookieHeader) {
-      request.headers.set("Cookie", cookieHeader);
+    if (token) {
+      request.headers.set("Authorization", `Bearer ${token?.value}`);
     }
   } catch (error) {
     // If cookies() fails, continue without them
