@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { dateUtils } from "@/lib/date";
+import { NoSsr } from "@/components/ui/no-ssr";
 
 const Footer = () => {
   return (
@@ -72,8 +73,11 @@ const Footer = () => {
 
           <div>
             <p className="text-center">
-              © LUNISOFT {dateUtils.format(new Date(), "yyyy")} - Tous droits
-              réservés
+              © LUNISOFT{" "}
+              <NoSsr>
+                <time>{dateUtils.format(new Date(), "yyyy")}</time>
+              </NoSsr>{" "}
+              - Tous droits réservés
             </p>
           </div>
         </footer>

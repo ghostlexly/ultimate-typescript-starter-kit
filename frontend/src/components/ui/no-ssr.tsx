@@ -7,7 +7,7 @@ const NoSsr = ({
   fallback,
 }: {
   children: React.ReactNode;
-  fallback: React.ReactNode;
+  fallback?: React.ReactNode;
 }) => {
   const [isMounted, setIsMounted] = useState(false);
 
