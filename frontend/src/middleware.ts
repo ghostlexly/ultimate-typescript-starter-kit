@@ -66,15 +66,18 @@ function chain(middlewares: MiddlewareFactory[]) {
 async function authenticationMiddleware(
   request: NextRequest
 ): Promise<NextResponse | null> {
+  // ---------------------------------------------
+  // Admin Area
+  // ---------------------------------------------
   const isAdminArea = request.nextUrl.pathname.startsWith("/admin-area");
-  const isAdminAuthPage =
+  const isAdminSigninPage =
     request.nextUrl.pathname.startsWith("/admin-area/signin");
 
-  if (isAdminArea || isAdminAuthPage) {
+  if (isAdminArea || isAdminSigninPage) {
     const session = await getServerSession();
 
     // Redirect unauthenticated users to signin page
-    if (isAdminArea && !isAdminAuthPage) {
+    if (isAdminArea && !isAdminSigninPage) {
       if (session.status === "unauthenticated") {
         return NextResponse.redirect(
           new URL("/admin-area/signin", request.url)
@@ -83,7 +86,7 @@ async function authenticationMiddleware(
     }
 
     // Redirect authenticated admins away from signin page
-    if (isAdminAuthPage) {
+    if (isAdminSigninPage) {
       if (
         session.status === "authenticated" &&
         session.data?.role.includes("ADMIN")
@@ -93,19 +96,22 @@ async function authenticationMiddleware(
     }
   }
 
+  // ---------------------------------------------
+  // Customer Area
+  // ---------------------------------------------
   const isCustomerArea = request.nextUrl.pathname.startsWith("/customer-area");
-  const isCustomerAuthPage = request.nextUrl.pathname.startsWith(
+  const isCustomerSigninPage = request.nextUrl.pathname.startsWith(
     "/customer-area/signin"
   );
   const isCustomerSignupPage = request.nextUrl.pathname.startsWith(
     "/customer-area/signup"
   );
 
-  if (isCustomerArea || isCustomerAuthPage || isCustomerSignupPage) {
+  if (isCustomerArea || isCustomerSigninPage || isCustomerSignupPage) {
     const session = await getServerSession();
 
     // Redirect unauthenticated users to signin page
-    if (isCustomerArea && !isCustomerAuthPage && !isCustomerSignupPage) {
+    if (isCustomerArea && !isCustomerSigninPage && !isCustomerSignupPage) {
       if (session.status === "unauthenticated") {
         return NextResponse.redirect(
           new URL("/customer-area/signin", request.url)
@@ -114,7 +120,7 @@ async function authenticationMiddleware(
     }
 
     // Redirect authenticated customers away from signin page
-    if (isCustomerAuthPage || isCustomerSignupPage) {
+    if (isCustomerSigninPage || isCustomerSignupPage) {
       if (
         session.status === "authenticated" &&
         session.data?.role.includes("CUSTOMER")
