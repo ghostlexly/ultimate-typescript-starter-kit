@@ -46,14 +46,13 @@ type FormValues = {
 };
 
 export function SignUpForm({
-  className,
+  searchParams,
   ...props
-}: React.ComponentPropsWithoutRef<"div">) {
+}: React.ComponentPropsWithoutRef<"div"> & { searchParams: any }) {
   const router = useRouter();
   const { previousLink } = useAppStore();
   const session = useSession();
   const [isPendingTransition, startTransition] = useTransition();
-  const searchParams = useSearchParams();
 
   const countries = useQuery({
     queryKey: ["countries"],
@@ -69,7 +68,7 @@ export function SignUpForm({
   });
 
   useEffect(() => {
-    const error = searchParams.get("error");
+    const error = searchParams.error;
 
     if (error) {
       toast.error(
@@ -127,7 +126,7 @@ export function SignUpForm({
   }
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className="flex flex-col gap-6" {...props}>
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Create an account</CardTitle>

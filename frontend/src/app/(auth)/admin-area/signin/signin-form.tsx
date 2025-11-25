@@ -22,7 +22,7 @@ import { useSession } from "@/lib/luni-auth/luni-auth.provider";
 import { cn } from "@/lib/utils";
 import { wolfios } from "@/lib/wolfios/wolfios";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -33,13 +33,12 @@ type FormValues = {
 };
 
 export function SigninForm({
-  className,
+  searchParams,
   ...props
-}: React.ComponentPropsWithoutRef<"div">) {
+}: React.ComponentPropsWithoutRef<"div"> & { searchParams: any }) {
   const router = useRouter();
   const session = useSession();
   const [isPendingTransition, startTransition] = useTransition();
-  const searchParams = useSearchParams();
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -49,7 +48,7 @@ export function SigninForm({
   });
 
   useEffect(() => {
-    const error = searchParams.get("error");
+    const error = searchParams.error;
 
     if (error) {
       toast.error(
@@ -85,7 +84,7 @@ export function SigninForm({
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className="flex flex-col gap-6" {...props}>
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome back</CardTitle>

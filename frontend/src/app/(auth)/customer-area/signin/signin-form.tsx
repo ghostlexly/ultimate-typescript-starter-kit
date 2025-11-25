@@ -34,14 +34,13 @@ type FormValues = {
 };
 
 export function SigninForm({
-  className,
+  searchParams,
   ...props
-}: React.ComponentPropsWithoutRef<"div">) {
+}: React.ComponentPropsWithoutRef<"div"> & { searchParams: any }) {
   const router = useRouter();
   const { previousLink } = useAppStore();
   const session = useSession();
   const [isPendingTransition, startTransition] = useTransition();
-  const searchParams = useSearchParams();
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -51,7 +50,7 @@ export function SigninForm({
   });
 
   useEffect(() => {
-    const error = searchParams.get("error");
+    const error = searchParams.error;
 
     if (error) {
       toast.error(
@@ -93,7 +92,7 @@ export function SigninForm({
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className="flex flex-col gap-6" {...props}>
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome back</CardTitle>
