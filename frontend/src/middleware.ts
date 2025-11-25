@@ -97,12 +97,15 @@ async function authenticationMiddleware(
   const isCustomerAuthPage = request.nextUrl.pathname.startsWith(
     "/customer-area/signin"
   );
+  const isCustomerSignupPage = request.nextUrl.pathname.startsWith(
+    "/customer-area/signup"
+  );
 
-  if (isCustomerArea || isCustomerAuthPage) {
+  if (isCustomerArea || isCustomerAuthPage || isCustomerSignupPage) {
     const session = await getServerSession();
 
     // Redirect unauthenticated users to signin page
-    if (isCustomerArea && !isCustomerAuthPage) {
+    if (isCustomerArea && !isCustomerAuthPage && !isCustomerSignupPage) {
       if (session.status === "unauthenticated") {
         return NextResponse.redirect(
           new URL("/customer-area/signin", request.url)
@@ -111,7 +114,7 @@ async function authenticationMiddleware(
     }
 
     // Redirect authenticated customers away from signin page
-    if (isCustomerAuthPage) {
+    if (isCustomerAuthPage || isCustomerSignupPage) {
       if (
         session.status === "authenticated" &&
         session.data?.role.includes("CUSTOMER")
