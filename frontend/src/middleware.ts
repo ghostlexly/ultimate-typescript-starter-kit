@@ -93,6 +93,34 @@ async function authenticationMiddleware(
     }
   }
 
+  const isCustomerArea = request.nextUrl.pathname.startsWith("/customer-area");
+  const isCustomerAuthPage = request.nextUrl.pathname.startsWith(
+    "/customer-area/signin"
+  );
+
+  if (isCustomerArea || isCustomerAuthPage) {
+    const session = await getServerSession();
+
+    // Redirect unauthenticated users to signin page
+    if (isCustomerArea && !isCustomerAuthPage) {
+      if (session.status === "unauthenticated") {
+        return NextResponse.redirect(
+          new URL("/customer-area/signin", request.url)
+        );
+      }
+    }
+
+    // Redirect authenticated customers away from signin page
+    if (isCustomerAuthPage) {
+      if (
+        session.status === "authenticated" &&
+        session.data?.role.includes("CUSTOMER")
+      ) {
+        return NextResponse.redirect(new URL("/customer-area", request.url));
+      }
+    }
+  }
+
   return null;
 }
 

@@ -95,9 +95,10 @@ export function SingleSelectCombobox<T extends SingleSelectComboboxItem>({
         onChange(selectedItem);
       }
 
+      onSearchChange?.("");
       setOpen(false);
     },
-    [items, onChange, value]
+    [items, onChange, value, onSearchChange]
   );
 
   const defaultRenderItem = useCallback((item: T) => item.label, []);

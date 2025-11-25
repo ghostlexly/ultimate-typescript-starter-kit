@@ -55,7 +55,7 @@ const handleFormViolations = <T extends FieldValues>(
   prefix?: string
 ) => {
   violations.forEach((violation) => {
-    let fieldPath = violation.path.replace(/^body\./, "");
+    let fieldPath = violation.path;
     if (prefix) {
       fieldPath = `${prefix}.${fieldPath}`;
     }
