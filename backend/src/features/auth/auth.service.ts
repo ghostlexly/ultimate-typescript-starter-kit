@@ -6,6 +6,8 @@ import { JwtService } from '@nestjs/jwt';
 import { dateUtils } from 'src/core/utils/date';
 import crypto from 'crypto';
 import { ConfigService } from '@nestjs/config';
+import type { Response } from 'express';
+import type { Role } from 'src/generated/prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -167,8 +169,42 @@ export class AuthService {
     });
 
     return {
+      session,
       accessToken,
       refreshToken: newRefreshToken,
     };
+  }
+
+  /**
+   * Set authentication cookies (access token and refresh token) on the response object
+   */
+  setAuthCookies({
+    res,
+    accessToken,
+    refreshToken,
+    role,
+  }: {
+    res: Response;
+    accessToken: string;
+    refreshToken: string;
+    role: Role;
+  }): void {
+    const path = role === 'ADMIN' ? '/admin-area' : '/';
+
+    res.cookie('lunisoft_access_token', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path,
+      maxAge: authConstants.accessTokenExpirationMinutes * 60 * 1000,
+    });
+
+    res.cookie('lunisoft_refresh_token', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path,
+      maxAge: authConstants.refreshTokenExpirationMinutes * 60 * 1000,
+    });
   }
 }

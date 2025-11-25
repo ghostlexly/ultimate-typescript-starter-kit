@@ -4,6 +4,8 @@ import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { GoogleCustomerStrategy } from './strategies/google-customer.strategy';
+import { GoogleAdminStrategy } from './strategies/google-admin.strategy';
 import { ClearExpiredSessionsCron } from './crons/clear-expired-sessions.cron';
 import { ConfigService } from '@nestjs/config';
 
@@ -26,7 +28,13 @@ import { ConfigService } from '@nestjs/config';
     PassportModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, ClearExpiredSessionsCron],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    GoogleCustomerStrategy,
+    GoogleAdminStrategy,
+    ClearExpiredSessionsCron,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

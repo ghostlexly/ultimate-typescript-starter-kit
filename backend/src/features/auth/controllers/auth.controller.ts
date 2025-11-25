@@ -8,6 +8,8 @@ import {
   Req,
   Res,
   UnauthorizedException,
+  UseFilters,
+  UseGuards,
   UsePipes,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
@@ -16,7 +18,6 @@ import { AllowAnonymous } from 'src/core/decorators/allow-anonymous.decorator';
 import { ZodValidationPipe } from 'src/core/pipes/zod-validation.pipe';
 import { DatabaseService } from 'src/features/application/services/database.service';
 import { Admin, Customer } from 'src/generated/prisma/client';
-import { authConstants } from '../auth.constants';
 import { AuthService } from '../auth.service';
 import type {
   AuthRefreshTokenDto,
@@ -26,15 +27,17 @@ import {
   authRefreshTokenSchema,
   authSigninSchema,
 } from '../validators/auth.validators';
+import { AuthGuard } from '@nestjs/passport';
+import { OAuthRedirectExceptionFilter } from '../filters/oauth-redirect.filter';
 
-@Controller('auth')
+@Controller()
 export class AuthController {
   constructor(
     private db: DatabaseService,
     private authService: AuthService,
   ) {}
 
-  @Post('signin')
+  @Post('/auth/signin')
   @AllowAnonymous()
   @Throttle({ long: { limit: 10 } })
   @UsePipes(new ZodValidationPipe(authSigninSchema))
@@ -110,20 +113,12 @@ export class AuthController {
         accountId: user.accountId,
       });
 
-    res.cookie('lunisoft_access_token', accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax', // ✅ CSRF protection (lax for SSR compatibility)
-      path: '/',
-      maxAge: authConstants.accessTokenExpirationMinutes * 60 * 1000,
-    });
-
-    res.cookie('lunisoft_refresh_token', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax', // ✅ CSRF protection (lax for SSR compatibility)
-      path: '/',
-      maxAge: authConstants.refreshTokenExpirationMinutes * 60 * 1000,
+    // Set authentication cookies
+    this.authService.setAuthCookies({
+      res,
+      accessToken,
+      refreshToken,
+      role: body.role,
     });
 
     return {
@@ -132,7 +127,7 @@ export class AuthController {
     };
   }
 
-  @Post('refresh')
+  @Post('/auth/refresh')
   @AllowAnonymous()
   @Throttle({ long: { limit: 50 } })
   @UsePipes(new ZodValidationPipe(authRefreshTokenSchema))
@@ -153,7 +148,7 @@ export class AuthController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const { accessToken, refreshToken } = await this.authService
+    const { session, accessToken, refreshToken } = await this.authService
       .refreshAuthenticationTokens({
         refreshToken: previousRefreshToken,
       })
@@ -166,20 +161,12 @@ export class AuthController {
         );
       });
 
-    res.cookie('lunisoft_access_token', accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax', // ✅ CSRF protection (lax for SSR compatibility)
-      path: '/',
-      maxAge: authConstants.accessTokenExpirationMinutes * 60 * 1000,
-    });
-
-    res.cookie('lunisoft_refresh_token', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax', // ✅ CSRF protection (lax for SSR compatibility)
-      path: '/',
-      maxAge: authConstants.refreshTokenExpirationMinutes * 60 * 1000,
+    // Set authentication cookies
+    this.authService.setAuthCookies({
+      res,
+      accessToken,
+      refreshToken,
+      role: session.account.role,
     });
 
     return {
@@ -188,7 +175,7 @@ export class AuthController {
     };
   }
 
-  @Get('me')
+  @Get('/auth/me')
   getMe(@Req() req: Request) {
     const user = req.user;
 
@@ -211,5 +198,91 @@ export class AuthController {
     } else {
       throw new HttpException('Invalid role.', HttpStatus.BAD_REQUEST);
     }
+  }
+
+  @Get('/auth/google/customer')
+  @AllowAnonymous()
+  @UseGuards(AuthGuard('google-customer'))
+  @UseFilters(OAuthRedirectExceptionFilter)
+  async googleAuthCustomer() {
+    // This route initiates the Google OAuth flow for customers
+  }
+
+  @Get('/auth/google/customer/callback')
+  @AllowAnonymous()
+  @UseGuards(AuthGuard('google-customer'))
+  @UseFilters(OAuthRedirectExceptionFilter)
+  async googleAuthRedirectCustomer(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const user = req.user;
+
+    if (!user) {
+      // Redirect to sign-in page with error message
+      return res.redirect(
+        `${process.env.APP_BASE_URL}/customer-area/signin?error=FAILED_TO_AUTHENTICATE_GOOGLE`,
+      );
+    }
+
+    // Generate authentication tokens
+    const { accessToken, refreshToken } =
+      await this.authService.generateAuthenticationTokens({
+        accountId: user.id,
+      });
+
+    // Set authentication cookies
+    this.authService.setAuthCookies({
+      res,
+      accessToken,
+      refreshToken,
+      role: 'CUSTOMER',
+    });
+
+    // Redirect to frontend
+    return res.redirect(`${process.env.APP_BASE_URL}/customer-area`);
+  }
+
+  @Get('/auth/google/admin')
+  @AllowAnonymous()
+  @UseGuards(AuthGuard('google-admin'))
+  @UseFilters(OAuthRedirectExceptionFilter)
+  async googleAuthAdmin() {
+    // This route initiates the Google OAuth flow for admins
+  }
+
+  @Get('/auth/google/admin/callback')
+  @AllowAnonymous()
+  @UseGuards(AuthGuard('google-admin'))
+  @UseFilters(OAuthRedirectExceptionFilter)
+  async googleAuthAdminRedirect(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const user = req.user;
+
+    if (!user) {
+      // Redirect to sign-in page with error message
+      return res.redirect(
+        `${process.env.APP_BASE_URL}/admin-area/signin?error=FAILED_TO_AUTHENTICATE_GOOGLE`,
+      );
+    }
+
+    // Generate authentication tokens
+    const { accessToken, refreshToken } =
+      await this.authService.generateAuthenticationTokens({
+        accountId: user.id,
+      });
+
+    // Set authentication cookies
+    this.authService.setAuthCookies({
+      res,
+      accessToken,
+      refreshToken,
+      role: 'ADMIN',
+    });
+
+    // Redirect to frontend
+    return res.redirect(`${process.env.APP_BASE_URL}/admin-area`);
   }
 }
