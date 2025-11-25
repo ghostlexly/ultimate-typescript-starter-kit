@@ -3,9 +3,9 @@
 import { cookies } from "next/headers";
 import { wolfiosServer } from "../wolfios/wolfios.server";
 
-export const ACCESS_TOKEN_COOKIE = "lunisoft_access_token";
-export const REFRESH_TOKEN_COOKIE = "lunisoft_refresh_token";
-export const ME_ROUTE = "/api/auth/me";
+const ACCESS_TOKEN_COOKIE = "lunisoft_access_token";
+const REFRESH_TOKEN_COOKIE = "lunisoft_refresh_token";
+const ME_ROUTE = "/api/auth/me";
 
 type SessionStatus = "loading" | "authenticated" | "unauthenticated";
 

@@ -1,9 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { cookies } from "next/headers";
-import {
-  ACCESS_TOKEN_COOKIE,
-  REFRESH_TOKEN_COOKIE,
-} from "../luni-auth/luni-auth.server";
 
 /**
  * Wolfios Server - Axios instance for Next.js Server Components
@@ -35,8 +31,8 @@ wolfiosServer.interceptors.request.use(async (request) => {
   try {
     const cookieStore = await cookies();
     const token =
-      cookieStore.get(ACCESS_TOKEN_COOKIE) ??
-      cookieStore.get(REFRESH_TOKEN_COOKIE);
+      cookieStore.get("lunisoft_access_token") ??
+      cookieStore.get("lunisoft_refresh_token");
 
     if (token) {
       request.headers.set("Authorization", `Bearer ${token?.value}`);
