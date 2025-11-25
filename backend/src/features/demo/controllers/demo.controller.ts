@@ -12,6 +12,7 @@ import {
   Controller,
   Get,
   Inject,
+  Logger,
   Post,
   Query,
   Req,
@@ -52,6 +53,8 @@ import {
 
 @Controller('demos')
 export class DemoController {
+  private logger = new Logger(DemoController.name);
+
   constructor(
     private db: DatabaseService,
     private commandBus: CommandBus,
