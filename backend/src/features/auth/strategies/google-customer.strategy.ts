@@ -82,6 +82,23 @@ export class GoogleCustomerStrategy extends PassportStrategy(
 
       // If still no customer, create a new one
       if (!account) {
+        const existingAccount = await this.db.prisma.account.findUnique({
+          where: {
+            email,
+          },
+        });
+
+        if (existingAccount) {
+          this.logger.error(
+            'This email address is already in use by another account for another role.',
+          );
+
+          throw new OAuthRedirectException(
+            `${this.appBaseUrl}/customer-area/signin`,
+            'EMAIL_ALREADY_EXISTS',
+          );
+        }
+
         account = await this.db.prisma.account.create({
           data: {
             role: 'CUSTOMER',

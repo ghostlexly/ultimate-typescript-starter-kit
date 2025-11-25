@@ -11,7 +11,6 @@ export class CustomerService {
   async verifyExistingEmail({ email }: { email: string }) {
     const existingCustomer = await this.db.prisma.account.findFirst({
       where: {
-        role: 'CUSTOMER',
         email: {
           equals: email,
           mode: 'insensitive',
