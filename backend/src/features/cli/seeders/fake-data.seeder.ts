@@ -29,14 +29,13 @@ export class FakeDataSeeder {
         const email = faker.internet.email().toLowerCase();
         const password = await this.hashPassword('Password123!');
 
-        await this.db.prisma.customer.create({
+        await this.db.prisma.account.create({
           data: {
+            role: 'CUSTOMER',
             email,
             password,
-            account: {
-              create: {
-                role: 'CUSTOMER',
-              },
+            customer: {
+              create: {},
             },
           },
         });
@@ -67,7 +66,7 @@ export class FakeDataSeeder {
     this.logger.log('Cleaning fake data...');
 
     // Clean only fake customers (not the test ones with specific emails)
-    const result = await this.db.prisma.customer.deleteMany({
+    const result = await this.db.prisma.account.deleteMany({
       where: {
         NOT: {
           email: {

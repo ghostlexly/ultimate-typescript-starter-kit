@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcrypt';
+import crypto from 'crypto';
+import type { Response } from 'express';
+import { dateUtils } from 'src/core/utils/date';
 import { DatabaseService } from 'src/features/application/services/database.service';
 import { authConstants } from './auth.constants';
-import { JwtService } from '@nestjs/jwt';
-import { dateUtils } from 'src/core/utils/date';
-import crypto from 'crypto';
-import { ConfigService } from '@nestjs/config';
-import type { Response } from 'express';
-import type { Role } from 'src/generated/prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -182,20 +181,16 @@ export class AuthService {
     res,
     accessToken,
     refreshToken,
-    role,
   }: {
     res: Response;
     accessToken: string;
     refreshToken: string;
-    role: Role;
   }): void {
-    const path = role === 'ADMIN' ? '/admin-area' : '/';
-
     res.cookie('lunisoft_access_token', accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      path,
+      path: '/',
       maxAge: authConstants.accessTokenExpirationMinutes * 60 * 1000,
     });
 
@@ -203,8 +198,13 @@ export class AuthService {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      path,
+      path: '/',
       maxAge: authConstants.refreshTokenExpirationMinutes * 60 * 1000,
     });
+  }
+
+  clearAuthCookies({ res }: { res: Response }): void {
+    res.clearCookie('lunisoft_access_token');
+    res.clearCookie('lunisoft_refresh_token');
   }
 }

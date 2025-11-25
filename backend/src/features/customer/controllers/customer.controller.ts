@@ -54,14 +54,13 @@ export class CustomerController {
     });
 
     // create customer
-    return await this.db.prisma.customer.create({
+    return await this.db.prisma.account.create({
       data: {
         email: body.email,
         password: hashedPassword,
-        account: {
-          create: {
-            role: 'CUSTOMER',
-          },
+        role: 'CUSTOMER',
+        customer: {
+          create: {},
         },
       },
     });
@@ -73,8 +72,9 @@ export class CustomerController {
     @Body() body: CustomerRequestPasswordResetTokenDto['body'],
   ) {
     // Get customer from the given email
-    const customer = await this.db.prisma.customer.findFirst({
+    const account = await this.db.prisma.account.findFirst({
       where: {
+        role: 'CUSTOMER',
         email: {
           equals: body.email,
           mode: 'insensitive',
@@ -82,7 +82,7 @@ export class CustomerController {
       },
     });
 
-    if (!customer) {
+    if (!account) {
       throw new HttpException(
         {
           message: "Aucun compte n'est associé à cette adresse e-mail.",
@@ -93,13 +93,14 @@ export class CustomerController {
 
     const uniqueToken = this.authService.generateUniqueToken();
 
-    await this.db.prisma.passwordResetToken.create({
+    await this.db.prisma.verificationToken.create({
       data: {
+        type: 'PASSWORD_RESET',
         token: uniqueToken,
         expiresAt: dateUtils.add(new Date(), {
           hours: authConstants.passwordResetTokenExpirationHours,
         }),
-        customerId: customer.id,
+        accountId: account.id,
       },
     });
 
@@ -125,15 +126,20 @@ export class CustomerController {
     body: CustomerResetPasswordDto['body'],
   ) {
     // Find the password reset token
-    const passwordResetToken =
-      await this.db.prisma.passwordResetToken.findFirst({
+    const passwordResetToken = await this.db.prisma.verificationToken.findFirst(
+      {
         where: {
+          type: 'PASSWORD_RESET',
           token: body.token,
           expiresAt: {
             gt: new Date(),
           },
+          account: {
+            role: 'CUSTOMER',
+          },
         },
-      });
+      },
+    );
 
     if (!passwordResetToken) {
       throw new HttpException(
@@ -145,11 +151,11 @@ export class CustomerController {
       );
     }
 
-    if (!passwordResetToken.customerId) {
+    if (!passwordResetToken.accountId) {
       throw new HttpException(
         {
           message:
-            "Le client associé à ce lien de réinitialisation n'existe pas.",
+            "Le compte associé à ce lien de réinitialisation n'existe pas.",
         },
         HttpStatus.BAD_REQUEST,
       );
@@ -160,9 +166,9 @@ export class CustomerController {
       password: body.password,
     });
 
-    await this.db.prisma.customer.update({
+    await this.db.prisma.account.update({
       where: {
-        id: passwordResetToken.customerId,
+        id: passwordResetToken.accountId,
       },
       data: {
         password: hashedPassword,
@@ -170,7 +176,7 @@ export class CustomerController {
     });
 
     // Delete the password reset token
-    await this.db.prisma.passwordResetToken.delete({
+    await this.db.prisma.verificationToken.delete({
       where: {
         id: passwordResetToken.id,
       },

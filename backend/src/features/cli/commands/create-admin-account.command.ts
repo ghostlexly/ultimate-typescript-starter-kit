@@ -27,14 +27,13 @@ export class CreateAdminAccountCommand extends CommandRunner {
     });
 
     // Create admin account
-    await this.db.prisma.admin.create({
+    await this.db.prisma.account.create({
       data: {
+        role: 'ADMIN',
         email: email,
         password: hashedPassword,
-        account: {
-          create: {
-            role: 'ADMIN',
-          },
+        admin: {
+          create: {},
         },
       },
     });

@@ -50,21 +50,28 @@ export class GoogleCustomerStrategy extends PassportStrategy(
       const email = emails[0].value;
 
       // Check if customer exists with this Google ID
-      let customer = await this.db.prisma.customer.findUnique({
-        where: { googleId: id },
+      let account = await this.db.prisma.account.findFirst({
+        where: {
+          role: 'CUSTOMER',
+          providerId: 'google',
+          providerAccountId: id,
+        },
       });
 
       // If not found by Google ID, check by email
-      if (!customer) {
-        customer = await this.db.prisma.customer.findUnique({
-          where: { email },
+      if (!account) {
+        account = await this.db.prisma.account.findUnique({
+          where: {
+            role: 'CUSTOMER',
+            email,
+          },
         });
 
         // If customer exists with this email but no Google ID, link the account
-        if (customer) {
-          customer = await this.db.prisma.customer.update({
-            where: { id: customer.id },
-            data: { googleId: id },
+        if (account) {
+          account = await this.db.prisma.account.update({
+            where: { id: account.id },
+            data: { providerId: 'google', providerAccountId: id },
           });
 
           this.logger.log(
@@ -74,19 +81,16 @@ export class GoogleCustomerStrategy extends PassportStrategy(
       }
 
       // If still no customer, create a new one
-      if (!customer) {
-        const account = await this.db.prisma.account.create({
+      if (!account) {
+        account = await this.db.prisma.account.create({
           data: {
             role: 'CUSTOMER',
-          },
-        });
-
-        customer = await this.db.prisma.customer.create({
-          data: {
             email,
-            googleId: id,
-            accountId: account.id,
-            password: null,
+            providerId: 'google',
+            providerAccountId: id,
+            customer: {
+              create: {},
+            },
           },
         });
 
@@ -94,8 +98,8 @@ export class GoogleCustomerStrategy extends PassportStrategy(
       }
 
       // Fetch the complete account with relations
-      const account = await this.db.prisma.account.findUnique({
-        where: { id: customer.accountId },
+      account = await this.db.prisma.account.findUnique({
+        where: { id: account.id },
         include: {
           admin: true,
           customer: true,

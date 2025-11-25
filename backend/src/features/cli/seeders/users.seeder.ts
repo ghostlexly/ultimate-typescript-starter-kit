@@ -68,14 +68,13 @@ export class UsersSeeder {
       password: userData.password,
     });
 
-    await this.db.prisma.admin.create({
+    await this.db.prisma.account.create({
       data: {
+        role: 'ADMIN',
         email: userData.email,
         password: hashedPassword,
-        account: {
-          create: {
-            role: 'ADMIN',
-          },
+        admin: {
+          create: {},
         },
       },
     });
@@ -86,14 +85,13 @@ export class UsersSeeder {
       password: userData.password,
     });
 
-    await this.db.prisma.customer.create({
+    await this.db.prisma.account.create({
       data: {
+        role: 'CUSTOMER',
         email: userData.email,
         password: hashedPassword,
-        account: {
-          create: {
-            role: 'CUSTOMER',
-          },
+        customer: {
+          create: {},
         },
       },
     });

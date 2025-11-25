@@ -12,13 +12,15 @@ import {
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
 import { AllowAnonymous } from 'src/core/decorators/allow-anonymous.decorator';
 import { ZodValidationPipe } from 'src/core/pipes/zod-validation.pipe';
 import { DatabaseService } from 'src/features/application/services/database.service';
-import { Admin, Customer } from 'src/generated/prisma/client';
+import { Account } from 'src/generated/prisma/client';
 import { AuthService } from '../auth.service';
+import { OAuthRedirectExceptionFilter } from '../filters/oauth-redirect.filter';
 import type {
   AuthRefreshTokenDto,
   AuthSigninDto,
@@ -27,8 +29,6 @@ import {
   authRefreshTokenSchema,
   authSigninSchema,
 } from '../validators/auth.validators';
-import { AuthGuard } from '@nestjs/passport';
-import { OAuthRedirectExceptionFilter } from '../filters/oauth-redirect.filter';
 
 @Controller()
 export class AuthController {
@@ -46,10 +46,11 @@ export class AuthController {
     @Body() body: AuthSigninDto['body'],
   ) {
     // Verify if user exists
-    let user: Admin | Customer | null = null;
+    let account: Account | null = null;
     if (body.role === 'ADMIN') {
-      user = await this.db.prisma.admin.findFirst({
+      account = await this.db.prisma.account.findFirst({
         where: {
+          role: 'ADMIN',
           email: {
             contains: body.email,
             mode: 'insensitive',
@@ -57,8 +58,9 @@ export class AuthController {
         },
       });
     } else if (body.role === 'CUSTOMER') {
-      user = await this.db.prisma.customer.findFirst({
+      account = await this.db.prisma.account.findFirst({
         where: {
+          role: 'CUSTOMER',
           email: {
             contains: body.email,
             mode: 'insensitive',
@@ -67,7 +69,7 @@ export class AuthController {
       });
     }
 
-    if (!user) {
+    if (!account) {
       // When user doesn't exist, still hash a fake password to prevent timing-based account enumeration
       await this.authService.comparePassword({
         password: body.password,
@@ -82,7 +84,7 @@ export class AuthController {
       );
     }
 
-    if (!user.password) {
+    if (!account.password) {
       throw new HttpException(
         {
           message:
@@ -95,7 +97,7 @@ export class AuthController {
     // Hash given password and compare it to the stored hash
     const validPassword = await this.authService.comparePassword({
       password: body.password,
-      hashedPassword: user.password,
+      hashedPassword: account.password,
     });
 
     if (!validPassword) {
@@ -110,7 +112,7 @@ export class AuthController {
     // Generate an access token
     const { accessToken, refreshToken } =
       await this.authService.generateAuthenticationTokens({
-        accountId: user.accountId,
+        accountId: account.id,
       });
 
     // Set authentication cookies
@@ -118,7 +120,6 @@ export class AuthController {
       res,
       accessToken,
       refreshToken,
-      role: body.role,
     });
 
     return {
@@ -148,7 +149,7 @@ export class AuthController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const { session, accessToken, refreshToken } = await this.authService
+    const { accessToken, refreshToken } = await this.authService
       .refreshAuthenticationTokens({
         refreshToken: previousRefreshToken,
       })
@@ -166,7 +167,6 @@ export class AuthController {
       res,
       accessToken,
       refreshToken,
-      role: session.account.role,
     });
 
     return {
@@ -186,13 +186,13 @@ export class AuthController {
     if (user.role === 'CUSTOMER') {
       return {
         id: user.customer.id,
-        email: user.customer.email,
+        email: user.email,
         role: user.role,
       };
     } else if (user.role === 'ADMIN') {
       return {
         id: user.admin.id,
-        email: user.admin.email,
+        email: user.email,
         role: user.role,
       };
     } else {
@@ -236,7 +236,6 @@ export class AuthController {
       res,
       accessToken,
       refreshToken,
-      role: 'CUSTOMER',
     });
 
     // Redirect to frontend
@@ -279,7 +278,6 @@ export class AuthController {
       res,
       accessToken,
       refreshToken,
-      role: 'ADMIN',
     });
 
     // Redirect to frontend

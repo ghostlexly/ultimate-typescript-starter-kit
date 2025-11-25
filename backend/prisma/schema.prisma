@@ -22,58 +22,74 @@ enum Role {
 }
 
 model Account {
-  id       String    @id @default(uuid())
-  role     Role
-  sessions Session[]
+  id                 String              @id @default(uuid())
+  email              String              @unique
+  password           String?
+  role               Role
+  providerId         String? // "google", "github", etc.
+  providerAccountId  String? // "1234567890"
+  isEmailVerified    Boolean             @default(false)
+  sessions           Session[]
+  verificationTokens VerificationToken[]
+  customer           Customer?
+  admin              Admin?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
 
-  customer Customer?
-  admin    Admin?
+  @@unique([providerId, providerAccountId, role])
+  @@index([providerId, providerAccountId])
 }
 
 model Session {
   id        String   @id @default(uuid())
-  expiresAt DateTime
-  account   Account  @relation(fields: [accountId], references: [id])
+  account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
   accountId String
-
+  ipAddress String? // Optional : tracking for security
+  userAgent String? // Optional : tracking for security
+  expiresAt DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([expiresAt])
+  @@index([accountId])
 }
 
 model Customer {
-  id                 String               @id @default(uuid())
-  email              String               @unique
-  password           String?
-  googleId           String?              @unique
-  account            Account              @relation(fields: [accountId], references: [id])
-  accountId          String               @unique
-  passwordResetToken PasswordResetToken[]
-  country            Country?             @relation(fields: [countryCode], references: [iso2Code])
-  countryCode        String?
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt
+  id          String   @id @default(uuid())
+  account     Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  accountId   String   @unique
+  country     Country? @relation(fields: [countryCode], references: [iso2Code])
+  countryCode String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Admin {
   id        String   @id @default(uuid())
-  email     String   @unique
-  password  String?
-  googleId  String?  @unique
-  account   Account  @relation(fields: [accountId], references: [id])
+  account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
   accountId String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model PasswordResetToken {
-  id        String   @id @default(uuid())
-  token     String   @unique
+model VerificationToken {
+  id        String           @id @default(uuid())
+  token     String           @unique
+  type      VerificationType // enum: PASSWORD_RESET, EMAIL_VERIFICATION, etc.
+  value     String? // optional value being verified
+  accountId String
+  account   Account          @relation(fields: [accountId], references: [id], onDelete: Cascade)
   expiresAt DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
 
-  customer   Customer? @relation(fields: [customerId], references: [id])
-  customerId String?
+  @@index([expiresAt])
+}
+
+enum VerificationType {
+  PASSWORD_RESET
+  EMAIL_VERIFICATION
+  TWO_FACTOR
 }
 
 // ------------------------------------------------------

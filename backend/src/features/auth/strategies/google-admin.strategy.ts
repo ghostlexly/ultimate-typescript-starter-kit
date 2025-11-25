@@ -50,40 +50,52 @@ export class GoogleAdminStrategy extends PassportStrategy(
       const email = emails[0].value;
 
       // Check if admin exists with this Google ID
-      let admin = await this.db.prisma.admin.findUnique({
-        where: { googleId: id },
+      let account = await this.db.prisma.account.findFirst({
+        where: {
+          role: 'ADMIN',
+          providerId: 'google',
+          providerAccountId: id,
+        },
       });
 
       // If not found by Google ID, check by email
-      if (!admin) {
-        admin = await this.db.prisma.admin.findUnique({
-          where: { email },
+      if (!account) {
+        account = await this.db.prisma.account.findUnique({
+          where: {
+            role: 'ADMIN',
+            email,
+          },
         });
 
         // If admin exists with this email but no Google ID, link the account
-        if (admin) {
-          admin = await this.db.prisma.admin.update({
-            where: { id: admin.id },
-            data: { googleId: id },
+        if (account) {
+          account = await this.db.prisma.account.update({
+            where: { id: account.id },
+            data: { providerId: 'google', providerAccountId: id },
           });
 
           this.logger.log(`Linked Google account to existing admin: ${email}`);
-        } else {
-          // Admin account doesn't exist - reject authentication
-          this.logger.error(
-            `Admin account not found for Google login: ${email}`,
-          );
-
-          throw new OAuthRedirectException(
-            `${this.appBaseUrl}/admin-area/signin`,
-            'ADMIN_ACCOUNT_NOT_FOUND',
-          );
         }
       }
 
+      // If still no admin, create a new one
+      if (!account) {
+        account = await this.db.prisma.account.create({
+          data: {
+            role: 'ADMIN',
+            email,
+            providerId: 'google',
+            providerAccountId: id,
+            admin: {},
+          },
+        });
+
+        this.logger.log(`Created new admin via Google OAuth: ${email}`);
+      }
+
       // Fetch the complete account with relations
-      const account = await this.db.prisma.account.findUnique({
-        where: { id: admin.accountId },
+      account = await this.db.prisma.account.findUnique({
+        where: { id: account.id },
         include: {
           admin: true,
           customer: true,
@@ -91,7 +103,7 @@ export class GoogleAdminStrategy extends PassportStrategy(
       });
 
       if (!account) {
-        this.logger.error('Account not found after admin update');
+        this.logger.error('Account not found after admin creation/update');
 
         throw new OAuthRedirectException(
           `${this.appBaseUrl}/admin-area/signin`,

@@ -34,7 +34,7 @@ import {
   UserIcon,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import LogoImg from "@/assets/images/logo.png";
 
@@ -326,6 +326,7 @@ const NotAuthenticatedDropdownMenu = ({
 
 const CustomerDropdownMenu = ({ children }: { children: React.ReactNode }) => {
   const session = useSession();
+  const router = useRouter();
 
   return (
     <DropdownMenu>
@@ -374,7 +375,12 @@ const CustomerDropdownMenu = ({ children }: { children: React.ReactNode }) => {
         <DropdownMenuItem>Support</DropdownMenuItem>
         <DropdownMenuItem disabled>API</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => session.destroy()}>
+        <DropdownMenuItem
+          onClick={() => {
+            session.destroy();
+            router.push("/");
+          }}
+        >
           Log out
           <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
         </DropdownMenuItem>
