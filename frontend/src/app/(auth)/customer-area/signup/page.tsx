@@ -1,7 +1,13 @@
 import { GalleryVerticalEndIcon } from "lucide-react";
 import { SignUpForm } from "./signup-form";
 
-export default function SignUpPage({ searchParams }: { searchParams: any }) {
+export default async function SignUpPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const resolvedSearchParams = await searchParams;
+
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10 rounded-lg bg-muted">
       <div className="flex w-full max-w-sm flex-col gap-6">
@@ -11,7 +17,7 @@ export default function SignUpPage({ searchParams }: { searchParams: any }) {
           </div>
           Acme Inc.
         </a>
-        <SignUpForm searchParams={searchParams} />
+        <SignUpForm searchParams={resolvedSearchParams} />
       </div>
     </div>
   );

@@ -35,7 +35,9 @@ type FormValues = {
 export function SigninForm({
   searchParams,
   ...props
-}: React.ComponentPropsWithoutRef<"div"> & { searchParams: any }) {
+}: React.ComponentPropsWithoutRef<"div"> & {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
   const router = useRouter();
   const session = useSession();
   const [isPendingTransition, startTransition] = useTransition();

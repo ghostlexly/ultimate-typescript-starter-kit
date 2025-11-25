@@ -48,7 +48,9 @@ type FormValues = {
 export function SignUpForm({
   searchParams,
   ...props
-}: React.ComponentPropsWithoutRef<"div"> & { searchParams: any }) {
+}: React.ComponentPropsWithoutRef<"div"> & {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
   const router = useRouter();
   const { previousLink } = useAppStore();
   const session = useSession();

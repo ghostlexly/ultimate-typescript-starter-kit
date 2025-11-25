@@ -4,8 +4,10 @@ import { SigninForm } from "./signin-form";
 export default async function SigninPage({
   searchParams,
 }: {
-  searchParams: any;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const resolvedSearchParams = await searchParams;
+
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10 rounded-lg bg-muted">
       <div className="flex w-full max-w-sm flex-col gap-6">
@@ -15,7 +17,7 @@ export default async function SigninPage({
           </div>
           Acme Inc.
         </a>
-        <SigninForm searchParams={searchParams} />
+        <SigninForm searchParams={resolvedSearchParams} />
       </div>
     </div>
   );
