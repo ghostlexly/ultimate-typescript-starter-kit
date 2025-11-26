@@ -20,11 +20,6 @@ import { Check, ChevronsUpDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCallback, useState } from "react";
 
-export interface MultiSelectComboboxItem {
-  value: string;
-  label: string;
-}
-
 export interface MultiSelectComboboxProps<T extends Record<string, any>>
   extends Omit<
     React.ComponentPropsWithoutRef<"button">,
@@ -100,7 +95,9 @@ export function MultiSelectCombobox<T extends Record<string, any>>({
   const toggleItem = useCallback(
     (item: T) => {
       if (isItemSelected(String(item[valueKey]))) {
-        onChange(value.filter((v) => String(v[valueKey]) !== String(item[valueKey])));
+        onChange(
+          value.filter((v) => String(v[valueKey]) !== String(item[valueKey]))
+        );
       } else {
         onChange([...value, item]);
       }
@@ -115,8 +112,14 @@ export function MultiSelectCombobox<T extends Record<string, any>>({
     [onChange, value, valueKey]
   );
 
-  const defaultRenderItem = useCallback((item: T) => String(item[labelKey]), [labelKey]);
-  const defaultRenderBadge = useCallback((item: T) => String(item[labelKey]), [labelKey]);
+  const defaultRenderItem = useCallback(
+    (item: T) => String(item[labelKey]),
+    [labelKey]
+  );
+  const defaultRenderBadge = useCallback(
+    (item: T) => String(item[labelKey]),
+    [labelKey]
+  );
 
   const itemRenderer = renderItem || defaultRenderItem;
   const badgeRenderer = renderBadge || defaultRenderBadge;
@@ -199,7 +202,11 @@ export function MultiSelectCombobox<T extends Record<string, any>>({
       {value.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {value.map((item) => (
-            <Badge key={String(item[valueKey])} variant="secondary" className="gap-1">
+            <Badge
+              key={String(item[valueKey])}
+              variant="secondary"
+              className="gap-1"
+            >
               {badgeRenderer(item)}
               <button
                 type="button"
