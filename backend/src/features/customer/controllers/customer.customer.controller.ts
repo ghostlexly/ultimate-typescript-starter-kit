@@ -4,15 +4,16 @@ import {
   Get,
   HttpException,
   HttpStatus,
-  Post,
+  Patch,
   Req,
+  UnauthorizedException,
   UsePipes,
 } from '@nestjs/common';
-import { Roles } from 'src/core/decorators/roles.decorator';
-import { DatabaseService } from 'src/features/application/services/database.service';
-import { UnauthorizedException } from '@nestjs/common';
 import { type Request } from 'express';
+import { Roles } from 'src/core/decorators/roles.decorator';
 import { ZodValidationPipe } from 'src/core/pipes/zod-validation.pipe';
+import { DatabaseService } from 'src/features/application/services/database.service';
+import { CountryService } from 'src/features/country/country.service';
 import {
   CustomerCustomerInformationsDto,
   customerCustomerInformationsSchema,
@@ -21,7 +22,10 @@ import {
 @Controller()
 @Roles(['CUSTOMER'])
 export class CustomerCustomerController {
-  constructor(private db: DatabaseService) {}
+  constructor(
+    private db: DatabaseService,
+    private countryService: CountryService,
+  ) {}
 
   @Get('/customer/informations')
   async getCustomerInformations(@Req() req: Request) {
@@ -33,7 +37,7 @@ export class CustomerCustomerController {
 
     const customerInformatons = await this.db.prisma.customer.findFirst({
       include: {
-        country: true,
+        city: true,
       },
       where: {
         id: customer.id,
@@ -48,11 +52,12 @@ export class CustomerCustomerController {
     }
 
     return {
-      country: customerInformatons.country,
+      countryCode: customerInformatons.countryCode,
+      city: customerInformatons.city,
     };
   }
 
-  @Post('/customer/informations')
+  @Patch('/customer/informations')
   @UsePipes(new ZodValidationPipe(customerCustomerInformationsSchema))
   async saveCustomerInformations(
     @Req() req: Request,
@@ -65,9 +70,6 @@ export class CustomerCustomerController {
     }
 
     const customerInformatons = await this.db.prisma.customer.findFirst({
-      include: {
-        country: true,
-      },
       where: {
         id: customer.id,
       },
@@ -80,11 +82,8 @@ export class CustomerCustomerController {
       );
     }
 
-    const country = await this.db.prisma.country.findFirst({
-      where: {
-        iso2Code: body.countryCode,
-      },
-    });
+    // Check if the provided country exists
+    const country = this.countryService.getCountryByIso2(body.countryCode);
 
     if (!country) {
       throw new HttpException(
@@ -93,24 +92,33 @@ export class CustomerCustomerController {
       );
     }
 
-    const customerInformations = await this.db.prisma.customer.update({
-      include: {
-        country: true,
+    // Check if the provided city exists
+    const city = await this.db.prisma.city.findUnique({
+      where: {
+        id: body.city,
       },
+    });
+
+    if (!city) {
+      throw new HttpException(
+        "This city doesn't exist",
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const customerInformations = await this.db.prisma.customer.update({
       where: {
         id: customer.id,
       },
       data: {
-        country: {
-          connect: {
-            iso2Code: body.countryCode,
-          },
-        },
+        countryCode: body.countryCode,
+        cityId: body.city,
       },
     });
 
     return {
-      country: customerInformations.country,
+      countryCode: customerInformations.countryCode,
+      cityId: customerInformations.cityId,
     };
   }
 }

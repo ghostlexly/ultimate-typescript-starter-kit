@@ -1,14 +1,9 @@
 ### Local search example
 
 ```tsx
-type Country = SingleSelectComboboxItem & {
-  countryCode: string;
-  countryName: string;
-};
-
 type FormValues = {
   email: string;
-  country: Country | null;
+  country: any | null;
   password: string;
 };
 
@@ -22,7 +17,11 @@ const component = () => {
     defaultValues: {
       email: "",
       password: "",
-      country: null,
+      country:
+        countries.find(
+          (country: any) =>
+            country.iso2Code === customerInformations.countryCode
+        ) ?? null,
     },
   });
 
@@ -60,11 +59,9 @@ const component = () => {
 
           <SingleSelectCombobox
             id={field.name}
-            items={countries.data?.map((country: any) => ({
-              value: country.countryCode,
-              label: country.countryName,
-              ...country,
-            }))}
+            items={countries.data || []}
+            valueKey="countryCode"
+            labelKey="countryName"
             value={field.value}
             onChange={field.onChange}
             placeholder="Select your country..."
@@ -88,14 +85,9 @@ const component = () => {
 ### Remote search example
 
 ```tsx
-type Country = SingleSelectComboboxItem & {
-  iso2Code: string;
-  countryName: string;
-};
-
 type FormValues = {
   email: string;
-  country: Country | null;
+  country: any | null;
   password: string;
 };
 
@@ -157,13 +149,9 @@ const component = () => {
 
           <SingleSelectCombobox
             id={field.name}
-            items={
-              countries.data?.nodes.map((country: any) => ({
-                value: country.iso2Code,
-                label: country.countryName,
-                ...country,
-              })) || []
-            }
+            items={countries.data?.nodes || []}
+            valueKey="iso2Code"
+            labelKey="countryName"
             value={field.value}
             onChange={field.onChange}
             onSearchChange={setCountrySearchTerm}

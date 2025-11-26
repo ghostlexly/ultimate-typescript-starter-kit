@@ -19,12 +19,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCallback, useState } from "react";
 
-export interface SingleSelectComboboxItem {
-  value: string;
-  label: string;
-}
-
-export interface SingleSelectComboboxProps<T extends SingleSelectComboboxItem>
+export interface SingleSelectComboboxProps<T extends Record<string, any>>
   extends Omit<
     React.ComponentPropsWithoutRef<"button">,
     "value" | "onChange" | "children"
@@ -32,6 +27,8 @@ export interface SingleSelectComboboxProps<T extends SingleSelectComboboxItem>
   items: T[];
   value: T | null;
   onChange: (value: T | null) => void;
+  valueKey?: keyof T;
+  labelKey?: keyof T;
   placeholder?: string;
   emptyMessage?: string;
   searchPlaceholder?: string;
@@ -51,11 +48,14 @@ export interface SingleSelectComboboxProps<T extends SingleSelectComboboxItem>
  * - Custom item rendering
  * - Works seamlessly with react-hook-form
  * - Accessible with ARIA roles
+ * - Custom value and label keys
  */
-export function SingleSelectCombobox<T extends SingleSelectComboboxItem>({
+export function SingleSelectCombobox<T extends Record<string, any>>({
   items,
   value,
   onChange,
+  valueKey = "value" as keyof T,
+  labelKey = "label" as keyof T,
   placeholder = "Select item...",
   emptyMessage = "No items found.",
   searchPlaceholder = "Search...",
@@ -83,13 +83,15 @@ export function SingleSelectCombobox<T extends SingleSelectComboboxItem>({
 
   const handleSelect = useCallback(
     (selectedValue: string) => {
-      const selectedItem = items.find((item) => item.value === selectedValue);
+      const selectedItem = items.find(
+        (item) => String(item[valueKey]) === selectedValue
+      );
 
       if (!selectedItem) {
         return;
       }
 
-      if (value?.value === selectedValue) {
+      if (value && String(value[valueKey]) === selectedValue) {
         onChange(null);
       } else {
         onChange(selectedItem);
@@ -98,10 +100,13 @@ export function SingleSelectCombobox<T extends SingleSelectComboboxItem>({
       onSearchChange?.("");
       setOpen(false);
     },
-    [items, onChange, value, onSearchChange]
+    [items, onChange, value, onSearchChange, valueKey]
   );
 
-  const defaultRenderItem = useCallback((item: T) => item.label, []);
+  const defaultRenderItem = useCallback(
+    (item: T) => String(item[labelKey]),
+    [labelKey]
+  );
   const itemRenderer = renderItem || defaultRenderItem;
 
   return (
@@ -116,7 +121,7 @@ export function SingleSelectCombobox<T extends SingleSelectComboboxItem>({
           {...buttonProps}
         >
           {value ? (
-            <span>{value.label}</span>
+            <span>{String(value[labelKey])}</span>
           ) : (
             <span className="text-muted-foreground">{placeholder}</span>
           )}
@@ -148,8 +153,8 @@ export function SingleSelectCombobox<T extends SingleSelectComboboxItem>({
                 <CommandGroup>
                   {items.map((item) => (
                     <CommandItem
-                      key={item.value}
-                      value={item.value}
+                      key={String(item[valueKey])}
+                      value={String(item[valueKey])}
                       keywords={getItemKeywords?.(item)}
                       onSelect={handleSelect}
                       className="cursor-pointer"
@@ -157,7 +162,8 @@ export function SingleSelectCombobox<T extends SingleSelectComboboxItem>({
                       <div
                         className={cn(
                           "flex items-center justify-center",
-                          value?.value === item.value
+                          value &&
+                            String(value[valueKey]) === String(item[valueKey])
                             ? "opacity-100"
                             : "opacity-0"
                         )}

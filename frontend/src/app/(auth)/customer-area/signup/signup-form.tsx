@@ -18,30 +18,21 @@ import {
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { QueryErrorMessage } from "@/components/ui/query-error-message";
-import {
-  SingleSelectCombobox,
-  SingleSelectComboboxItem,
-} from "@/components/ui/single-select-combobox/single-select-combobox";
+import { SingleSelectCombobox } from "@/components/ui/single-select-combobox/single-select-combobox";
 import { useAppStore } from "@/hooks/use-app-store";
 import { useSession } from "@/lib/luni-auth/luni-auth.provider";
 import { handleApiErrors } from "@/lib/handle-api-errors";
-import { cn } from "@/lib/utils";
 import { wolfios } from "@/lib/wolfios/wolfios";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
-type Country = SingleSelectComboboxItem & {
-  countryCode: string;
-  countryName: string;
-};
-
 type FormValues = {
   email: string;
-  country: Country | null;
+  country: any | null;
   password: string;
 };
 
@@ -200,11 +191,9 @@ export function SignUpForm({
 
                       <SingleSelectCombobox
                         id={field.name}
-                        items={countries.data?.map((country: any) => ({
-                          value: country.countryCode,
-                          label: country.countryName,
-                          ...country,
-                        }))}
+                        items={countries.data || []}
+                        valueKey="countryCode"
+                        labelKey="countryName"
                         value={field.value}
                         onChange={field.onChange}
                         placeholder="Select your country..."

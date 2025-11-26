@@ -4,6 +4,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { BullModule } from '@nestjs/bullmq';
 import { ApplicationModule } from '../application/application.module';
 import { AuthModule } from '../auth/auth.module';
+import { CountryModule } from '../country/country.module';
 import { CqrsModule } from '@nestjs/cqrs';
 
 // Commands
@@ -13,9 +14,9 @@ import { GenerateJwtKeysCommand } from './commands/generate-jwt-keys.command';
 import { SeedCommand } from './commands/seed.command';
 
 // Seeders
-import { CountriesSeeder } from './seeders/countries.seeder';
 import { UsersSeeder } from './seeders/users.seeder';
 import { FakeDataSeeder } from './seeders/fake-data.seeder';
+import { CitiesSeeder } from './seeders/cities.seeder';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { FakeDataSeeder } from './seeders/fake-data.seeder';
 
     ApplicationModule,
     AuthModule,
+    CountryModule,
   ],
   providers: [
     // Commands
@@ -45,8 +47,8 @@ import { FakeDataSeeder } from './seeders/fake-data.seeder';
     GenerateJwtKeysCommand,
 
     // Seeders
-    CountriesSeeder,
     UsersSeeder,
+    CitiesSeeder,
     FakeDataSeeder,
   ],
 })

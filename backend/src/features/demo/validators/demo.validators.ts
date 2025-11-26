@@ -30,15 +30,13 @@ export type DemoGetPaginatedDataDto = z.infer<
   typeof demoGetPaginatedDataSchema
 >;
 
-export const demoGetPaginatedCountriesSchema = z.object({
+export const demoGetCitiesSchema = z.object({
   query: pageQuerySchema.and(
     z
       .object({
-        countryName: z.string().optional(),
+        search: z.string(),
       })
       .partial(),
   ),
 });
-export type DemoGetPaginatedCountriesDto = z.infer<
-  typeof demoGetPaginatedCountriesSchema
->;
+export type DemoGetCitiesDto = z.infer<typeof demoGetCitiesSchema>;

@@ -16,10 +16,7 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-import {
-  SingleSelectCombobox,
-  SingleSelectComboboxItem,
-} from "@/components/ui/single-select-combobox/single-select-combobox";
+import { SingleSelectCombobox } from "@/components/ui/single-select-combobox/single-select-combobox";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { handleApiErrors } from "@/lib/handle-api-errors";
 import { wolfios } from "@/lib/wolfios/wolfios";
@@ -29,20 +26,27 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 type FormValues = {
-  countryCode: SingleSelectComboboxItem | null;
+  countryCode: any | null;
+  city: any | null;
 };
 
-function ComboboxForm({ customerInformations }: { customerInformations: any }) {
-  const [countrySearchTerm, setCountrySearchTerm] = useState("");
-  const debouncedCountrySearchTerm = useDebouncedValue(countrySearchTerm, 300);
+function ComboboxForm({
+  countries,
+  customerInformations,
+}: {
+  countries: any;
+  customerInformations: any;
+}) {
+  const [citySearchTerm, setCitySearchTerm] = useState("");
+  const debouncedCitySearchTerm = useDebouncedValue(citySearchTerm, 300);
 
-  const countries = useQuery({
-    queryKey: ["demos", "paginated-countries", debouncedCountrySearchTerm],
+  const cities = useQuery({
+    queryKey: ["demos", "cities", debouncedCitySearchTerm],
     queryFn: () =>
       wolfios
-        .get("/api/demos/paginated-countries", {
+        .get("/api/demos/cities", {
           params: {
-            countryName: debouncedCountrySearchTerm,
+            search: debouncedCitySearchTerm,
           },
         })
         .then((res) => res.data),
@@ -50,19 +54,20 @@ function ComboboxForm({ customerInformations }: { customerInformations: any }) {
 
   const form = useForm<FormValues>({
     defaultValues: {
-      countryCode: customerInformations.country
-        ? {
-            value: customerInformations.country.iso2Code,
-            label: customerInformations.country.countryName,
-          }
-        : null,
+      countryCode:
+        countries.find(
+          (country: any) =>
+            country.iso2Code === customerInformations.countryCode
+        ) ?? null,
+      city: customerInformations.city ?? null,
     },
   });
 
   const handleSubmit = async (values: FormValues) => {
     try {
-      await wolfios.post("/api/customer/informations", {
-        countryCode: values.countryCode?.value,
+      await wolfios.patch("/api/customer/informations", {
+        countryCode: values.countryCode?.iso2Code,
+        city: values.city?.id,
       });
 
       toast.success("Form submitted successfully!");
@@ -78,8 +83,8 @@ function ComboboxForm({ customerInformations }: { customerInformations: any }) {
           <CardTitle>Combobox Form Examples</CardTitle>
           <CardDescription>
             Try out the forms with combobox ! <br />
-            This form will save your country in the database and retrieve it
-            automatically on refresh.
+            This form will save your country and city in the database and
+            retrieve it automatically on refresh.
           </CardDescription>
         </CardHeader>
 
@@ -98,24 +103,55 @@ function ComboboxForm({ customerInformations }: { customerInformations: any }) {
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor={field.name}>
-                      Where are you from?
+                      Where are you from ?
                     </FieldLabel>
 
                     <SingleSelectCombobox
                       id={field.name}
-                      items={countries.data?.nodes.map((country: any) => ({
-                        value: country.iso2Code,
-                        label: country.countryName,
-                        ...country,
-                      }))}
+                      items={countries}
+                      valueKey="iso2Code"
+                      labelKey="countryName"
                       value={field.value}
                       onChange={field.onChange}
-                      onSearchChange={setCountrySearchTerm}
-                      shouldFilter={false} // disable local search
                       placeholder="Select your country..."
                       emptyMessage="No country found. Please try again."
                       searchPlaceholder="Search..."
-                      loading={countries.isLoading}
+                      getItemKeywords={(item: any) => [
+                        item.iso2Code,
+                        item.countryName,
+                      ]}
+                      aria-invalid={fieldState.invalid}
+                    />
+
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+
+              <Controller
+                name="city"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={field.name}>
+                      What is your city?
+                    </FieldLabel>
+
+                    <SingleSelectCombobox
+                      id={field.name}
+                      items={cities.data?.nodes || []}
+                      valueKey="id"
+                      labelKey="name"
+                      value={field.value}
+                      onChange={field.onChange}
+                      onSearchChange={setCitySearchTerm}
+                      shouldFilter={false} // disable local search
+                      placeholder="Select your city..."
+                      emptyMessage="No city found. Please try again."
+                      searchPlaceholder="Search..."
+                      loading={cities.isLoading}
                       aria-invalid={fieldState.invalid}
                     />
 

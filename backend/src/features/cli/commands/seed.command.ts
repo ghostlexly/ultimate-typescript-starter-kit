@@ -1,8 +1,8 @@
 import { Command, CommandRunner, Option } from 'nest-commander';
 import { Logger } from '@nestjs/common';
-import { CountriesSeeder } from '../seeders/countries.seeder';
 import { UsersSeeder } from '../seeders/users.seeder';
 import { FakeDataSeeder } from '../seeders/fake-data.seeder';
+import { CitiesSeeder } from '../seeders/cities.seeder';
 
 interface SeedOptions {
   fakeData?: boolean;
@@ -11,43 +11,43 @@ interface SeedOptions {
 
 @Command({
   name: 'seed',
-  description: 'Seed all data (countries, users, and optionally fake data)',
+  description: 'Seed all data (users, and optionally fake data)',
 })
 export class SeedCommand extends CommandRunner {
-  private readonly logger = new Logger(SeedCommand.name);
+  private logger = new Logger(SeedCommand.name);
 
   constructor(
-    private readonly countriesSeeder: CountriesSeeder,
-    private readonly usersSeeder: UsersSeeder,
-    private readonly fakeDataSeeder: FakeDataSeeder,
+    private usersSeeder: UsersSeeder,
+    private citiesSeeder: CitiesSeeder,
+    private fakeDataSeeder: FakeDataSeeder,
   ) {
     super();
   }
 
   async run(_passedParams: string[], options?: SeedOptions): Promise<void> {
-    this.logger.log('🌱 Starting database seeding...\n');
+    this.logger.debug('🌱 Starting database seeding...');
 
     try {
-      // Seed countries
-      this.logger.log('📍 Seeding countries...');
-      await this.countriesSeeder.seed();
-
       // Seed users
-      this.logger.log('\n👥 Seeding test users...');
+      this.logger.debug('👥 Seeding test users...');
       await this.usersSeeder.seed();
       this.usersSeeder.getTestCredentials();
+
+      // Seed cities
+      this.logger.debug('🌍 Seeding cities...');
+      await this.citiesSeeder.seed();
 
       // Seed fake data (optional)
       if (options?.fakeData) {
         const customers = options.fakeCustomers || 10;
 
-        this.logger.log('\n🎲 Seeding fake data...');
+        this.logger.debug('🎲 Seeding fake data...');
         await this.fakeDataSeeder.seed({ customers });
       }
 
-      this.logger.log('\n✓ All seeding completed successfully! 🎉');
+      this.logger.debug('✓ All seeding completed successfully! 🎉');
     } catch (error) {
-      this.logger.error(`\n✗ Seeding failed: ${error.message}`);
+      this.logger.error(`✗ Seeding failed: ${error.message}`);
       throw error;
     }
   }

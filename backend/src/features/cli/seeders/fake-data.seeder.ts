@@ -9,17 +9,17 @@ export class FakeDataSeeder {
   constructor(private readonly db: DatabaseService) {}
 
   async seed(options: { customers?: number } = {}): Promise<void> {
-    this.logger.log('Starting fake data seed...');
+    this.logger.debug('Starting fake data seed...');
 
     const { customers = 10 } = options;
 
     await this.seedFakeCustomers(customers);
 
-    this.logger.log('Fake data seed completed successfully');
+    this.logger.debug('Fake data seed completed successfully');
   }
 
   private async seedFakeCustomers(count: number): Promise<void> {
-    this.logger.log(`Creating ${count} fake customers...`);
+    this.logger.debug(`Creating ${count} fake customers...`);
 
     let created = 0;
     let skipped = 0;
@@ -51,7 +51,7 @@ export class FakeDataSeeder {
       }
     }
 
-    this.logger.log(
+    this.logger.debug(
       `Fake customers created: ${created} created, ${skipped} skipped`,
     );
   }
@@ -63,7 +63,7 @@ export class FakeDataSeeder {
   }
 
   async clean(): Promise<void> {
-    this.logger.log('Cleaning fake data...');
+    this.logger.debug('Cleaning fake data...');
 
     // Clean only fake customers (not the test ones with specific emails)
     const result = await this.db.prisma.account.deleteMany({
@@ -76,6 +76,6 @@ export class FakeDataSeeder {
       },
     });
 
-    this.logger.log(`Cleaned ${result.count} fake customers`);
+    this.logger.debug(`Cleaned ${result.count} fake customers`);
   }
 }

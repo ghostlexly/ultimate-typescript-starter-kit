@@ -18,7 +18,7 @@ export class UsersSeeder {
   ) {}
 
   async seed(): Promise<void> {
-    this.logger.log('Starting users seed...');
+    this.logger.debug('Starting users seed...');
 
     const testUsers: TestUser[] = [
       {
@@ -44,11 +44,11 @@ export class UsersSeeder {
           await this.seedCustomer(userData);
         }
         created++;
-        this.logger.log(`Created ${userData.role}: ${userData.email}`);
+        this.logger.debug(`Created ${userData.role}: ${userData.email}`);
       } catch (error) {
         if (error.code === 'P2002') {
           skipped++;
-          this.logger.log(`Skipped existing user: ${userData.email}`);
+          this.logger.debug(`Skipped existing user: ${userData.email}`);
         } else {
           this.logger.error(
             `Failed to seed user ${userData.email}: ${error.message}`,
@@ -58,7 +58,7 @@ export class UsersSeeder {
       }
     }
 
-    this.logger.log(
+    this.logger.debug(
       `Users seed completed: ${created} created, ${skipped} skipped`,
     );
   }
@@ -98,13 +98,13 @@ export class UsersSeeder {
   }
 
   getTestCredentials(): void {
-    this.logger.log('\n=== Test User Credentials ===');
-    this.logger.log('Admin Account:');
-    this.logger.log('  Email: contact@lunisoft.fr');
-    this.logger.log('  Password: password');
-    this.logger.log('\nCustomer Accounts:');
-    this.logger.log('  Email: customer@lunisoft.fr');
-    this.logger.log('  Password: password');
-    this.logger.log('=============================\n');
+    this.logger.debug('\n=== Test User Credentials ===');
+    this.logger.debug('Admin Account:');
+    this.logger.debug('  Email: contact@lunisoft.fr');
+    this.logger.debug('  Password: password');
+    this.logger.debug('\nCustomer Accounts:');
+    this.logger.debug('  Email: customer@lunisoft.fr');
+    this.logger.debug('  Password: password');
+    this.logger.debug('=============================\n');
   }
 }

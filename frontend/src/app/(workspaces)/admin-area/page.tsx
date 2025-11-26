@@ -11,9 +11,11 @@ import { Button } from "@/components/ui/button";
 
 export default function Page() {
   const test = async () => {
-    await wolfios.get("/api/demos/protected-route").then((res) => {
-      console.log(res.data);
-    });
+    await wolfios
+      .get("/api/demos/protected-route")
+      .then(() =>
+        console.log("A protected route has been successfully accessed.")
+      );
   };
 
   return (

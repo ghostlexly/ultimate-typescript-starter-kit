@@ -1,14 +1,9 @@
 ### Local search example
 
 ```tsx
-type Country = MultiSelectComboboxItem & {
-  countryCode: string;
-  countryName: string;
-};
-
 type FormValues = {
   email: string;
-  countries: Country[];
+  countries: any[];
   password: string;
 };
 
@@ -60,19 +55,15 @@ const component = () => {
 
           <MultiSelectCombobox
             id={field.name}
-            items={
-              countries.data.map((country: any) => ({
-                value: country.countryCode,
-                label: country.countryName,
-                ...country,
-              })) || []
-            }
+            items={countries.data || []}
+            valueKey="countryCode"
+            labelKey="countryName"
             value={field.value}
             onChange={field.onChange}
             placeholder="Select countries..."
             emptyMessage="No country found. Please try again."
             searchPlaceholder="Search..."
-            getItemKeywords={(item: Country) => [
+            getItemKeywords={(item: any) => [
               item.countryName,
               item.countryCode,
             ]}
@@ -91,14 +82,9 @@ const component = () => {
 ### Remote search example
 
 ```tsx
-type Country = MultiSelectComboboxItem & {
-  iso2Code: string;
-  countryName: string;
-};
-
 type FormValues = {
   email: string;
-  countries: Country[];
+  countries: any[];
   password: string;
 };
 
@@ -160,13 +146,9 @@ const component = () => {
 
           <MultiSelectCombobox
             id={field.name}
-            items={
-              countries.data?.nodes.map((country: any) => ({
-                value: country.iso2Code,
-                label: country.countryName,
-                ...country,
-              })) || []
-            }
+            items={countries.data?.nodes || []}
+            valueKey="iso2Code"
+            labelKey="countryName"
             value={field.value}
             onChange={field.onChange}
             onSearchChange={setCountrySearchTerm}

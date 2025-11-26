@@ -58,8 +58,9 @@ model Customer {
   id          String   @id @default(uuid())
   account     Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
   accountId   String   @unique
-  country     Country? @relation(fields: [countryCode], references: [iso2Code])
   countryCode String?
+  city        City?    @relation(fields: [cityId], references: [id])
+  cityId      String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -106,20 +107,23 @@ model Media {
   updatedAt DateTime @updatedAt
 }
 
-// data from https://www.insee.fr/fr/information/7766585 -> Pays et territoires étrangers
-model Country {
-  id            String  @id @default(uuid())
-  countryName   String
-  iso2Code      String  @unique // ISO 3166-1 alpha-2 code (FR, DE, ES, IT, etc..)
-  iso3Code      String  @unique // ISO 3166-1 alpha-3 code (FRA, DEU, ESP, ITA, etc..)
-  num3Code      String  @unique // ISO 3166-1 numeric-3 code (250, 276, 724, 380, etc..)
-  inseeCode     String?
-  continent     String?
-  continentName String?
-  currencyCode  String?
-  population    Int?    @default(0)
+model City {
+  id             String           @id @default(uuid())
+  inseeCode      String           @unique
+  departmentCode String
+  regionCode     String
+  name           String
+  population     Int              @default(0)
+  postalCodes    CityPostalCode[]
 
-  customers Customer[]
+  customer Customer[]
+}
+
+model CityPostalCode {
+  id         String @id @default(uuid())
+  postalCode String
+  cityId     String
+  city       City   @relation(fields: [cityId], references: [id])
 }
 
 // ------------------------------------------------------

@@ -43,15 +43,15 @@ import { Prisma } from 'src/generated/prisma/client';
 import { KillDragonCommand } from '../commands/impl/kill-dragon.command';
 import { DemoSerializeTestDto } from '../dto/demo.dto';
 import {
-  DemoGetPaginatedCountriesDto,
-  demoGetPaginatedCountriesSchema,
+  DemoGetCitiesDto,
+  demoGetCitiesSchema,
   demoGetPaginatedDataSchema,
   demoTestPlayerSchema,
   type DemoGetPaginatedDataDto,
   type DemoTestPlayerDto,
 } from '../validators/demo.validators';
 
-@Controller('demos')
+@Controller()
 export class DemoController {
   private logger = new Logger(DemoController.name);
 
@@ -66,7 +66,7 @@ export class DemoController {
   /**
    * @description Try the Prisma Client
    */
-  @Get()
+  @Get('/demos')
   @AllowAnonymous()
   async findAll() {
     return await this.db.prisma.account.findManyAndCount({});
@@ -75,7 +75,7 @@ export class DemoController {
   /**
    * @description Try the Zod Validation Pipe
    */
-  @Post()
+  @Post('/demos')
   @AllowAnonymous()
   @UsePipes(new ZodValidationPipe(demoTestPlayerSchema))
   create(
@@ -88,7 +88,7 @@ export class DemoController {
   /**
    * @description Try the Serialization Pipe
    */
-  @Get('serialize-with-class')
+  @Get('/demos/serialize-with-class')
   @AllowAnonymous()
   @UseInterceptors(ClassSerializerInterceptor)
   serializeWithClass() {
@@ -103,7 +103,7 @@ export class DemoController {
   /**
    * @description Try the Serialization Pipe
    */
-  @Get('serialize-with-options')
+  @Get('/demos/serialize-with-options')
   @AllowAnonymous()
   @UseInterceptors(ClassSerializerInterceptor)
   @SerializeOptions({
@@ -125,7 +125,7 @@ export class DemoController {
   /**
    * @description Launch a test job with BullMQ
    */
-  @Get('queue-launch')
+  @Get('/demos/queue-launch')
   @AllowAnonymous()
   async testQueueLaunch() {
     await this.demoQueue.add('testingJob', { message: 'Hello World' });
@@ -137,7 +137,7 @@ export class DemoController {
   /**
    * @description Public route that doesn't require authentication
    */
-  @Get('public-route')
+  @Get('/demos/public-route')
   @AllowAnonymous()
   publicRoute() {
     return {
@@ -148,7 +148,7 @@ export class DemoController {
   /**
    * @description Protected route that requires authentication
    */
-  @Get('protected-route')
+  @Get('/demos/protected-route')
   protectedRoute() {
     return {
       message: 'Protected route.',
@@ -158,7 +158,7 @@ export class DemoController {
   /**
    * @description Protected route that requires authentication and customer role
    */
-  @Get('protected-route-customer')
+  @Get('/demos/protected-route-customer')
   @Roles(['CUSTOMER'])
   protectedRouteCustomer(@Req() req: Request) {
     const customer = req.user?.customer;
@@ -177,7 +177,7 @@ export class DemoController {
    * @description Strict throttler (rate-limiting)
    * Will block the IP Address after 10 attempts.
    */
-  @Get('strict-throttler')
+  @Get('/demos/strict-throttler')
   @AllowAnonymous()
   @Throttle({ long: { limit: 10 } })
   strictThrottler() {
@@ -186,13 +186,13 @@ export class DemoController {
     };
   }
 
-  @Get('throw-unhandled-error')
+  @Get('/demos/throw-unhandled-error')
   @AllowAnonymous()
   throwUnhandledError() {
     throw new Error('Unhandled error');
   }
 
-  @Get('pdf-generation')
+  @Get('/demos/pdf-generation')
   @AllowAnonymous()
   async testPdfGeneration(@Res() res: Response) {
     // Get template
@@ -238,7 +238,7 @@ export class DemoController {
     return res.send(pdfBuffer);
   }
 
-  @Get('cached-by-interceptor')
+  @Get('/demos/cached-by-interceptor')
   @AllowAnonymous()
   @UseInterceptors(CacheInterceptor)
   @CacheKey('cached-response')
@@ -250,7 +250,7 @@ export class DemoController {
     };
   }
 
-  @Get('cached-by-service')
+  @Get('/demos/cached-by-service')
   @AllowAnonymous()
   async testCachedData() {
     const cacheKey = 'cached-data';
@@ -270,10 +270,11 @@ export class DemoController {
     return data;
   }
 
-  @Get('paginated-data')
+  @Get('/demos/paginated-data')
   @AllowAnonymous()
+  @UsePipes(new ZodValidationPipe(demoGetPaginatedDataSchema))
   async getPaginatedData(
-    @Query(new ZodValidationPipe(demoGetPaginatedDataSchema))
+    @Query()
     query: DemoGetPaginatedDataDto['query'],
   ) {
     const filterConditions: Prisma.CustomerWhereInput[] = [
@@ -324,36 +325,48 @@ export class DemoController {
     });
   }
 
-  @Get('paginated-countries')
+  @Get('/demos/cities')
   @AllowAnonymous()
-  async getPaginatedCountries(
-    @Query(new ZodValidationPipe(demoGetPaginatedCountriesSchema))
-    query: DemoGetPaginatedCountriesDto['query'],
-  ) {
-    const filterConditions: Prisma.CountryWhereInput[] = [];
+  @UsePipes(new ZodValidationPipe(demoGetCitiesSchema))
+  async getCities(@Query() query: DemoGetCitiesDto['query']) {
+    const filterConditions: Prisma.CityWhereInput[] = [];
 
     const { pagination, orderBy } = buildQueryParams({
       query,
-      defaultSort: { countryName: 'asc' },
-      allowedSortFields: ['countryName'],
+      defaultSort: { population: 'desc' },
+      allowedSortFields: ['population', 'id', 'name'],
     });
 
     // --------------------------------------
     // Filters
     // --------------------------------------
-    if (query.countryName) {
+    if (query.search) {
       filterConditions.push({
-        countryName: {
-          contains: query.countryName,
-          mode: 'insensitive',
-        },
+        OR: [
+          {
+            name: {
+              contains: query.search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            postalCodes: {
+              some: {
+                postalCode: {
+                  contains: query.search,
+                  mode: 'insensitive',
+                },
+              },
+            },
+          },
+        ],
       });
     }
 
     // --------------------------------------
     // Query
     // --------------------------------------
-    const { data, count } = await this.db.prisma.country.findManyAndCount({
+    const { data, count } = await this.db.prisma.city.findManyAndCount({
       where: {
         AND: filterConditions,
       },
@@ -370,7 +383,7 @@ export class DemoController {
     });
   }
 
-  @Post('cqrs-kill-dragon')
+  @Post('/demos/cqrs-kill-dragon')
   @AllowAnonymous()
   async cqrsKillDragon() {
     const response = await this.commandBus.execute(
