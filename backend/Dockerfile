@@ -40,8 +40,5 @@ COPY ./prisma ./prisma
 COPY ./public ./public
 COPY ./views ./views
 
-# Generate Prisma Client files
-RUN npx prisma generate
-
 ENV NODE_ENV=production
 CMD npm run start:prod

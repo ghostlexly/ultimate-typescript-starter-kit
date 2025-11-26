@@ -22,13 +22,9 @@ export class TestDatabaseHelper {
     this.logger.log('Cleaning test database...');
 
     // Delete in order to respect foreign key constraints
-    await this.prisma.passwordResetToken.deleteMany();
-    await this.prisma.session.deleteMany();
-    await this.prisma.customer.deleteMany();
-    await this.prisma.admin.deleteMany();
     await this.prisma.account.deleteMany();
-    await this.prisma.country.deleteMany();
     await this.prisma.appConfig.deleteMany();
+    await this.prisma.city.deleteMany();
 
     // Add other tables as needed
 
@@ -39,47 +35,100 @@ export class TestDatabaseHelper {
    * Seed minimal test data (countries only)
    */
   async seedMinimalData(): Promise<void> {
-    await this.prisma.country.createMany({
-      data: [
-        {
-          countryName: 'France',
-          iso2Code: 'FR',
-          iso3Code: 'FRA',
-          num3Code: '250',
-          continent: 'EU',
-          continentName: 'Europe',
-          currencyCode: 'EUR',
+    await this.prisma.city.create({
+      data: {
+        name: 'Marseille',
+        inseeCode: '13055',
+        departmentCode: '13',
+        regionCode: '93',
+        population: 877215,
+        postalCodes: {
+          createMany: {
+            data: [
+              {
+                postalCode: '13001',
+              },
+              {
+                postalCode: '13002',
+              },
+              {
+                postalCode: '13003',
+              },
+              {
+                postalCode: '13004',
+              },
+              {
+                postalCode: '13005',
+              },
+              {
+                postalCode: '13006',
+              },
+              {
+                postalCode: '13007',
+              },
+              {
+                postalCode: '13008',
+              },
+              {
+                postalCode: '13009',
+              },
+              {
+                postalCode: '13010',
+              },
+              {
+                postalCode: '13011',
+              },
+              {
+                postalCode: '13012',
+              },
+              {
+                postalCode: '13013',
+              },
+              {
+                postalCode: '13014',
+              },
+              {
+                postalCode: '13015',
+              },
+              {
+                postalCode: '13016',
+              },
+            ],
+          },
         },
-        {
-          countryName: 'United States',
-          iso2Code: 'US',
-          iso3Code: 'USA',
-          num3Code: '840',
-          continent: 'NA',
-          continentName: 'North America',
-          currencyCode: 'USD',
+      },
+    });
+
+    await this.prisma.city.create({
+      data: {
+        name: "Seillons-Source-d'Argens",
+        inseeCode: '83125',
+        departmentCode: '83',
+        regionCode: '93',
+        population: 2717,
+        postalCodes: {
+          createMany: {
+            data: [
+              {
+                postalCode: '83470',
+              },
+            ],
+          },
         },
-      ],
-      skipDuplicates: true,
+      },
     });
   }
 
   /**
    * Create a test admin account
    */
-  async createTestAdmin(data: {
-    email: string;
-    password: string;
-  }): Promise<{ id: string; accountId: string; email: string }> {
-    const admin = await this.prisma.admin.create({
+  async createTestAdmin(data: { email: string; password: string }) {
+    const admin = await this.prisma.account.create({
       data: {
         email: data.email,
         password: data.password,
-        account: {
-          create: {
-            role: 'ADMIN',
-          },
-        },
+        role: 'ADMIN',
+        admin: { create: {} },
       },
     });
 
@@ -89,19 +138,13 @@ export class TestDatabaseHelper {
   /**
    * Create a test customer account
    */
-  async createTestCustomer(data: {
-    email: string;
-    password: string;
-  }): Promise<{ id: string; accountId: string; email: string }> {
-    const customer = await this.prisma.customer.create({
+  async createTestCustomer(data: { email: string; password: string }) {
+    const customer = await this.prisma.account.create({
       data: {
         email: data.email,
         password: data.password,
-        account: {
-          create: {
-            role: 'CUSTOMER',
-          },
-        },
+        role: 'CUSTOMER',
+        customer: { create: {} },
       },
     });
 
