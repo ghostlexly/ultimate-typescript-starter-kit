@@ -27,8 +27,8 @@ export interface SingleSelectComboboxProps<T extends Record<string, any>>
   items: T[];
   value: T | null;
   onChange: (value: T | null) => void;
-  valueKey?: keyof T;
-  labelKey?: keyof T;
+  valueKey?: string;
+  labelKey?: string;
   placeholder?: string;
   emptyMessage?: string;
   searchPlaceholder?: string;
@@ -54,8 +54,8 @@ export function SingleSelectCombobox<T extends Record<string, any>>({
   items,
   value,
   onChange,
-  valueKey = "value" as keyof T,
-  labelKey = "label" as keyof T,
+  valueKey = "value",
+  labelKey = "label",
   placeholder = "Select item...",
   emptyMessage = "No items found.",
   searchPlaceholder = "Search...",
