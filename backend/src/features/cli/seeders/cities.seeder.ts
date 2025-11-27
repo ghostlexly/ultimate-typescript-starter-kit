@@ -16,6 +16,12 @@ interface CommuneData {
   population: number;
 }
 
+/**
+ * Seed towns from INSEE data
+ *
+ * File: communes.json
+ * Source: https://geo.api.gouv.fr/communes
+ */
 @Injectable()
 export class CitiesSeeder {
   private logger = new Logger(CitiesSeeder.name);
