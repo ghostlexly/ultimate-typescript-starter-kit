@@ -7,7 +7,8 @@ import {
   StorageClass,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import fs from 'fs';
+import fs from 'fs/promises';
+import { createWriteStream } from 'fs';
 import path from 'path';
 import { ConfigService } from '@nestjs/config';
 import { FilesService } from './files.service';
@@ -56,7 +57,7 @@ export class S3Service {
     mimeType: string;
     storageClass?: StorageClass;
   }) => {
-    const buffer = fs.readFileSync(filePath);
+    const buffer = await fs.readFile(filePath);
     const normalizedFileName =
       this.filesService.getNormalizedFileName(fileName);
 
@@ -114,7 +115,7 @@ export class S3Service {
       );
     }
 
-    const fileWriteStream = fs.createWriteStream(destinationPath);
+    const fileWriteStream = createWriteStream(destinationPath);
 
     const stream = new WritableStream({
       write(chunk) {

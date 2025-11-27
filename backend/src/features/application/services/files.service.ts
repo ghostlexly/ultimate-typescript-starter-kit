@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import path from 'path';
-import fs from 'fs';
+import fs from 'fs/promises';
 import FileType from 'file-type'; // version 16.5.4
 import crypto from 'crypto';
 
@@ -29,7 +29,7 @@ export class FilesService {
     filePath: string;
     originalFileName?: string;
   }) {
-    const stats = fs.statSync(filePath);
+    const stats = await fs.stat(filePath);
     const fileTypeFromFile = await FileType.fromFile(filePath);
     let mimeType: string = fileTypeFromFile?.mime ?? 'application/octet-stream';
 

@@ -3,9 +3,10 @@ import {
   DatabaseService,
   PrismaTransactionClient,
 } from '../../application/services/database.service';
-import communesData from './data/communes.json';
+import path from 'path';
+import fs from 'fs/promises';
 
-interface CommuneData {
+interface CityData {
   nom: string;
   code: string;
   codeDepartement: string;
@@ -31,57 +32,65 @@ export class CitiesSeeder {
   async seed(): Promise<void> {
     this.logger.debug('Starting cities seeding...');
 
-    const communes: CommuneData[] = Array.isArray(communesData)
-      ? communesData
-      : (communesData as any).default || [];
+    const cities = await this.getCities();
+
     const batchSize = 500;
     let totalSeeded = 0;
 
-    for (let i = 0; i < communes.length; i += batchSize) {
-      const batch = communes.slice(i, i + batchSize);
+    for (let i = 0; i < cities.length; i += batchSize) {
+      const batch = cities.slice(i, i + batchSize);
 
       await this.db.prisma.$transaction(async (tx: PrismaTransactionClient) => {
-        for (const commune of batch) {
-          const city = await tx.city.upsert({
-            where: { inseeCode: commune.code },
-            create: {
-              inseeCode: commune.code,
-              departmentCode: commune.codeDepartement,
-              regionCode: commune.codeRegion,
-              name: commune.nom,
-              population: commune.population,
-            },
+        for (const city of batch) {
+          await tx.city.upsert({
+            where: { inseeCode: city.code },
             update: {
-              departmentCode: commune.codeDepartement,
-              regionCode: commune.codeRegion,
-              name: commune.nom,
-              population: commune.population,
+              departmentCode: city.codeDepartement,
+              regionCode: city.codeRegion,
+              name: city.nom,
+              population: city.population,
+              postalCodes: {
+                deleteMany: {},
+                create: city.codesPostaux.map((code) => ({
+                  postalCode: code,
+                })),
+              },
+            },
+            create: {
+              inseeCode: city.code,
+              departmentCode: city.codeDepartement,
+              regionCode: city.codeRegion,
+              name: city.nom,
+              population: city.population,
+              postalCodes: {
+                create: city.codesPostaux.map((code) => ({
+                  postalCode: code,
+                })),
+              },
             },
           });
-
-          await tx.cityPostalCode.deleteMany({
-            where: { cityId: city.id },
-          });
-
-          if (commune.codesPostaux.length > 0) {
-            await tx.cityPostalCode.createMany({
-              data: commune.codesPostaux.map((postalCode: string) => ({
-                postalCode,
-                cityId: city.id,
-              })),
-            });
-          }
         }
       });
 
       totalSeeded += batch.length;
       this.logger.debug(
-        `Seeded ${totalSeeded} / ${communes.length} cities (${Math.round((totalSeeded / communes.length) * 100)}%)`,
+        `Seeded ${totalSeeded} / ${cities.length} cities (${Math.round((totalSeeded / cities.length) * 100)}%)`,
       );
     }
 
     this.logger.debug(
       `Cities seeding completed. Total cities seeded: ${totalSeeded}`,
     );
+  }
+
+  private async getCities(): Promise<CityData[]> {
+    const citiesData = await fs.readFile(
+      path.join(__dirname, 'data', 'communes.json'),
+      'utf-8',
+    );
+
+    const citiesParsed = JSON.parse(citiesData);
+
+    return citiesParsed;
   }
 }
