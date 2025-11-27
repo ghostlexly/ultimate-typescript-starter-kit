@@ -101,7 +101,7 @@ const component = () => {
       wolfios
         .get("/api/demos/paginated-countries", {
           params: {
-            countryName: debouncedCountrySearchTerm,
+            countryName: debouncedCountrySearchTerm ?? undefined,
           },
         })
         .then((res) => res.data),
