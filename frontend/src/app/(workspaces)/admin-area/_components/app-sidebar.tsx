@@ -31,6 +31,7 @@ import {
   Settings2Icon,
   SquareTerminalIcon,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 const data = {
   navMain: [
@@ -43,6 +44,7 @@ const data = {
         {
           title: "History",
           url: "#",
+          badge: <Badge variant="default">3</Badge>,
         },
         {
           title: "Starred",
@@ -135,6 +137,7 @@ const data = {
       title: "Search",
       url: "#",
       icon: IconSearch,
+      badge: <Badge variant="default">6</Badge>,
     },
   ],
   documents: [

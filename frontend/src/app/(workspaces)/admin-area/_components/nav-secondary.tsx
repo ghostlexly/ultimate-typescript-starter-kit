@@ -21,6 +21,7 @@ export function NavSecondary({
     title: string;
     url: string;
     icon: Icon;
+    badge?: React.ReactNode;
   }[];
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   const { setOpenMobile, isMobile } = useSidebar();
@@ -42,6 +43,7 @@ export function NavSecondary({
                   <div>
                     <item.icon />
                     <span>{item.title}</span>
+                    {item.badge && <div className="ml-auto">{item.badge}</div>}
                   </div>
                 </SidebarMenuButton>
               </SidebarMenuItem>

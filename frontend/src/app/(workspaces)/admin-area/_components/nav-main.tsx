@@ -33,6 +33,7 @@ export function NavMain({
     items?: {
       title: string;
       url: string;
+      badge?: React.ReactNode;
     }[];
   }[];
 }) {
@@ -91,7 +92,10 @@ export function NavMain({
                     >
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild>
-                          <span>{subItem.title}</span>
+                          <div className="flex items-center justify-between">
+                            <span>{subItem.title}</span>
+                            {subItem.badge && subItem.badge}
+                          </div>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                     </Link>
