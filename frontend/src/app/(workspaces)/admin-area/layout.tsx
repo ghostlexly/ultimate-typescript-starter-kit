@@ -1,6 +1,7 @@
 import { AppSidebar } from "@/app/(workspaces)/admin-area/_components/app-sidebar";
 import { Header } from "@/app/(workspaces)/admin-area/_components/header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { BreadcrumbProvider } from "@/hooks/use-breadcrumb";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -25,9 +26,11 @@ export default async function AdminAreaLayout({
     >
       <AppSidebar variant="inset" />
       <SidebarInset>
-        <Header />
+        <BreadcrumbProvider>
+          <Header />
 
-        {children}
+          {children}
+        </BreadcrumbProvider>
       </SidebarInset>
     </SidebarProvider>
   );

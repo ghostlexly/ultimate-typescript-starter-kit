@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Icon,
   IconDatabase,
   IconFileWord,
   IconHelp,
@@ -15,6 +16,8 @@ import { NavDocuments } from "@/app/(workspaces)/admin-area/_components/nav-docu
 import { NavMain } from "@/app/(workspaces)/admin-area/_components/nav-main";
 import { NavSecondary } from "@/app/(workspaces)/admin-area/_components/nav-secondary";
 import { NavUser } from "@/app/(workspaces)/admin-area/_components/nav-user";
+import { SidebarNavItem } from "@/components/navigation/sidebar-nav";
+import { Badge } from "@/components/ui/badge";
 import {
   Sidebar,
   SidebarContent,
@@ -31,9 +34,12 @@ import {
   Settings2Icon,
   SquareTerminalIcon,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 
-const data = {
+const data: {
+  navMain: SidebarNavItem[];
+  navSecondary: SidebarNavItem[];
+  documents: { title: string; url: string; icon: Icon }[];
+} = {
   navMain: [
     {
       title: "Playground",
