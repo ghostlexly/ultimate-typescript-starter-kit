@@ -16,7 +16,7 @@ import { NavDocuments } from "@/app/(workspaces)/admin-area/_components/nav-docu
 import { NavMain } from "@/app/(workspaces)/admin-area/_components/nav-main";
 import { NavSecondary } from "@/app/(workspaces)/admin-area/_components/nav-secondary";
 import { NavUser } from "@/app/(workspaces)/admin-area/_components/nav-user";
-import { SidebarNavItem } from "@/components/navigation/sidebar-nav";
+import { SidebarNavItem } from "@/components/ui/sidebar-nav";
 import { Badge } from "@/components/ui/badge";
 import {
   Sidebar,

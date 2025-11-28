@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/sidebar";
 import { IconCirclePlusFilled, IconMail } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
-import { SidebarNav, type SidebarNavItem } from "@/components/navigation/sidebar-nav";
+import { SidebarNav, type SidebarNavItem } from "@/components/ui/sidebar-nav";
 
 export function NavMain({ items }: { items: SidebarNavItem[] }) {
   return (

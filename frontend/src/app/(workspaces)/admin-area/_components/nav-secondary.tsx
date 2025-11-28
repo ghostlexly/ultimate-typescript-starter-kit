@@ -2,10 +2,7 @@
 
 import * as React from "react";
 
-import {
-  SidebarNav,
-  SidebarNavItem,
-} from "@/components/navigation/sidebar-nav";
+import { SidebarNav, SidebarNavItem } from "@/components/ui/sidebar-nav";
 import {
   SidebarGroup,
   SidebarGroupContent,
