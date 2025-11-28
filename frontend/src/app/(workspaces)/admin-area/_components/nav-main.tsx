@@ -1,50 +1,16 @@
 "use client";
 
-import { ChevronRight, type LucideIcon } from "lucide-react";
-
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import {
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import { IconCirclePlusFilled, IconMail } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { SidebarNav, type SidebarNavItem } from "@/components/navigation/sidebar-nav";
 
-export function NavMain({
-  items,
-}: {
-  items: {
-    title: string;
-    url: string;
-    icon?: LucideIcon;
-    isActive?: boolean;
-    items?: {
-      title: string;
-      url: string;
-      badge?: React.ReactNode;
-    }[];
-  }[];
-}) {
-  const { setOpenMobile, isMobile } = useSidebar();
-
-  const handleLinkClick = () => {
-    if (isMobile) {
-      setOpenMobile(false);
-    }
-  };
-
+export function NavMain({ items }: { items: SidebarNavItem[] }) {
   return (
     <SidebarGroup>
       <SidebarMenu>
@@ -66,46 +32,7 @@ export function NavMain({
           </Button>
         </SidebarMenuItem>
       </SidebarMenu>
-      <SidebarMenu>
-        {items.map((item) => (
-          <Collapsible
-            key={item.title}
-            asChild
-            defaultOpen={item.isActive}
-            className="group/collapsible"
-          >
-            <SidebarMenuItem>
-              <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title}>
-                  {item.icon && <item.icon />}
-                  <span>{item.title}</span>
-                  <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                </SidebarMenuButton>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <SidebarMenuSub>
-                  {item.items?.map((subItem) => (
-                    <Link
-                      href={subItem.url}
-                      key={subItem.title}
-                      onClick={handleLinkClick}
-                    >
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild>
-                          <div className="flex items-center justify-between">
-                            <span>{subItem.title}</span>
-                            {subItem.badge && subItem.badge}
-                          </div>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    </Link>
-                  ))}
-                </SidebarMenuSub>
-              </CollapsibleContent>
-            </SidebarMenuItem>
-          </Collapsible>
-        ))}
-      </SidebarMenu>
+      <SidebarNav items={items} />
     </SidebarGroup>
   );
 }

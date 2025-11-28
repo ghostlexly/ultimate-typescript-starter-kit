@@ -1,28 +1,23 @@
 "use client";
 
 import * as React from "react";
-import { type Icon } from "@tabler/icons-react";
 
+import {
+  SidebarNav,
+  SidebarNavItem,
+} from "@/components/navigation/sidebar-nav";
 import {
   SidebarGroup,
   SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
+  SidebarGroupLabel,
   useSidebar,
 } from "@/components/ui/sidebar";
-import Link from "next/link";
 
 export function NavSecondary({
   items,
   ...props
 }: {
-  items: {
-    title: string;
-    url: string;
-    icon: Icon;
-    badge?: React.ReactNode;
-  }[];
+  items: SidebarNavItem[];
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   const { setOpenMobile, isMobile } = useSidebar();
 
@@ -34,22 +29,9 @@ export function NavSecondary({
 
   return (
     <SidebarGroup {...props}>
+      <SidebarGroupLabel>Secondary</SidebarGroupLabel>
       <SidebarGroupContent>
-        <SidebarMenu>
-          {items.map((item) => (
-            <Link href={item.url} key={item.title} onClick={handleLinkClick}>
-              <SidebarMenuItem>
-                <SidebarMenuButton tooltip={item.title} asChild>
-                  <div>
-                    <item.icon />
-                    <span>{item.title}</span>
-                    {item.badge && <div className="ml-auto">{item.badge}</div>}
-                  </div>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </Link>
-          ))}
-        </SidebarMenu>
+        <SidebarNav items={items} />
       </SidebarGroupContent>
     </SidebarGroup>
   );
