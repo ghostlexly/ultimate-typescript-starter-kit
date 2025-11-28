@@ -36,6 +36,7 @@ RUN npx playwright install chromium --with-deps
 
 # Copy project specific files
 COPY --from=builder /usr/src/app/dist ./dist
+COPY ./prisma.config.ts ./prisma.config.ts
 COPY ./prisma ./prisma
 COPY ./public ./public
 COPY ./views ./views

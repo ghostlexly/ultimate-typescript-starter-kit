@@ -8,13 +8,11 @@
       {
         "include": "**/*.json",
         "exclude": "node_modules/**",
-        "outDir": "dist/src",
         "watchAssets": true
       },
       {
         "include": "**/*.csv",
         "exclude": "node_modules/**",
-        "outDir": "dist/src",
         "watchAssets": true
       }
     ]
