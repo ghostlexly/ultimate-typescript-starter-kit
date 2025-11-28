@@ -30,7 +30,7 @@ export function NavDocuments({
   items,
 }: {
   items: {
-    name: string;
+    title: string;
     url: string;
     icon: Icon;
   }[];
@@ -48,12 +48,12 @@ export function NavDocuments({
       <SidebarGroupLabel>Documents</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
-          <SidebarMenuItem key={item.name}>
+          <SidebarMenuItem key={item.title}>
             <Link href={item.url} onClick={handleLinkClick}>
-              <SidebarMenuButton asChild>
+              <SidebarMenuButton tooltip={item.title} asChild>
                 <div>
                   <item.icon />
-                  <span>{item.name}</span>
+                  <span>{item.title}</span>
                 </div>
               </SidebarMenuButton>
             </Link>

@@ -139,17 +139,17 @@ const data = {
   ],
   documents: [
     {
-      name: "Data Library",
+      title: "Data Library",
       url: "#",
       icon: IconDatabase,
     },
     {
-      name: "Reports",
+      title: "Reports",
       url: "#",
       icon: IconReport,
     },
     {
-      name: "Word Assistant",
+      title: "Word Assistant",
       url: "#",
       icon: IconFileWord,
     },
@@ -166,7 +166,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   };
 
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
+    <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
