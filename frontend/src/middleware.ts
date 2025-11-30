@@ -78,7 +78,10 @@ async function authenticationMiddleware(
 
     // Redirect unauthenticated users to signin page
     if (isAdminArea && !isAdminSigninPage) {
-      if (session.status === "unauthenticated") {
+      if (
+        session.status === "unauthenticated" ||
+        !session.data?.role.includes("ADMIN")
+      ) {
         return NextResponse.redirect(
           new URL("/admin-area/signin", request.url)
         );
@@ -112,7 +115,10 @@ async function authenticationMiddleware(
 
     // Redirect unauthenticated users to signin page
     if (isCustomerArea && !isCustomerSigninPage && !isCustomerSignupPage) {
-      if (session.status === "unauthenticated") {
+      if (
+        session.status === "unauthenticated" ||
+        !session.data?.role.includes("CUSTOMER")
+      ) {
         return NextResponse.redirect(
           new URL("/customer-area/signin", request.url)
         );
