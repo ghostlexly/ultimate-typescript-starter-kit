@@ -2,13 +2,12 @@
 
 import * as React from "react";
 
-import { SidebarNav, SidebarNavItem } from "@/components/ui/sidebar-nav";
 import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
-  useSidebar,
 } from "@/components/ui/sidebar";
+import { SidebarNav, SidebarNavItem } from "@/components/ui/sidebar-nav";
 
 export function NavSecondary({
   items,
@@ -16,14 +15,6 @@ export function NavSecondary({
 }: {
   items: SidebarNavItem[];
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
-  const { setOpenMobile, isMobile } = useSidebar();
-
-  const handleLinkClick = () => {
-    if (isMobile) {
-      setOpenMobile(false);
-    }
-  };
-
   return (
     <SidebarGroup {...props}>
       <SidebarGroupLabel>Secondary</SidebarGroupLabel>
