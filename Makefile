@@ -50,7 +50,7 @@ prisma-m-deploy: ## Apply the latest Prisma migrations
 	$(COMPOSE) restart backend
 
 prisma-m-diff: ## Check if database is up to date with schema file
-	$(COMPOSE) exec backend npx prisma migrate diff --from-schema-datasource prisma/schema.prisma --to-schema-datamodel prisma/schema.prisma --script
+	$(COMPOSE) exec backend npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --script
 
 ##———————————— Testing
 
@@ -65,7 +65,10 @@ test-all: ## Run all tests (unit + E2E)
 test-watch: ## Run tests in watch mode
 	$(COMPOSE) exec -e NODE_ENV=test -e APP_DATABASE_CONNECTION_URL=$(POSTGRES_TEST_URL) backend npm run test:watch
 
-##———————————— CLI Commands
+##———————————— Container Management
 
-cli: ## Run CLI commands in the backend container (use: make cli ARGS="command arguments")
-	$(COMPOSE) exec backend npm run cli -- $(ARGS)
+bb: ## Run bash in the backend container
+	$(COMPOSE) exec backend bash
+
+fb: ## Run bash in the frontend container
+	$(COMPOSE) exec frontend bash
