@@ -10,19 +10,24 @@ import { authConstants } from './auth.constants';
 
 @Injectable()
 export class AuthService {
+  private jwtPublicKey: string;
+
   constructor(
     private db: DatabaseService,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) {}
+  ) {
+    const jwtPublicKey = this.configService.get<string>('APP_JWT_PUBLIC_KEY');
+
+    if (jwtPublicKey) {
+      this.jwtPublicKey = Buffer.from(jwtPublicKey, 'base64').toString('utf8');
+    }
+  }
 
   async extractJwtPayload({ token }: { token: string }): Promise<any> {
     return await this.jwtService.verifyAsync(token, {
       algorithms: ['RS256'],
-      secret: Buffer.from(
-        this.configService.getOrThrow<string>('APP_JWT_PUBLIC_KEY'),
-        'base64',
-      ).toString('utf8'),
+      secret: this.jwtPublicKey,
     });
   }
 
