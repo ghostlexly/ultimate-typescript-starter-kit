@@ -7,6 +7,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { ClearExpiredSessionsCron } from './crons/clear-expired-sessions.cron';
 import { ConfigService } from '@nestjs/config';
+import { ClearExpiredVerificationTokensCron } from './crons/clear-expired-verification-tokens.cron';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { ConfigService } from '@nestjs/config';
     JwtStrategy,
     GoogleStrategy,
     ClearExpiredSessionsCron,
+    ClearExpiredVerificationTokensCron,
   ],
   exports: [AuthService],
 })

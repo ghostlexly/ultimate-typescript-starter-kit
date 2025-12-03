@@ -6,6 +6,7 @@ import crypto from 'crypto';
 import type { Response } from 'express';
 import { dateUtils } from 'src/core/utils/date';
 import { DatabaseService } from 'src/features/application/services/database.service';
+import { VerificationType } from 'src/generated/prisma/client';
 import { authConstants } from './auth.constants';
 
 @Injectable()
@@ -211,5 +212,34 @@ export class AuthService {
   clearAuthCookies({ res }: { res: Response }): void {
     res.clearCookie('lunisoft_access_token');
     res.clearCookie('lunisoft_refresh_token');
+  }
+
+  async verifyVerificationToken({
+    type,
+    token,
+    email,
+  }: {
+    type: VerificationType;
+    token: string;
+    email: string;
+  }) {
+    const tokenFound = await this.db.prisma.verificationToken.findFirst({
+      where: {
+        token: token,
+        type: type,
+        account: {
+          email: email,
+        },
+        expiresAt: {
+          gte: new Date(),
+        },
+      },
+    });
+
+    if (!tokenFound) {
+      return false;
+    }
+
+    return true;
   }
 }

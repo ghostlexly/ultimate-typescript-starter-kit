@@ -181,7 +181,9 @@ export function SigninForm({
                       />
 
                       <FieldDescription>
-                        <Link href="#">Forgot your password?</Link>
+                        <Link href="/forgot-password">
+                          Forgot your password?
+                        </Link>
                       </FieldDescription>
 
                       {fieldState.invalid && (
