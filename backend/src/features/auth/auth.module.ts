@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { GoogleCustomerStrategy } from './strategies/google.strategy';
+import { GoogleStrategy } from './strategies/google.strategy';
 import { ClearExpiredSessionsCron } from './crons/clear-expired-sessions.cron';
 import { ConfigService } from '@nestjs/config';
 
@@ -30,7 +30,7 @@ import { ConfigService } from '@nestjs/config';
   providers: [
     AuthService,
     JwtStrategy,
-    GoogleCustomerStrategy,
+    GoogleStrategy,
     ClearExpiredSessionsCron,
   ],
   exports: [AuthService],

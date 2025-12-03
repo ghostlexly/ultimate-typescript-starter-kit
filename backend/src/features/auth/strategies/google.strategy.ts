@@ -6,11 +6,8 @@ import { DatabaseService } from 'src/features/application/services/database.serv
 import { OAuthRedirectException } from '../../../core/exceptions/oauth-redirect.exception';
 
 @Injectable()
-export class GoogleCustomerStrategy extends PassportStrategy(
-  Strategy,
-  'google',
-) {
-  private logger = new Logger(GoogleCustomerStrategy.name);
+export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
+  private logger = new Logger(GoogleStrategy.name);
   private readonly appBaseUrl: string;
 
   constructor(
