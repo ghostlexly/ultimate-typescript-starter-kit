@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
 import { DatabaseService } from 'src/features/application/services/database.service';
-import { OAuthRedirectException } from '../exceptions/oauth-redirect.exception';
+import { OAuthRedirectException } from '../../../core/exceptions/oauth-redirect.exception';
 
 @Injectable()
 export class GoogleCustomerStrategy extends PassportStrategy(

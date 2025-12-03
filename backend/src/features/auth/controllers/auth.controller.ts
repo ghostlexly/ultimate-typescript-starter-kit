@@ -20,7 +20,6 @@ import { ZodValidationPipe } from 'src/core/pipes/zod-validation.pipe';
 import { DatabaseService } from 'src/features/application/services/database.service';
 import { Account } from 'src/generated/prisma/client';
 import { AuthService } from '../auth.service';
-import { OAuthRedirectExceptionFilter } from '../filters/oauth-redirect.filter';
 import type {
   AuthRefreshTokenDto,
   AuthSigninDto,
@@ -29,6 +28,7 @@ import {
   authRefreshTokenSchema,
   authSigninSchema,
 } from '../validators/auth.validators';
+import { OAuthRedirectExceptionFilter } from 'src/core/filters/oauth-redirect.filter';
 
 @Controller()
 export class AuthController {
