@@ -8,7 +8,7 @@ import { OAuthRedirectException } from '../exceptions/oauth-redirect.exception';
 @Injectable()
 export class GoogleCustomerStrategy extends PassportStrategy(
   Strategy,
-  'google-customer',
+  'google',
 ) {
   private logger = new Logger(GoogleCustomerStrategy.name);
   private readonly appBaseUrl: string;
@@ -22,7 +22,7 @@ export class GoogleCustomerStrategy extends PassportStrategy(
       clientSecret: configService.getOrThrow<string>(
         'API_GOOGLE_CLIENT_SECRET',
       ),
-      callbackURL: `${configService.getOrThrow<string>('APP_BASE_URL')}/api/auth/google/customer/callback`,
+      callbackURL: `${configService.getOrThrow<string>('APP_BASE_URL')}/api/auth/google/callback`,
       scope: ['email', 'profile'],
     });
 
@@ -42,7 +42,7 @@ export class GoogleCustomerStrategy extends PassportStrategy(
         this.logger.error('No email found in Google profile');
 
         throw new OAuthRedirectException(
-          `${this.appBaseUrl}/customer-area/signin`,
+          `${this.appBaseUrl}/signin`,
           'EMAIL_NOT_FOUND',
         );
       }
@@ -52,7 +52,6 @@ export class GoogleCustomerStrategy extends PassportStrategy(
       // Check if customer exists with this Google ID
       let account = await this.db.prisma.account.findFirst({
         where: {
-          role: 'CUSTOMER',
           providerId: 'google',
           providerAccountId: id,
         },
@@ -62,7 +61,6 @@ export class GoogleCustomerStrategy extends PassportStrategy(
       if (!account) {
         account = await this.db.prisma.account.findUnique({
           where: {
-            role: 'CUSTOMER',
             email,
           },
         });
@@ -94,7 +92,7 @@ export class GoogleCustomerStrategy extends PassportStrategy(
           );
 
           throw new OAuthRedirectException(
-            `${this.appBaseUrl}/customer-area/signin`,
+            `${this.appBaseUrl}/signin`,
             'EMAIL_ALREADY_EXISTS',
           );
         }
@@ -127,7 +125,7 @@ export class GoogleCustomerStrategy extends PassportStrategy(
         this.logger.error('Account not found after customer creation/update');
 
         throw new OAuthRedirectException(
-          `${this.appBaseUrl}/customer-area/signin`,
+          `${this.appBaseUrl}/signin`,
           'ACCOUNT_NOT_FOUND',
         );
       }
@@ -142,7 +140,7 @@ export class GoogleCustomerStrategy extends PassportStrategy(
       this.logger.error('Error during Google OAuth validation:', error);
 
       throw new OAuthRedirectException(
-        `${this.appBaseUrl}/customer-area/signin`,
+        `${this.appBaseUrl}/signin`,
         'INTERNAL_SERVER_ERROR',
       );
     }

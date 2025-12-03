@@ -17,12 +17,13 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
-import { handleApiErrors } from "@/lib/handle-api-errors";
+import { useAppStore } from "@/hooks/use-app-store";
 import { useSession } from "@/lib/luni-auth/luni-auth.provider";
+import { handleApiErrors } from "@/lib/handle-api-errors";
 import { cn } from "@/lib/utils";
 import { wolfios } from "@/lib/wolfios/wolfios";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -39,6 +40,7 @@ export function SigninForm({
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const router = useRouter();
+  const { previousLink } = useAppStore();
   const session = useSession();
   const [isPendingTransition, startTransition] = useTransition();
 
@@ -61,18 +63,35 @@ export function SigninForm({
 
   const handleSubmit = async (values: FormValues) => {
     try {
-      await wolfios.post(`/api/auth/signin`, {
-        email: values.email,
-        password: values.password,
-        role: "ADMIN",
-      });
+      // Sign in
+      const response = await wolfios
+        .post(`/api/auth/signin`, {
+          email: values.email,
+          password: values.password,
+        })
+        .then((res) => res.data);
 
       // Refresh the session to update authentication state
       await session.refresh();
 
-      // Redirect after successful login
+      // if previous link is provided, redirect to it
+      // (ex: when the user is redirected to login page from booking page)
       startTransition(() => {
-        router.push("/admin-area");
+        if (previousLink && previousLink !== "/") {
+          router.push(previousLink);
+        } else {
+          switch (response.role) {
+            case "ADMIN":
+              router.push("/admin-area");
+              break;
+            case "CUSTOMER":
+              router.push("/");
+              break;
+            case "HOUSEKEEPER":
+              router.push("/housekeeper-area");
+              break;
+          }
+        }
       });
     } catch (error) {
       handleApiErrors({ error, form });
@@ -81,7 +100,7 @@ export function SigninForm({
 
   const handleGoogleSignIn = () => {
     startTransition(() => {
-      router.push("/api/auth/google/admin");
+      router.push("/api/auth/google");
     });
   };
 
@@ -184,9 +203,13 @@ export function SigninForm({
               </FieldGroup>
 
               <div className="text-center text-sm">
-                Don't have an account?
-                <br />
-                Contact the technical support
+                Don&apos;t have an account?{" "}
+                <Link
+                  href="/customer-area/signup"
+                  className="underline underline-offset-4"
+                >
+                  Sign up
+                </Link>
               </div>
             </div>
           </form>

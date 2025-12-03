@@ -66,30 +66,28 @@ function chain(middlewares: MiddlewareFactory[]) {
 async function authenticationMiddleware(
   request: NextRequest
 ): Promise<NextResponse | null> {
+  const isSigninPage = request.nextUrl.pathname.startsWith("/signin");
+
   // ---------------------------------------------
   // Admin Area
   // ---------------------------------------------
   const isAdminArea = request.nextUrl.pathname.startsWith("/admin-area");
-  const isAdminSigninPage =
-    request.nextUrl.pathname.startsWith("/admin-area/signin");
 
-  if (isAdminArea || isAdminSigninPage) {
+  if (isAdminArea || isSigninPage) {
     const session = await getServerSession();
 
     // Redirect unauthenticated users to signin page
-    if (isAdminArea && !isAdminSigninPage) {
+    if (isAdminArea && !isSigninPage) {
       if (
         session.status === "unauthenticated" ||
         !session.data?.role.includes("ADMIN")
       ) {
-        return NextResponse.redirect(
-          new URL("/admin-area/signin", request.url)
-        );
+        return NextResponse.redirect(new URL("/signin", request.url));
       }
     }
 
     // Redirect authenticated admins away from signin page
-    if (isAdminSigninPage) {
+    if (isSigninPage) {
       if (
         session.status === "authenticated" &&
         session.data?.role.includes("ADMIN")
@@ -103,35 +101,30 @@ async function authenticationMiddleware(
   // Customer Area
   // ---------------------------------------------
   const isCustomerArea = request.nextUrl.pathname.startsWith("/customer-area");
-  const isCustomerSigninPage = request.nextUrl.pathname.startsWith(
-    "/customer-area/signin"
-  );
   const isCustomerSignupPage = request.nextUrl.pathname.startsWith(
     "/customer-area/signup"
   );
 
-  if (isCustomerArea || isCustomerSigninPage || isCustomerSignupPage) {
+  if (isCustomerArea || isSigninPage || isCustomerSignupPage) {
     const session = await getServerSession();
 
     // Redirect unauthenticated users to signin page
-    if (isCustomerArea && !isCustomerSigninPage && !isCustomerSignupPage) {
+    if (isCustomerArea && !isSigninPage && !isCustomerSignupPage) {
       if (
         session.status === "unauthenticated" ||
         !session.data?.role.includes("CUSTOMER")
       ) {
-        return NextResponse.redirect(
-          new URL("/customer-area/signin", request.url)
-        );
+        return NextResponse.redirect(new URL("/signin", request.url));
       }
     }
 
     // Redirect authenticated customers away from signin page
-    if (isCustomerSigninPage || isCustomerSignupPage) {
+    if (isSigninPage || isCustomerSignupPage) {
       if (
         session.status === "authenticated" &&
         session.data?.role.includes("CUSTOMER")
       ) {
-        return NextResponse.redirect(new URL("/customer-area", request.url));
+        return NextResponse.redirect(new URL("/", request.url));
       }
     }
   }

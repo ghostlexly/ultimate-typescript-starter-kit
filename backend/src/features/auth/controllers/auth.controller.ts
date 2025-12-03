@@ -46,28 +46,14 @@ export class AuthController {
     @Body() body: AuthSigninDto['body'],
   ) {
     // Verify if user exists
-    let account: Account | null = null;
-    if (body.role === 'ADMIN') {
-      account = await this.db.prisma.account.findFirst({
-        where: {
-          role: 'ADMIN',
-          email: {
-            contains: body.email,
-            mode: 'insensitive',
-          },
+    const account: Account | null = await this.db.prisma.account.findFirst({
+      where: {
+        email: {
+          contains: body.email,
+          mode: 'insensitive',
         },
-      });
-    } else if (body.role === 'CUSTOMER') {
-      account = await this.db.prisma.account.findFirst({
-        where: {
-          role: 'CUSTOMER',
-          email: {
-            contains: body.email,
-            mode: 'insensitive',
-          },
-        },
-      });
-    }
+      },
+    });
 
     if (!account) {
       // When user doesn't exist, still hash a fake password to prevent timing-based account enumeration
@@ -123,6 +109,7 @@ export class AuthController {
     });
 
     return {
+      role: account.role,
       accessToken,
       refreshToken,
     };
@@ -200,19 +187,19 @@ export class AuthController {
     }
   }
 
-  @Get('/auth/google/customer')
+  @Get('/auth/google')
   @AllowAnonymous()
-  @UseGuards(AuthGuard('google-customer'))
+  @UseGuards(AuthGuard('google'))
   @UseFilters(OAuthRedirectExceptionFilter)
-  async googleAuthCustomer() {
+  async googleAuth() {
     // This route initiates the Google OAuth flow for customers
   }
 
-  @Get('/auth/google/customer/callback')
+  @Get('/auth/google/callback')
   @AllowAnonymous()
-  @UseGuards(AuthGuard('google-customer'))
+  @UseGuards(AuthGuard('google'))
   @UseFilters(OAuthRedirectExceptionFilter)
-  async googleAuthRedirectCustomer(
+  async googleAuthRedirect(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
@@ -221,7 +208,7 @@ export class AuthController {
     if (!user) {
       // Redirect to sign-in page with error message
       return res.redirect(
-        `${process.env.APP_BASE_URL}/customer-area/signin?error=FAILED_TO_AUTHENTICATE_GOOGLE`,
+        `${process.env.APP_BASE_URL}/signin?error=FAILED_TO_AUTHENTICATE_GOOGLE`,
       );
     }
 
@@ -239,48 +226,11 @@ export class AuthController {
     });
 
     // Redirect to frontend
-    return res.redirect(`${process.env.APP_BASE_URL}/customer-area`);
-  }
-
-  @Get('/auth/google/admin')
-  @AllowAnonymous()
-  @UseGuards(AuthGuard('google-admin'))
-  @UseFilters(OAuthRedirectExceptionFilter)
-  async googleAuthAdmin() {
-    // This route initiates the Google OAuth flow for admins
-  }
-
-  @Get('/auth/google/admin/callback')
-  @AllowAnonymous()
-  @UseGuards(AuthGuard('google-admin'))
-  @UseFilters(OAuthRedirectExceptionFilter)
-  async googleAuthAdminRedirect(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    const user = req.user;
-
-    if (!user) {
-      // Redirect to sign-in page with error message
-      return res.redirect(
-        `${process.env.APP_BASE_URL}/admin-area/signin?error=FAILED_TO_AUTHENTICATE_GOOGLE`,
-      );
+    switch (user.role) {
+      case 'ADMIN':
+        return res.redirect(`${process.env.APP_BASE_URL}/admin-area`);
+      case 'CUSTOMER':
+        return res.redirect(`${process.env.APP_BASE_URL}/`);
     }
-
-    // Generate authentication tokens
-    const { accessToken, refreshToken } =
-      await this.authService.generateAuthenticationTokens({
-        accountId: user.id,
-      });
-
-    // Set authentication cookies
-    this.authService.setAuthCookies({
-      res,
-      accessToken,
-      refreshToken,
-    });
-
-    // Redirect to frontend
-    return res.redirect(`${process.env.APP_BASE_URL}/admin-area`);
   }
 }

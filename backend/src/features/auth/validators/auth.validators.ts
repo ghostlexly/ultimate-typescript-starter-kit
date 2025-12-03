@@ -1,11 +1,9 @@
-import { Role } from 'src/generated/prisma/client';
 import { z } from 'zod';
 
 export const authSigninSchema = z.object({
   body: z.object({
     email: z.email(),
     password: z.string().min(1),
-    role: z.enum(Role),
   }),
 });
 export type AuthSigninDto = z.infer<typeof authSigninSchema>;
