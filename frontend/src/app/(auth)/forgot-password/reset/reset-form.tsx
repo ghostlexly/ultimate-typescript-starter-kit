@@ -17,7 +17,7 @@ import {
 import { PasswordInput } from "@/components/ui/password-input";
 import { handleApiErrors } from "@/lib/handle-api-errors";
 import { wolfios } from "@/lib/wolfios/wolfios";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -27,9 +27,16 @@ type FormValues = {
   confirmPassword: string;
 };
 
-export function ForgotPasswordResetForm() {
+export type ForgotPasswordResetFormProps = {
+  email: string | null;
+  token: string | null;
+};
+
+export function ForgotPasswordResetForm({
+  email,
+  token,
+}: ForgotPasswordResetFormProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<FormValues>({
@@ -50,8 +57,8 @@ export function ForgotPasswordResetForm() {
       }
 
       await wolfios.post("/api/auth/reset-password", {
-        email: searchParams.get("email"),
-        token: searchParams.get("token"),
+        email,
+        token,
         password: values.password,
       });
 

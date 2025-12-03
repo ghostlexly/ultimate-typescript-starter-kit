@@ -1,7 +1,16 @@
 import { GalleryVerticalEndIcon } from "lucide-react";
 import { ForgotPasswordVerifyForm } from "./verify-form";
 
-export default function ForgotPasswordVerifyPage() {
+type Params = Promise<{ [key: string]: string | string[] | undefined }>;
+
+export default async function ForgotPasswordVerifyPage({
+  searchParams,
+}: {
+  searchParams: Params;
+}) {
+  const params = await searchParams;
+  const email = typeof params.email === "string" ? params.email : null;
+
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10 rounded-lg bg-muted">
       <div className="flex w-full max-w-sm flex-col gap-6">
@@ -11,7 +20,7 @@ export default function ForgotPasswordVerifyPage() {
           </div>
           Acme Inc.
         </a>
-        <ForgotPasswordVerifyForm />
+        <ForgotPasswordVerifyForm email={email} />
       </div>
     </div>
   );

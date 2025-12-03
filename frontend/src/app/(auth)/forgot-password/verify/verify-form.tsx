@@ -20,21 +20,24 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useTransition } from "react";
-import { Controller, useForm } from "react-hook-form";
-import Link from "next/link";
 import { handleApiErrors } from "@/lib/handle-api-errors";
 import { wolfios } from "@/lib/wolfios/wolfios";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 type FormValues = {
   token: string;
 };
 
-export function ForgotPasswordVerifyForm() {
+export type ForgotPasswordVerifyFormProps = {
+  email: string | null;
+};
+
+export function ForgotPasswordVerifyForm({
+  email,
+}: ForgotPasswordVerifyFormProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const email = searchParams.get("email");
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<FormValues>({
