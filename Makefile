@@ -70,5 +70,5 @@ test-watch: ## Run tests in watch mode
 bb: ## Run bash in the backend container
 	$(COMPOSE) exec backend bash
 
-fb: ## Run bash in the frontend container
+bf: ## Run bash in the frontend container
 	$(COMPOSE) exec frontend bash
