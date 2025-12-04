@@ -11,14 +11,16 @@ import {
 } from "@/components/ui/breadcrumb";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BellIcon } from "lucide-react";
+import { BellIcon, ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { useBreadcrumb } from "@/hooks/use-breadcrumb";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export function Header() {
   const { breadcrumbs } = useBreadcrumb();
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   // The breadcrumbs are empty on the first SSR load,
   // so we need to wait for the client to load them
@@ -31,6 +33,15 @@ export function Header() {
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
       <div className="flex w-full items-center gap-2 px-4 lg:gap-3 lg:px-6">
         <SidebarTrigger className="sm:hidden -ml-1" />
+
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-muted-foreground -ml-2 hidden h-8 w-8 sm:flex"
+          onClick={() => router.back()}
+        >
+          <ChevronLeftIcon className="h-4 w-4" />
+        </Button>
 
         <Breadcrumb className="hidden sm:flex">
           <BreadcrumbList>
