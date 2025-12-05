@@ -20,6 +20,13 @@ import { Check, ChevronsUpDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCallback, useState } from "react";
 
+/**
+ * Access nested properties using dot notation (e.g., "account.email")
+ */
+const getNestedValue = (obj: Record<string, any>, path: string): any => {
+  return path.split(".").reduce((current, key) => current?.[key], obj);
+};
+
 export interface MultiSelectComboboxProps<T extends Record<string, any>>
   extends Omit<
     React.ComponentPropsWithoutRef<"button">,
@@ -29,7 +36,7 @@ export interface MultiSelectComboboxProps<T extends Record<string, any>>
   value: T[];
   onChange: (value: T[]) => void;
   valueKey?: string;
-  labelKey?: string;
+  renderLabel?: (item: T) => React.ReactNode;
   placeholder?: string;
   emptyMessage?: string;
   searchPlaceholder?: string;
@@ -51,14 +58,16 @@ export interface MultiSelectComboboxProps<T extends Record<string, any>>
  * - Custom item and badge rendering
  * - Works seamlessly with react-hook-form
  * - Accessible with ARIA roles
- * - Custom value and label keys
+ * - Custom value and label keys (supports nested paths like "account.email")
  */
+const defaultRenderLabel = (item: Record<string, any>) => String(item.label);
+
 export function MultiSelectCombobox<T extends Record<string, any>>({
   items,
   value,
   onChange,
   valueKey = "value",
-  labelKey = "label",
+  renderLabel = defaultRenderLabel,
   placeholder = "Select items...",
   emptyMessage = "No items found.",
   searchPlaceholder = "Search...",
@@ -74,11 +83,16 @@ export function MultiSelectCombobox<T extends Record<string, any>>({
 }: MultiSelectComboboxProps<T>) {
   const [open, setOpen] = useState(false);
 
+  const getValue = useCallback(
+    (item: T) => getNestedValue(item, valueKey),
+    [valueKey]
+  );
+
   const isItemSelected = useCallback(
     (itemValue: string) => {
-      return value.some((item) => String(item[valueKey]) === itemValue);
+      return value.some((item) => String(getValue(item)) === itemValue);
     },
-    [value, valueKey]
+    [value, getValue]
   );
 
   const handleOpenChange = useCallback(
@@ -94,35 +108,25 @@ export function MultiSelectCombobox<T extends Record<string, any>>({
 
   const toggleItem = useCallback(
     (item: T) => {
-      if (isItemSelected(String(item[valueKey]))) {
-        onChange(
-          value.filter((v) => String(v[valueKey]) !== String(item[valueKey]))
-        );
+      const itemValue = String(getValue(item));
+      if (isItemSelected(itemValue)) {
+        onChange(value.filter((v) => String(getValue(v)) !== itemValue));
       } else {
         onChange([...value, item]);
       }
     },
-    [isItemSelected, onChange, value, valueKey]
+    [isItemSelected, onChange, value, getValue]
   );
 
   const removeItem = useCallback(
     (itemValue: string) => {
-      onChange(value.filter((v) => String(v[valueKey]) !== itemValue));
+      onChange(value.filter((v) => String(getValue(v)) !== itemValue));
     },
-    [onChange, value, valueKey]
+    [onChange, value, getValue]
   );
 
-  const defaultRenderItem = useCallback(
-    (item: T) => String(item[labelKey]),
-    [labelKey]
-  );
-  const defaultRenderBadge = useCallback(
-    (item: T) => String(item[labelKey]),
-    [labelKey]
-  );
-
-  const itemRenderer = renderItem || defaultRenderItem;
-  const badgeRenderer = renderBadge || defaultRenderBadge;
+  const itemRenderer = renderItem || renderLabel;
+  const badgeRenderer = renderBadge || renderLabel;
 
   return (
     <>
@@ -170,27 +174,30 @@ export function MultiSelectCombobox<T extends Record<string, any>>({
                     <div className="px-2 text-center">{emptyMessage}</div>
                   </CommandEmpty>
                   <CommandGroup>
-                    {items.map((item) => (
-                      <CommandItem
-                        key={String(item[valueKey])}
-                        value={String(item[valueKey])}
-                        keywords={getItemKeywords?.(item)}
-                        onSelect={() => toggleItem(item)}
-                        className="cursor-pointer"
-                      >
-                        <div
-                          className={cn(
-                            "flex items-center justify-center",
-                            isItemSelected(String(item[valueKey]))
-                              ? "opacity-100"
-                              : "opacity-0"
-                          )}
+                    {items.map((item) => {
+                      const itemValue = String(getValue(item));
+                      return (
+                        <CommandItem
+                          key={itemValue}
+                          value={itemValue}
+                          keywords={getItemKeywords?.(item)}
+                          onSelect={() => toggleItem(item)}
+                          className="cursor-pointer"
                         >
-                          <Check className="h-4 w-4" />
-                        </div>
-                        {itemRenderer(item)}
-                      </CommandItem>
-                    ))}
+                          <div
+                            className={cn(
+                              "flex items-center justify-center",
+                              isItemSelected(itemValue)
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          >
+                            <Check className="h-4 w-4" />
+                          </div>
+                          {itemRenderer(item)}
+                        </CommandItem>
+                      );
+                    })}
                   </CommandGroup>
                 </>
               )}
@@ -201,23 +208,22 @@ export function MultiSelectCombobox<T extends Record<string, any>>({
 
       {value.length > 0 && (
         <div className="flex flex-wrap gap-2">
-          {value.map((item) => (
-            <Badge
-              key={String(item[valueKey])}
-              variant="secondary"
-              className="gap-1"
-            >
-              {badgeRenderer(item)}
-              <button
-                type="button"
-                onClick={() => removeItem(String(item[valueKey]))}
-                className="hover:bg-destructive/20 rounded-full"
-                disabled={disabled}
-              >
-                <X className="size-3" />
-              </button>
-            </Badge>
-          ))}
+          {value.map((item) => {
+            const itemValue = String(getValue(item));
+            return (
+              <Badge key={itemValue} variant="secondary" className="gap-1">
+                {badgeRenderer(item)}
+                <button
+                  type="button"
+                  onClick={() => removeItem(itemValue)}
+                  className="hover:bg-destructive/20 rounded-full"
+                  disabled={disabled}
+                >
+                  <X className="size-3" />
+                </button>
+              </Badge>
+            );
+          })}
         </div>
       )}
     </>

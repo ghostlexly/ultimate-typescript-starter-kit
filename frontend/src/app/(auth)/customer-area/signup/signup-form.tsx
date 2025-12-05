@@ -193,7 +193,7 @@ export function SignUpForm({
                         id={field.name}
                         items={countries.data || []}
                         valueKey="countryCode"
-                        labelKey="countryName"
+                        renderLabel={(item) => item.countryName}
                         value={field.value}
                         onChange={field.onChange}
                         placeholder="Select your country..."

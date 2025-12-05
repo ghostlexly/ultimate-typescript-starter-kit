@@ -19,6 +19,13 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCallback, useState } from "react";
 
+/**
+ * Access nested properties using dot notation (e.g., "account.email")
+ */
+const getNestedValue = (obj: Record<string, any>, path: string): any => {
+  return path.split(".").reduce((current, key) => current?.[key], obj);
+};
+
 export interface SingleSelectComboboxProps<T extends Record<string, any>>
   extends Omit<
     React.ComponentPropsWithoutRef<"button">,
@@ -28,7 +35,7 @@ export interface SingleSelectComboboxProps<T extends Record<string, any>>
   value: T | null;
   onChange: (value: T | null) => void;
   valueKey?: string;
-  labelKey?: string;
+  renderLabel?: (item: T) => React.ReactNode;
   placeholder?: string;
   emptyMessage?: string;
   searchPlaceholder?: string;
@@ -50,12 +57,14 @@ export interface SingleSelectComboboxProps<T extends Record<string, any>>
  * - Accessible with ARIA roles
  * - Custom value and label keys
  */
+const defaultRenderLabel = (item: Record<string, any>) => String(item.label);
+
 export function SingleSelectCombobox<T extends Record<string, any>>({
   items,
   value,
   onChange,
   valueKey = "value",
-  labelKey = "label",
+  renderLabel = defaultRenderLabel,
   placeholder = "Select item...",
   emptyMessage = "No items found.",
   searchPlaceholder = "Search...",
@@ -69,6 +78,11 @@ export function SingleSelectCombobox<T extends Record<string, any>>({
   ...buttonProps
 }: SingleSelectComboboxProps<T>) {
   const [open, setOpen] = useState(false);
+
+  const getValue = useCallback(
+    (item: T) => getNestedValue(item, valueKey),
+    [valueKey]
+  );
 
   const handleOpenChange = useCallback(
     (newOpen: boolean) => {
@@ -84,14 +98,14 @@ export function SingleSelectCombobox<T extends Record<string, any>>({
   const handleSelect = useCallback(
     (selectedValue: string) => {
       const selectedItem = items.find(
-        (item) => String(item[valueKey]) === selectedValue
+        (item) => String(getValue(item)) === selectedValue
       );
 
       if (!selectedItem) {
         return;
       }
 
-      if (value && String(value[valueKey]) === selectedValue) {
+      if (value && String(getValue(value)) === selectedValue) {
         onChange(null);
       } else {
         onChange(selectedItem);
@@ -100,14 +114,10 @@ export function SingleSelectCombobox<T extends Record<string, any>>({
       onSearchChange?.("");
       setOpen(false);
     },
-    [items, onChange, value, onSearchChange, valueKey]
+    [items, onChange, value, onSearchChange, getValue]
   );
 
-  const defaultRenderItem = useCallback(
-    (item: T) => String(item[labelKey]),
-    [labelKey]
-  );
-  const itemRenderer = renderItem || defaultRenderItem;
+  const itemRenderer = renderItem || renderLabel;
 
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
@@ -121,7 +131,7 @@ export function SingleSelectCombobox<T extends Record<string, any>>({
           {...buttonProps}
         >
           {value ? (
-            <span>{String(value[labelKey])}</span>
+            <span>{renderLabel(value)}</span>
           ) : (
             <span className="text-muted-foreground">{placeholder}</span>
           )}
@@ -151,28 +161,30 @@ export function SingleSelectCombobox<T extends Record<string, any>>({
                   <div className="px-2 text-center">{emptyMessage}</div>
                 </CommandEmpty>
                 <CommandGroup>
-                  {items.map((item) => (
-                    <CommandItem
-                      key={String(item[valueKey])}
-                      value={String(item[valueKey])}
-                      keywords={getItemKeywords?.(item)}
-                      onSelect={handleSelect}
-                      className="cursor-pointer"
-                    >
-                      <div
-                        className={cn(
-                          "flex items-center justify-center",
-                          value &&
-                            String(value[valueKey]) === String(item[valueKey])
-                            ? "opacity-100"
-                            : "opacity-0"
-                        )}
+                  {items.map((item) => {
+                    const itemValue = String(getValue(item));
+                    return (
+                      <CommandItem
+                        key={itemValue}
+                        value={itemValue}
+                        keywords={getItemKeywords?.(item)}
+                        onSelect={handleSelect}
+                        className="cursor-pointer"
                       >
-                        <Check className="h-4 w-4" />
-                      </div>
-                      {itemRenderer(item)}
-                    </CommandItem>
-                  ))}
+                        <div
+                          className={cn(
+                            "flex items-center justify-center",
+                            value && String(getValue(value)) === itemValue
+                              ? "opacity-100"
+                              : "opacity-0"
+                          )}
+                        >
+                          <Check className="h-4 w-4" />
+                        </div>
+                        {itemRenderer(item)}
+                      </CommandItem>
+                    );
+                  })}
                 </CommandGroup>
               </>
             )}

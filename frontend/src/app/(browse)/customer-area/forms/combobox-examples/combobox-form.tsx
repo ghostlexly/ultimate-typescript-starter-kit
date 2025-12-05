@@ -110,7 +110,7 @@ function ComboboxForm({
                       id={field.name}
                       items={countries}
                       valueKey="iso2Code"
-                      labelKey="countryName"
+                      renderLabel={(item) => item.countryName}
                       value={field.value}
                       onChange={field.onChange}
                       placeholder="Select your country..."
@@ -143,7 +143,7 @@ function ComboboxForm({
                       id={field.name}
                       items={cities.data?.nodes || []}
                       valueKey="id"
-                      labelKey="name"
+                      renderLabel={(item) => item.name}
                       value={field.value}
                       onChange={field.onChange}
                       onSearchChange={setCitySearchTerm}

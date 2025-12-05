@@ -57,7 +57,7 @@ const component = () => {
             id={field.name}
             items={countries.data || []}
             valueKey="countryCode"
-            labelKey="countryName"
+            renderLabel={(item) => item.countryName}
             value={field.value}
             onChange={field.onChange}
             placeholder="Select countries..."
@@ -148,7 +148,7 @@ const component = () => {
             id={field.name}
             items={countries.data?.nodes || []}
             valueKey="iso2Code"
-            labelKey="countryName"
+            renderLabel={(item) => item.countryName}
             value={field.value}
             onChange={field.onChange}
             onSearchChange={setCountrySearchTerm}
