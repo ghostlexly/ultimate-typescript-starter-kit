@@ -167,6 +167,25 @@ frontend/src/
 
 ## Code Style & Conventions
 
+### General
+
+- Write concise, technical TypeScript code
+- Use functional and declarative programming patterns; avoid classes
+- Prefer iteration and modularization over code duplication
+- Use descriptive variable names with auxiliary verbs (e.g., `isLoading`, `hasError`, `canSubmit`)
+
+### Naming Conventions
+
+- Use lowercase with dashes for directories (e.g., `components/auth-wizard`)
+- Favor named exports for components
+- Use PascalCase for components, camelCase for functions and variables
+
+### TypeScript Usage
+
+- Use TypeScript for all code; prefer interfaces over types
+- Avoid enums; use maps or const objects instead
+- Use functional components with TypeScript interfaces
+
 ### Backend
 
 - Use **Zod** for all request validation
@@ -179,11 +198,26 @@ frontend/src/
 ### Frontend
 
 - Use TypeScript strictly
-- Prefer server components when possible
-- Use client components only when needed (`'use client'`)
+- Use the `function` keyword for pure functions
+- Structure files: exported component, subcomponents, helpers, static content, types
 - Follow Next.js App Router conventions
-- Use Tailwind CSS for styling
+- Use Tailwind CSS for styling with a mobile-first approach
 - Implement proper error boundaries
+
+### React & Next.js Patterns
+
+- Favor React Server Components (RSC) over client components
+- Minimize `'use client'`, `useEffect`, and `useState`
+- Wrap client components in `Suspense` with fallback
+- Use dynamic loading for non-critical components
+- Avoid using client components for data fetching or state management
+
+### UI & Performance
+
+- Use Shadcn UI, Radix UI, and Tailwind for components and styling
+- Implement responsive design with mobile-first approach
+- Optimize images: use WebP format, include size data, implement lazy loading
+- Optimize Web Vitals (LCP, CLS, FID)
 
 ## Testing
 
