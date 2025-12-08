@@ -54,25 +54,8 @@ export class AuthService {
     return await bcrypt.hash(password, 10);
   }
 
-  /**
-   * Generate a JWT access token for a given account id.
-   */
-  async generateAuthenticationTokens({
-    accountId,
-  }: {
-    accountId: string;
-  }): Promise<{ accessToken: string; refreshToken: string }> {
-    // Get the user
-    const account = await this.db.prisma.account.findUnique({
-      where: { id: accountId },
-    });
-
-    if (!account) {
-      throw new Error('Account does not exist.');
-    }
-
-    // Create a new session
-    const session = await this.db.prisma.session.create({
+  async createSession({ accountId }: { accountId: string }) {
+    return await this.db.prisma.session.create({
       data: {
         expiresAt: dateUtils.add(new Date(), {
           minutes: authConstants.refreshTokenExpirationMinutes,
@@ -80,12 +63,35 @@ export class AuthService {
         accountId,
       },
     });
+  }
+
+  /**
+   * Generate a JWT access token for a given account id.
+   */
+  async generateAuthenticationTokens({
+    sessionId,
+  }: {
+    sessionId: string;
+  }): Promise<{ accessToken: string; refreshToken: string }> {
+    // Get the user
+    const session = await this.db.prisma.session.findUnique({
+      include: {
+        account: true,
+      },
+      where: { id: sessionId },
+    });
+
+    if (!session) {
+      throw new Error('Session does not exist.');
+    }
 
     // Generate the JWT access token
     const accessToken = await this.jwtService.signAsync({
       payload: {
         sub: session.id,
-        role: account.role,
+        accountId: session.account.id,
+        role: session.account.role,
+        email: session.account.email,
       },
       options: {
         expiresIn: `${authConstants.accessTokenExpirationMinutes}m`,
@@ -152,26 +158,11 @@ export class AuthService {
       },
     });
 
-    // Generate the JWT access token
-    const accessToken = await this.jwtService.signAsync({
-      payload: {
-        sub: session.id,
-        role: session.account.role,
-      },
-      options: {
-        expiresIn: `${authConstants.accessTokenExpirationMinutes}m`,
-      },
-    });
-
-    // Generate the JWT refresh token
-    const newRefreshToken = await this.jwtService.signAsync({
-      payload: {
-        sub: session.id,
-      },
-      options: {
-        expiresIn: `${authConstants.refreshTokenExpirationMinutes}m`,
-      },
-    });
+    /**
+     * Generate new authentication tokens
+     */
+    const { accessToken, refreshToken: newRefreshToken } =
+      await this.generateAuthenticationTokens({ sessionId: session.id });
 
     return {
       session,

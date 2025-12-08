@@ -160,8 +160,16 @@ export class DemoController {
    */
   @Get('/demos/protected-route-customer')
   @Roles(['CUSTOMER'])
-  protectedRouteCustomer(@Req() req: Request) {
-    const customer = req.user?.customer;
+  async protectedRouteCustomer(@Req() req: Request) {
+    const user = req.user;
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    const customer = await this.db.prisma.customer.findFirst({
+      where: { accountId: user.accountId },
+    });
 
     if (!customer) {
       throw new UnauthorizedException();
@@ -169,6 +177,10 @@ export class DemoController {
 
     return {
       message: 'Protected route for customer.',
+      sessionId: user.sessionId,
+      role: user.role,
+      accountId: user.accountId,
+      email: user.email,
       customerId: customer.id,
     };
   }

@@ -29,9 +29,9 @@ export class CustomerCustomerController {
 
   @Get('/customer/informations')
   async getCustomerInformations(@Req() req: Request) {
-    const customer = req.user?.customer;
+    const user = req.user;
 
-    if (!customer) {
+    if (!user) {
       throw new UnauthorizedException();
     }
 
@@ -40,7 +40,7 @@ export class CustomerCustomerController {
         city: true,
       },
       where: {
-        id: customer.id,
+        accountId: user.accountId,
       },
     });
 
@@ -63,15 +63,15 @@ export class CustomerCustomerController {
     @Req() req: Request,
     @Body() body: CustomerCustomerInformationsDto['body'],
   ) {
-    const customer = req.user?.customer;
+    const user = req.user;
 
-    if (!customer) {
+    if (!user) {
       throw new UnauthorizedException();
     }
 
     const customerInformatons = await this.db.prisma.customer.findFirst({
       where: {
-        id: customer.id,
+        accountId: user.accountId,
       },
     });
 
@@ -106,9 +106,9 @@ export class CustomerCustomerController {
       );
     }
 
-    const customerInformations = await this.db.prisma.customer.update({
+    await this.db.prisma.customer.update({
       where: {
-        id: customer.id,
+        id: customerInformatons.id,
       },
       data: {
         countryCode: body.countryCode,
@@ -117,8 +117,8 @@ export class CustomerCustomerController {
     });
 
     return {
-      countryCode: customerInformations.countryCode,
-      cityId: customerInformations.cityId,
+      countryCode: body.countryCode,
+      cityId: body.city,
     };
   }
 }

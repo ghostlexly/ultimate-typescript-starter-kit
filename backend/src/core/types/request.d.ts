@@ -1,10 +1,3 @@
-import { Account, Admin, Customer } from 'src/generated/prisma/client';
-
-export type User = Account & {
-  admin: Admin;
-  customer: Customer;
-};
-
 declare global {
   namespace Express {
     interface Request {
@@ -12,9 +5,11 @@ declare global {
       clientIp?: string;
     }
 
-    interface User extends Account {
-      admin: Admin;
-      customer: Customer;
+    interface User {
+      sessionId: string;
+      role: string;
+      accountId: string;
+      email: string;
     }
   }
 }

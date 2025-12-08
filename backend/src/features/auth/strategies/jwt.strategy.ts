@@ -1,11 +1,9 @@
-import { ExtractJwt, Strategy } from 'passport-jwt';
-import { PassportStrategy } from '@nestjs/passport';
-import { Inject, Injectable, Logger } from '@nestjs/common';
-import { authConstants } from '../auth.constants';
-import { DatabaseService } from 'src/features/application/services/database.service';
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
-import { Account } from 'src/generated/prisma/client';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { PassportStrategy } from '@nestjs/passport';
+import { ExtractJwt, Strategy } from 'passport-jwt';
+import { DatabaseService } from 'src/features/application/services/database.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -36,7 +34,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(jwt: any) {
+  validate(jwt: any) {
     try {
       if (!jwt.payload) {
         this.logger.error("JWT token's payload is missing !");
@@ -44,44 +42,36 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       }
 
       const sessionId = jwt.payload.sub;
+      const role = jwt.payload.role;
+      const accountId = jwt.payload.accountId;
+      const email = jwt.payload.email;
 
       if (!sessionId) {
         this.logger.error("Session ID is missing in JWT token's payload !");
         return false;
       }
 
-      // Get account by session id from cache
-      const cachedAccount = await this.cacheManager.get<Account>(
-        `session:${sessionId}`,
-      );
-
-      // If the account is found in the cache, return it
-      if (cachedAccount) {
-        return cachedAccount;
-      }
-
-      // If the account is not found in the cache, get it from the database
-      const account = await this.db.prisma.account.findFirst({
-        include: {
-          admin: true,
-          customer: true,
-        },
-        where: { sessions: { some: { id: sessionId } } },
-      });
-
-      // If the account is not found in the database, return false (authentication failed)
-      if (!account) {
+      if (!role) {
+        this.logger.error("Role is missing in JWT token's payload !");
         return false;
       }
 
-      // If the account is found in the database, cache it
-      await this.cacheManager.set(
-        `session:${sessionId}`,
-        account,
-        authConstants.accessTokenExpirationMinutes * 60 * 1000, // Convert minutes to milliseconds
-      );
+      if (!accountId) {
+        this.logger.error("Account ID is missing in JWT token's payload !");
+        return false;
+      }
 
-      return account;
+      if (!email) {
+        this.logger.error("Email is missing in JWT token's payload !");
+        return false;
+      }
+
+      return {
+        sessionId,
+        role,
+        accountId,
+        email,
+      };
     } catch {
       return false;
     }

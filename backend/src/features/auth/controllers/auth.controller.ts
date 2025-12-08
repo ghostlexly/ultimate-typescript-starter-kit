@@ -105,10 +105,15 @@ export class AuthController {
       );
     }
 
+    // Create a new session
+    const session = await this.authService.createSession({
+      accountId: account.id,
+    });
+
     // Generate an access token
     const { accessToken, refreshToken } =
       await this.authService.generateAuthenticationTokens({
-        accountId: account.id,
+        sessionId: session.id,
       });
 
     // Set authentication cookies
@@ -180,21 +185,11 @@ export class AuthController {
       throw new UnauthorizedException();
     }
 
-    if (user.role === 'CUSTOMER') {
-      return {
-        id: user.customer.id,
-        email: user.email,
-        role: user.role,
-      };
-    } else if (user.role === 'ADMIN') {
-      return {
-        id: user.admin.id,
-        email: user.email,
-        role: user.role,
-      };
-    } else {
-      throw new HttpException('Invalid role.', HttpStatus.BAD_REQUEST);
-    }
+    return {
+      accountId: user.accountId,
+      email: user.email,
+      role: user.role,
+    };
   }
 
   @Get('/auth/google')
@@ -225,7 +220,7 @@ export class AuthController {
     // Generate authentication tokens
     const { accessToken, refreshToken } =
       await this.authService.generateAuthenticationTokens({
-        accountId: user.id,
+        sessionId: user.sessionId,
       });
 
     // Set authentication cookies
