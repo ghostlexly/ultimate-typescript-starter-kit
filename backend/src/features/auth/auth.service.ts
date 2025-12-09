@@ -102,6 +102,9 @@ export class AuthService {
     const refreshToken = await this.jwtService.signAsync({
       payload: {
         sub: session.id,
+        accountId: session.account.id,
+        role: session.account.role,
+        email: session.account.email,
       },
       options: {
         expiresIn: `${authConstants.refreshTokenExpirationMinutes}m`,

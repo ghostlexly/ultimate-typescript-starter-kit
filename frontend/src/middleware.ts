@@ -21,38 +21,12 @@ type MiddlewareFactory = (
  */
 function chain(middlewares: MiddlewareFactory[]) {
   return async (request: NextRequest): Promise<NextResponse> => {
-    const response = NextResponse.next();
-
     for (const middleware of middlewares) {
-      const middlewareResponse = await middleware(request);
-
-      if (middlewareResponse) {
-        // If middleware returns a redirect, merge cookies and return immediately
-        if (
-          middlewareResponse.status >= 300 &&
-          middlewareResponse.status < 400
-        ) {
-          // Merge cookies from previous responses
-          response.cookies.getAll().forEach((cookie) => {
-            middlewareResponse.cookies.set(cookie.name, cookie.value, {
-              maxAge: 60 * 60 * 24 * 365,
-              path: "/",
-            });
-          });
-          return middlewareResponse;
-        }
-
-        // Merge cookies from non-redirect responses
-        middlewareResponse.cookies.getAll().forEach((cookie) => {
-          response.cookies.set(cookie.name, cookie.value, {
-            maxAge: 60 * 60 * 24 * 365,
-            path: "/",
-          });
-        });
-      }
+      const response = await middleware(request);
+      if (response) return response;
     }
 
-    return response;
+    return NextResponse.next();
   };
 }
 
@@ -61,71 +35,45 @@ function chain(middlewares: MiddlewareFactory[]) {
 // =============================================================================
 
 /**
- * Protects admin area routes and handles authentication redirects
+ * Protects admin and customer areas, handles authentication redirects
  */
 async function authenticationMiddleware(
   request: NextRequest
 ): Promise<NextResponse | null> {
-  const isSigninPage = request.nextUrl.pathname.startsWith("/signin");
+  const { pathname } = request.nextUrl;
 
-  // ---------------------------------------------
-  // Admin Area
-  // ---------------------------------------------
-  const isAdminArea = request.nextUrl.pathname.startsWith("/admin-area");
+  const isSigninPage = pathname.startsWith("/signin");
+  const isAdminArea = pathname.startsWith("/admin-area");
+  const isCustomerArea = pathname.startsWith("/customer-area");
+  const isCustomerSignupPage = pathname.startsWith("/customer-area/signup");
 
-  if (isAdminArea || isSigninPage) {
-    const session = await getServerSession();
-
-    // Redirect unauthenticated users to signin page
-    if (isAdminArea && !isSigninPage) {
-      if (
-        session.status === "unauthenticated" ||
-        !session.data?.role.includes("ADMIN")
-      ) {
-        return NextResponse.redirect(new URL("/signin", request.url));
-      }
-    }
-
-    // Redirect authenticated admins away from signin page
-    if (isSigninPage) {
-      if (
-        session.status === "authenticated" &&
-        session.data?.role.includes("ADMIN")
-      ) {
-        return NextResponse.redirect(new URL("/admin-area", request.url));
-      }
-    }
+  // Skip session check if not in a protected area or auth page
+  if (!isAdminArea && !isCustomerArea && !isSigninPage) {
+    return null;
   }
 
-  // ---------------------------------------------
-  // Customer Area
-  // ---------------------------------------------
-  const isCustomerArea = request.nextUrl.pathname.startsWith("/customer-area");
-  const isCustomerSignupPage = request.nextUrl.pathname.startsWith(
-    "/customer-area/signup"
-  );
+  const session = await getServerSession();
+  const isAuthenticated = session.status === "authenticated";
+  const isAdmin = session.data?.role.includes("ADMIN");
+  const isCustomer = session.data?.role.includes("CUSTOMER");
 
-  if (isCustomerArea || isSigninPage || isCustomerSignupPage) {
-    const session = await getServerSession();
+  // Admin area: redirect if not admin
+  if (isAdminArea && (!isAuthenticated || !isAdmin)) {
+    return NextResponse.redirect(new URL("/signin", request.url));
+  }
 
-    // Redirect unauthenticated users to signin page
-    if (isCustomerArea && !isSigninPage && !isCustomerSignupPage) {
-      if (
-        session.status === "unauthenticated" ||
-        !session.data?.role.includes("CUSTOMER")
-      ) {
-        return NextResponse.redirect(new URL("/signin", request.url));
-      }
+  // Customer area (except signup): redirect if not customer
+  if (isCustomerArea && !isCustomerSignupPage && (!isAuthenticated || !isCustomer)) {
+    return NextResponse.redirect(new URL("/signin", request.url));
+  }
+
+  // Auth pages: redirect if already authenticated
+  if (isSigninPage || isCustomerSignupPage) {
+    if (isAuthenticated && isAdmin) {
+      return NextResponse.redirect(new URL("/admin-area", request.url));
     }
-
-    // Redirect authenticated customers away from signin page
-    if (isSigninPage || isCustomerSignupPage) {
-      if (
-        session.status === "authenticated" &&
-        session.data?.role.includes("CUSTOMER")
-      ) {
-        return NextResponse.redirect(new URL("/", request.url));
-      }
+    if (isAuthenticated && isCustomer) {
+      return NextResponse.redirect(new URL("/", request.url));
     }
   }
 
