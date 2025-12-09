@@ -2,8 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
+import { dateUtils } from 'src/core/utils/date';
 import { DatabaseService } from 'src/features/application/services/database.service';
+import { Account } from 'src/generated/prisma/client';
 import { OAuthRedirectException } from '../../../core/exceptions/oauth-redirect.exception';
+import { authConstants } from '../auth.constants';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
@@ -27,119 +30,102 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   }
 
   async validate(
-    accessToken: string,
-    refreshToken: string,
+    _accessToken: string,
+    _refreshToken: string,
     profile: any,
     done: VerifyCallback,
   ): Promise<any> {
     try {
-      const { id, emails } = profile;
+      const { googleId, email } = this.extractProfileData({ profile });
+      const account = await this.findOrCreateAccount({ googleId, email });
+      const session = await this.createSession({ accountId: account.id });
 
-      if (!emails || emails.length === 0) {
-        this.logger.error('No email found in Google profile');
-
-        throw new OAuthRedirectException(
-          `${this.appBaseUrl}/signin`,
-          'EMAIL_NOT_FOUND',
-        );
-      }
-
-      const email = emails[0].value;
-
-      // Check if customer exists with this Google ID
-      let account = await this.db.prisma.account.findFirst({
-        where: {
-          providerId: 'google',
-          providerAccountId: id,
-        },
+      return done(null, {
+        sessionId: session.id,
+        accountId: account.id,
+        role: account.role,
+        email: account.email,
       });
-
-      // If not found by Google ID, check by email
-      if (!account) {
-        account = await this.db.prisma.account.findUnique({
-          where: {
-            email,
-          },
-        });
-
-        // If customer exists with this email but no Google ID, link the account
-        if (account) {
-          account = await this.db.prisma.account.update({
-            where: { id: account.id },
-            data: { providerId: 'google', providerAccountId: id },
-          });
-
-          this.logger.log(
-            `Linked Google account to existing customer: ${email}`,
-          );
-        }
-      }
-
-      // If still no customer, create a new one
-      if (!account) {
-        const existingAccount = await this.db.prisma.account.findUnique({
-          where: {
-            email,
-          },
-        });
-
-        if (existingAccount) {
-          this.logger.error(
-            'This email address is already in use by another account for another role.',
-          );
-
-          throw new OAuthRedirectException(
-            `${this.appBaseUrl}/signin`,
-            'EMAIL_ALREADY_EXISTS',
-          );
-        }
-
-        account = await this.db.prisma.account.create({
-          data: {
-            role: 'CUSTOMER',
-            email,
-            providerId: 'google',
-            providerAccountId: id,
-            customer: {
-              create: {},
-            },
-          },
-        });
-
-        this.logger.log(`Created new customer via Google OAuth: ${email}`);
-      }
-
-      // Fetch the complete account with relations
-      account = await this.db.prisma.account.findUnique({
-        where: { id: account.id },
-        include: {
-          admin: true,
-          customer: true,
-        },
-      });
-
-      if (!account) {
-        this.logger.error('Account not found after customer creation/update');
-
-        throw new OAuthRedirectException(
-          `${this.appBaseUrl}/signin`,
-          'ACCOUNT_NOT_FOUND',
-        );
-      }
-
-      return done(null, account as any);
     } catch (error) {
-      // Re-throw OAuthRedirectException to be caught by the filter
       if (error instanceof OAuthRedirectException) {
         throw error;
       }
 
       this.logger.error('Error during Google OAuth validation:', error);
-
       throw new OAuthRedirectException(
         `${this.appBaseUrl}/signin`,
         'INTERNAL_SERVER_ERROR',
       );
     }
+  }
+
+  private extractProfileData({ profile }: { profile: any }): {
+    googleId: string;
+    email: string;
+  } {
+    const { id: googleId, emails } = profile;
+
+    if (!emails || emails.length === 0) {
+      this.logger.error('No email found in Google profile');
+      throw new OAuthRedirectException(
+        `${this.appBaseUrl}/signin`,
+        'EMAIL_NOT_FOUND',
+      );
+    }
+
+    return { googleId, email: emails[0].value };
+  }
+
+  private async findOrCreateAccount({
+    googleId,
+    email,
+  }: {
+    googleId: string;
+    email: string;
+  }): Promise<Account> {
+    // 1. Find by Google ID
+    const existingByGoogleId = await this.db.prisma.account.findFirst({
+      where: { providerId: 'google', providerAccountId: googleId },
+    });
+
+    if (existingByGoogleId) {
+      return existingByGoogleId;
+    }
+
+    // 2. Find by email and link Google account
+    const existingByEmail = await this.db.prisma.account.findUnique({
+      where: { email },
+    });
+
+    if (existingByEmail) {
+      this.logger.log(`Linked Google account to existing customer: ${email}`);
+      return this.db.prisma.account.update({
+        where: { id: existingByEmail.id },
+        data: { providerId: 'google', providerAccountId: googleId },
+      });
+    }
+
+    // 3. Create new account
+    this.logger.log(`Created new customer via Google OAuth: ${email}`);
+    return this.db.prisma.account.create({
+      data: {
+        role: 'CUSTOMER',
+        email,
+        providerId: 'google',
+        providerAccountId: googleId,
+        customer: { create: {} },
+      },
+    });
+  }
+
+  private async createSession({ accountId }: { accountId: string }) {
+    return this.db.prisma.session.create({
+      data: {
+        expiresAt: dateUtils.add(new Date(), {
+          minutes: authConstants.refreshTokenExpirationMinutes,
+        }),
+        accountId,
+      },
+    });
   }
 }
