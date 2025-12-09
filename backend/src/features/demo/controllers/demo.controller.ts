@@ -149,9 +149,19 @@ export class DemoController {
    * @description Protected route that requires authentication
    */
   @Get('/demos/protected-route')
-  protectedRoute() {
+  protectedRoute(@Req() req: Request) {
+    const user = req.user;
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
     return {
       message: 'Protected route.',
+      sessionId: user.sessionId,
+      role: user.role,
+      accountId: user.accountId,
+      email: user.email,
     };
   }
 
