@@ -63,7 +63,11 @@ async function authenticationMiddleware(
   }
 
   // Customer area (except signup): redirect if not customer
-  if (isCustomerArea && !isCustomerSignupPage && (!isAuthenticated || !isCustomer)) {
+  if (
+    isCustomerArea &&
+    !isCustomerSignupPage &&
+    (!isAuthenticated || !isCustomer)
+  ) {
     return NextResponse.redirect(new URL("/signin", request.url));
   }
 
@@ -87,5 +91,5 @@ async function authenticationMiddleware(
 export const middleware = chain([authenticationMiddleware]);
 
 export const config = {
-  matcher: ["/:path*"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };
