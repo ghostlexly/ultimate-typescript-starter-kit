@@ -107,7 +107,7 @@ export function NavUser() {
             <DropdownMenuItem
               onClick={() => {
                 session.destroy();
-                router.push("/signin");
+                router.push("/auth/signin");
               }}
             >
               <IconLogout />

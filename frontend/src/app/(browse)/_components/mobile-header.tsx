@@ -172,13 +172,13 @@ const NotLoggedSheetMenu = ({ children }: { children: React.ReactNode }) => {
             <SheetMenuItem
               icon={UserIcon}
               label="Se connecter"
-              href="/customer-area/signin"
+              href="/auth/signin"
             />
 
             <SheetMenuItem
               icon={UserPlusIcon}
               label="Créer un compte"
-              href="/customer-area/signup"
+              href="/auth/customer/signup"
             />
           </div>
         </div>

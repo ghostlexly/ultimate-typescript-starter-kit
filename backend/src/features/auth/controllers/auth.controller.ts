@@ -213,7 +213,7 @@ export class AuthController {
     if (!user) {
       // Redirect to sign-in page with error message
       return res.redirect(
-        `${process.env.APP_BASE_URL}/signin?error=FAILED_TO_AUTHENTICATE_GOOGLE`,
+        `${process.env.APP_BASE_URL}/auth/signin?error=FAILED_TO_AUTHENTICATE_GOOGLE`,
       );
     }
 

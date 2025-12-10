@@ -42,13 +42,18 @@ async function authenticationMiddleware(
 ): Promise<NextResponse | null> {
   const { pathname } = request.nextUrl;
 
-  const isSigninPage = pathname.startsWith("/signin");
+  const isSigninPage = pathname.startsWith("/auth/signin");
   const isAdminArea = pathname.startsWith("/admin-area");
   const isCustomerArea = pathname.startsWith("/customer-area");
-  const isCustomerSignupPage = pathname.startsWith("/customer-area/signup");
+  const isCustomerSignupPage = pathname.startsWith("/auth/customer/signup");
 
   // Skip session check if not in a protected area or auth page
-  if (!isAdminArea && !isCustomerArea && !isSigninPage) {
+  if (
+    !isSigninPage &&
+    !isAdminArea &&
+    !isCustomerArea &&
+    !isCustomerSignupPage
+  ) {
     return null;
   }
 
@@ -59,16 +64,12 @@ async function authenticationMiddleware(
 
   // Admin area: redirect if not admin
   if (isAdminArea && (!isAuthenticated || !isAdmin)) {
-    return NextResponse.redirect(new URL("/signin", request.url));
+    return NextResponse.redirect(new URL("/auth/signin", request.url));
   }
 
-  // Customer area (except signup): redirect if not customer
-  if (
-    isCustomerArea &&
-    !isCustomerSignupPage &&
-    (!isAuthenticated || !isCustomer)
-  ) {
-    return NextResponse.redirect(new URL("/signin", request.url));
+  // Customer area: redirect if not customer
+  if (isCustomerArea && (!isAuthenticated || !isCustomer)) {
+    return NextResponse.redirect(new URL("/auth/signin", request.url));
   }
 
   // Auth pages: redirect if already authenticated

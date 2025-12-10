@@ -98,7 +98,7 @@ const DesktopHeader = () => {
               variant="outline"
               className="flex rounded-full border-gray-300 text-black"
             >
-              <Link href="/customer-area/signup">Sign up</Link>
+              <Link href="/auth/customer/signup">Sign up</Link>
             </Button>
 
             <div className="flex">
@@ -311,11 +311,11 @@ const NotAuthenticatedDropdownMenu = ({
       <DropdownMenuContent className="w-56" align="start">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuGroup>
-          <Link href="/customer-area/signin">
+          <Link href="/auth/signin">
             <DropdownMenuItem>Sign in</DropdownMenuItem>
           </Link>
 
-          <Link href="/customer-area/signup">
+          <Link href="/auth/customer/signup">
             <DropdownMenuItem>Sign up</DropdownMenuItem>
           </Link>
         </DropdownMenuGroup>

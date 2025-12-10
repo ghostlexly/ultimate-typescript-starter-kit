@@ -53,7 +53,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 
       this.logger.error('Error during Google OAuth validation:', error);
       throw new OAuthRedirectException(
-        `${this.appBaseUrl}/signin`,
+        `${this.appBaseUrl}/auth/signin`,
         'INTERNAL_SERVER_ERROR',
       );
     }
@@ -68,7 +68,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     if (!emails || emails.length === 0) {
       this.logger.error('No email found in Google profile');
       throw new OAuthRedirectException(
-        `${this.appBaseUrl}/signin`,
+        `${this.appBaseUrl}/auth/signin`,
         'EMAIL_NOT_FOUND',
       );
     }

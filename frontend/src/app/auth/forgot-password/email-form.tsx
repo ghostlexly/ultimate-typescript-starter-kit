@@ -104,7 +104,10 @@ export function ForgotPasswordEmailForm() {
 
               <div className="text-center text-sm">
                 Remember your password?{" "}
-                <Link href="/signin" className="underline underline-offset-4">
+                <Link
+                  href="/auth/signin"
+                  className="underline underline-offset-4"
+                >
                   Sign in
                 </Link>
               </div>
