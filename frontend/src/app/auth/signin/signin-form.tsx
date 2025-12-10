@@ -181,7 +181,7 @@ export function SigninForm({
                       />
 
                       <FieldDescription>
-                        <Link href="/forgot-password">
+                        <Link href="/auth/forgot-password">
                           Forgot your password?
                         </Link>
                       </FieldDescription>

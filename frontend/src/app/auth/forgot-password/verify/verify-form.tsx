@@ -59,7 +59,7 @@ export function ForgotPasswordVerifyForm({
         const params = new URLSearchParams();
         if (email) params.set("email", email);
         params.set("token", values.token);
-        router.push(`/forgot-password/reset?${params.toString()}`);
+        router.push(`/auth/forgot-password/reset?${params.toString()}`);
       });
     } catch (error) {
       handleApiErrors({ form, error });

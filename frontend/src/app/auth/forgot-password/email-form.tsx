@@ -43,7 +43,7 @@ export function ForgotPasswordEmailForm() {
       startTransition(() => {
         // Pass email to next step via query param
         router.push(
-          `/forgot-password/verify?email=${encodeURIComponent(values.email)}`
+          `/auth/forgot-password/verify?email=${encodeURIComponent(values.email)}`
         );
       });
     } catch (error) {
