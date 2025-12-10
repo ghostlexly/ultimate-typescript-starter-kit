@@ -39,61 +39,19 @@ import Image from "next/image";
 import LogoImg from "@/assets/images/logo.png";
 
 const DesktopHeader = () => {
-  const pathname = usePathname();
-  const session = useSession();
-  const isAuthenticated = session.status === "authenticated";
-
-  const DropdownMenuByRole = () => {
-    if (isAuthenticated && session.data?.role === "CUSTOMER") {
-      return (
-        <CustomerDropdownMenu>
-          <Button
-            variant={"outline"}
-            className="flex items-center gap-1 rounded-full border border-gray-300 px-3 py-1.5 text-black shadow-sm"
-          >
-            <MenuIcon className="size-4" />
-
-            <div className="flex size-6 items-center justify-center text-sm">
-              <UserAvatar
-                imageUrl={session.data.imageUrl}
-                name={session.data.name}
-                email={session.data.email}
-              />
-            </div>
-          </Button>
-        </CustomerDropdownMenu>
-      );
-    }
-
-    return (
-      <NotAuthenticatedDropdownMenu>
-        <Button
-          variant={"outline"}
-          className="flex items-center gap-1 rounded-full border border-gray-300 px-3 py-1.5 text-black shadow-sm"
-        >
-          <MenuIcon className="size-4" />
-
-          <div className="flex size-6 items-center justify-center">
-            <UserIcon className="size-4" />
-          </div>
-        </Button>
-      </NotAuthenticatedDropdownMenu>
-    );
-  };
-
   return (
     <header className="bg-background sticky top-0 z-50 hidden w-full justify-center backdrop-blur xl:flex">
       <Container variant="centered" className="py-0 md:py-0">
         <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <div className="flex w-1/4 overflow-hidden">
+          <div className="flex items-center gap-4">
+            {/* Logo */}
             <Logo />
+
+            <DesktopNavigation />
           </div>
 
           {/* Right side buttons */}
-          <div className="flex items-center justify-end gap-2">
-            <DesktopNavigation activePath={pathname} />
-
+          <div className="flex items-center gap-4">
             <Button
               variant="outline"
               className="flex rounded-full border-gray-300 text-black"
@@ -125,7 +83,7 @@ const Logo: React.FC = () => (
   </Link>
 );
 
-const DesktopNavigation = ({ activePath }: { activePath: string }) => {
+const DesktopNavigation = () => {
   // Navigation Menu List Item Component
   const ListItem = ({
     title,
@@ -299,6 +257,47 @@ const DesktopNavigation = ({ activePath }: { activePath: string }) => {
     </NavigationMenu>
   );
 };
+
+function DropdownMenuByRole() {
+  const session = useSession();
+  const isAuthenticated = session.status === "authenticated";
+
+  if (isAuthenticated && session.data?.role === "CUSTOMER") {
+    return (
+      <CustomerDropdownMenu>
+        <Button
+          variant={"outline"}
+          className="flex items-center gap-1 rounded-full border border-gray-300 px-3 py-1.5 text-black shadow-sm"
+        >
+          <MenuIcon className="size-4" />
+
+          <div className="flex size-6 items-center justify-center text-sm">
+            <UserAvatar
+              imageUrl={session.data.imageUrl}
+              name={session.data.name}
+              email={session.data.email}
+            />
+          </div>
+        </Button>
+      </CustomerDropdownMenu>
+    );
+  }
+
+  return (
+    <NotAuthenticatedDropdownMenu>
+      <Button
+        variant={"outline"}
+        className="flex items-center gap-1 rounded-full border border-gray-300 px-3 py-1.5 text-black shadow-sm"
+      >
+        <MenuIcon className="size-4" />
+
+        <div className="flex size-6 items-center justify-center">
+          <UserIcon className="size-4" />
+        </div>
+      </Button>
+    </NotAuthenticatedDropdownMenu>
+  );
+}
 
 const NotAuthenticatedDropdownMenu = ({
   children,

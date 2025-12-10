@@ -16,6 +16,7 @@ import {
 import { useSession } from "@/lib/luni-auth/luni-auth.provider";
 import {
   ChevronRightIcon,
+  LogOutIcon,
   MailIcon,
   MenuIcon,
   UserIcon,
@@ -28,44 +29,6 @@ import { usePathname } from "next/navigation";
 
 const MobileHeader = () => {
   const pathname = usePathname();
-  const session = useSession();
-  const isAuthenticated = session.status === "authenticated";
-
-  const SheetMenuByRole = () => {
-    if (isAuthenticated && session.data?.role === "CUSTOMER") {
-      return (
-        <Button
-          variant="outline"
-          className="flex items-center gap-1 rounded-full border border-gray-300 px-3 py-1.5 text-black shadow-sm"
-        >
-          <MenuIcon className="size-4" />
-
-          <div className="flex size-6 items-center justify-center text-sm">
-            <UserAvatar
-              imageUrl={session.data.imageUrl}
-              name={session.data.name}
-              email={session.data.email}
-            />
-          </div>
-        </Button>
-      );
-    }
-
-    return (
-      <NotLoggedSheetMenu>
-        <Button
-          variant="outline"
-          className="flex items-center gap-1 rounded-full border border-gray-300 px-3 py-1.5 text-black shadow-sm"
-        >
-          <MenuIcon className="size-4" />
-
-          <div className="flex size-6 items-center justify-center text-sm">
-            <UserIcon className="size-4" />
-          </div>
-        </Button>
-      </NotLoggedSheetMenu>
-    );
-  };
 
   return (
     <header className="bg-background sticky top-0 z-50 flex w-full justify-center backdrop-blur xl:hidden">
@@ -105,13 +68,15 @@ const SheetMenuItem = ({
   icon: Icon,
   label,
   href,
+  onClick,
 }: {
   icon: React.ElementType;
   label: string;
   href: string;
+  onClick?: () => void;
 }) => {
   return (
-    <Link href={href} className="block">
+    <Link href={href} className="block" onClick={onClick}>
       <SheetClose className="flex items-center justify-between w-full">
         <div className="flex items-center gap-4">
           <Icon className="size-6" />
@@ -123,6 +88,47 @@ const SheetMenuItem = ({
     </Link>
   );
 };
+
+function SheetMenuByRole() {
+  const session = useSession();
+  const isAuthenticated = session.status === "authenticated";
+
+  if (isAuthenticated && session.data?.role === "CUSTOMER") {
+    return (
+      <CustomerSheetMenu>
+        <Button
+          variant="outline"
+          className="flex items-center gap-1 rounded-full border border-gray-300 px-3 py-1.5 text-black shadow-sm"
+        >
+          <MenuIcon className="size-4" />
+
+          <div className="flex size-6 items-center justify-center text-sm">
+            <UserAvatar
+              imageUrl={session.data.imageUrl}
+              name={session.data.name}
+              email={session.data.email}
+            />
+          </div>
+        </Button>
+      </CustomerSheetMenu>
+    );
+  }
+
+  return (
+    <NotLoggedSheetMenu>
+      <Button
+        variant="outline"
+        className="flex items-center gap-1 rounded-full border border-gray-300 px-3 py-1.5 text-black shadow-sm"
+      >
+        <MenuIcon className="size-4" />
+
+        <div className="flex size-6 items-center justify-center text-sm">
+          <UserIcon className="size-4" />
+        </div>
+      </Button>
+    </NotLoggedSheetMenu>
+  );
+}
 
 const NotLoggedSheetMenu = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -179,6 +185,66 @@ const NotLoggedSheetMenu = ({ children }: { children: React.ReactNode }) => {
               icon={UserPlusIcon}
               label="Créer un compte"
               href="/auth/customer/signup"
+            />
+          </div>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+};
+
+const CustomerSheetMenu = ({ children }: { children: React.ReactNode }) => {
+  const session = useSession();
+
+  return (
+    <Sheet>
+      <SheetTrigger asChild>{children}</SheetTrigger>
+      <SheetContent side="right" className="w-full overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle className="sr-only">Menu</SheetTitle>
+        </SheetHeader>
+
+        <div className="px-4 my-2">
+          <Link href="/">
+            <Button size="lg" className="mb-4 w-full">
+              Devenir aide ménagère
+            </Button>
+          </Link>
+
+          <Link href="/">
+            <Button size="lg" className="mb-4 w-full">
+              Réserver un ménage
+            </Button>
+          </Link>
+
+          <Separator className="my-2" />
+
+          <div className="space-y-4 py-2">
+            <p className="mb-6 px-2 text-xl font-medium">Navigation</p>
+
+            <SheetMenuItem
+              icon={UsersIcon}
+              label="Qui sommes-nous ?"
+              href="/who-are-we"
+            />
+
+            <SheetMenuItem
+              icon={MailIcon}
+              label="Nous contacter"
+              href="/contact"
+            />
+          </div>
+
+          <Separator className="my-6" />
+
+          <div className="space-y-6 py-2">
+            <SheetMenuItem
+              icon={LogOutIcon}
+              label="Se déconnecter"
+              href="/"
+              onClick={() => {
+                session.destroy();
+              }}
             />
           </div>
         </div>
