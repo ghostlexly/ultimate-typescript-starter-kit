@@ -1,8 +1,6 @@
-/**
- * Test user fixtures
- * These are the test accounts that will be created for E2E tests
- */
+import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { DatabaseService } from '../../src/features/application/services/database.service';
 
 export const TEST_USERS = {
   admin: {
@@ -22,10 +20,61 @@ export const TEST_USERS = {
   },
 } as const;
 
-/**
- * Get hashed version of test passwords
- * Use this when creating users directly in the database
- */
 export async function getHashedPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 10);
+}
+
+@Injectable()
+export class TestUsersFixture {
+  constructor(private readonly db: DatabaseService) {}
+
+  async seed(): Promise<void> {
+    await this.seedAdmin();
+    await this.seedCustomers();
+  }
+
+  private async seedAdmin(): Promise<void> {
+    const hashedPassword = await getHashedPassword(TEST_USERS.admin.password);
+
+    await this.db.prisma.account.create({
+      data: {
+        email: TEST_USERS.admin.email,
+        password: hashedPassword,
+        role: 'ADMIN',
+        admin: { create: {} },
+      },
+    });
+  }
+
+  private async seedCustomers(): Promise<void> {
+    const hashedPassword = await getHashedPassword(
+      TEST_USERS.customer.password,
+    );
+
+    await this.db.prisma.account.create({
+      data: {
+        email: TEST_USERS.customer.email,
+        password: hashedPassword,
+        role: 'CUSTOMER',
+        customer: {
+          create: {},
+        },
+      },
+    });
+
+    const hashedPassword2 = await getHashedPassword(
+      TEST_USERS.customer2.password,
+    );
+
+    await this.db.prisma.account.create({
+      data: {
+        email: TEST_USERS.customer2.email,
+        password: hashedPassword2,
+        role: 'CUSTOMER',
+        customer: {
+          create: {},
+        },
+      },
+    });
+  }
 }

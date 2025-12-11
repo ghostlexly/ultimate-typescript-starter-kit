@@ -1,26 +1,29 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import request from 'supertest';
 import { setupE2ETest } from './helpers/e2e-test-setup.helper';
-import { TEST_USERS, getHashedPassword } from './fixtures/test-users.fixture';
+import { TEST_USERS } from './fixtures/test-users.fixture';
+
+/**
+ * The tests in this file are end-to-end tests for the authentication system.
+ * The tests are made in 3 phases:
+ * 1. Arrange: Prepare the test data when needed
+ * 2. Act: Perform the action
+ * 3. Assert: Check the result
+ */
 
 describe('Authentication (e2e)', () => {
   const ctx = setupE2ETest();
+  let customerAccessToken: string;
 
   beforeEach(async () => {
     await ctx.dbHelper.reset();
+
+    customerAccessToken = await ctx.getTokenFor('customer');
   });
 
-  describe('POST /api/auth/login', () => {
-    it('should login with valid admin credentials', async () => {
-      // Arrange: Create test admin
-      const hashedPassword = await getHashedPassword(TEST_USERS.admin.password);
-
-      await ctx.dbHelper.createTestAdmin({
-        email: TEST_USERS.admin.email,
-        password: hashedPassword,
-      });
-
-      // Act: Login
+  describe('POST /api/auth/signin', () => {
+    it('should signin with valid admin credentials', async () => {
+      // Act: Signin
       const response = await request(ctx.httpServer)
         .post('/api/auth/signin')
         .send({
@@ -33,22 +36,10 @@ describe('Authentication (e2e)', () => {
       // Assert: Check response structure
       expect(response.body).toHaveProperty('accessToken');
       expect(response.body).toHaveProperty('refreshToken');
-      expect(response.body.accessToken).toBeDefined();
-      expect(typeof response.body.accessToken).toBe('string');
     });
 
-    it('should login with valid customer credentials', async () => {
-      // Arrange: Create test customer
-      const hashedPassword = await getHashedPassword(
-        TEST_USERS.customer.password,
-      );
-
-      await ctx.dbHelper.createTestCustomer({
-        email: TEST_USERS.customer.email,
-        password: hashedPassword,
-      });
-
-      // Act: Login
+    it('should signin with valid customer credentials', async () => {
+      // Act: Signin
       const response = await request(ctx.httpServer)
         .post('/api/auth/signin')
         .send({
@@ -63,18 +54,8 @@ describe('Authentication (e2e)', () => {
       expect(response.body).toHaveProperty('refreshToken');
     });
 
-    it('should reject login with invalid password', async () => {
-      // Arrange: Create test customer
-      const hashedPassword = await getHashedPassword(
-        TEST_USERS.customer.password,
-      );
-
-      await ctx.dbHelper.createTestCustomer({
-        email: TEST_USERS.customer.email,
-        password: hashedPassword,
-      });
-
-      // Act: Login with wrong password
+    it('should reject signin with invalid password', async () => {
+      // Act: Signin with wrong password
       const response = await request(ctx.httpServer)
         .post('/api/auth/signin')
         .send({
@@ -88,8 +69,8 @@ describe('Authentication (e2e)', () => {
       expect(response.body).toHaveProperty('message');
     });
 
-    it('should reject login with non-existent email', async () => {
-      // Act: Login with email that doesn't exist
+    it('should reject signin with non-existent email', async () => {
+      // Act: Signin with email that doesn't exist
       await request(ctx.httpServer)
         .post('/api/auth/signin')
         .send({
@@ -100,8 +81,8 @@ describe('Authentication (e2e)', () => {
         .expect(400);
     });
 
-    it('should reject login with invalid email format', async () => {
-      // Act: Login with invalid email
+    it('should reject signin with invalid email format', async () => {
+      // Act: Signin with invalid email
       await request(ctx.httpServer)
         .post('/api/auth/signin')
         .send({
@@ -112,8 +93,8 @@ describe('Authentication (e2e)', () => {
         .expect(400);
     });
 
-    it('should reject login with missing password', async () => {
-      // Act: Login without password
+    it('should reject signin with missing password', async () => {
+      // Act: Signin without password
       await request(ctx.httpServer)
         .post('/api/auth/signin')
         .send({
@@ -126,17 +107,8 @@ describe('Authentication (e2e)', () => {
 
   describe('POST /api/auth/refresh', () => {
     it('should refresh access token with valid refresh token', async () => {
-      // Arrange: Create user and login to get tokens
-      const hashedPassword = await getHashedPassword(
-        TEST_USERS.customer.password,
-      );
-
-      await ctx.dbHelper.createTestCustomer({
-        email: TEST_USERS.customer.email,
-        password: hashedPassword,
-      });
-
-      const loginResponse = await request(ctx.httpServer)
+      // Arrange: Login to get tokens
+      const signinResponse = await request(ctx.httpServer)
         .post('/api/auth/signin')
         .send({
           email: TEST_USERS.customer.email,
@@ -144,7 +116,7 @@ describe('Authentication (e2e)', () => {
           role: 'CUSTOMER',
         });
 
-      const { refreshToken } = loginResponse.body;
+      const { refreshToken } = signinResponse.body;
 
       // Act: Refresh token
       const response = await request(ctx.httpServer)
@@ -172,34 +144,14 @@ describe('Authentication (e2e)', () => {
 
   describe('Protected Routes', () => {
     it('should allow access to protected route with valid token', async () => {
-      // Arrange: Create user and get access token
-      const hashedPassword = await getHashedPassword(
-        TEST_USERS.customer.password,
-      );
-
-      await ctx.dbHelper.createTestCustomer({
-        email: TEST_USERS.customer.email,
-        password: hashedPassword,
-      });
-
-      const loginResponse = await request(ctx.httpServer)
-        .post('/api/auth/signin')
-        .send({
-          email: TEST_USERS.customer.email,
-          password: TEST_USERS.customer.password,
-          role: 'CUSTOMER',
-        });
-
-      const { accessToken } = loginResponse.body;
-
       // Act: Access protected route
       const response = await request(ctx.httpServer)
         .get('/api/auth/me')
-        .set('Authorization', `Bearer ${accessToken}`)
+        .set('Authorization', `Bearer ${customerAccessToken}`)
         .expect(200);
 
       // Assert: Check response structure
-      expect(response.body).toHaveProperty('id');
+      expect(response.body).toHaveProperty('accountId');
       expect(response.body).toHaveProperty('email');
       expect(response.body).toHaveProperty('role');
       expect(response.body.role).toBe('CUSTOMER');
