@@ -27,7 +27,7 @@ jobs:
         run: docker compose exec -e NODE_ENV=test -e APP_DATABASE_CONNECTION_URL=postgresql://lunisoft:ChangeMe@postgres-test:5432/test backend npx prisma migrate reset --force
 
       - name: Run tests
-        run: docker compose exec -e NODE_ENV=test -e APP_DATABASE_CONNECTION_URL=postgresql://lunisoft:ChangeMe@postgres-test:5432/test backend npm run test:e2e
+        run: docker compose exec -e NODE_ENV=test backend npm run test:e2e
 
       - name: Stop services
         if: always()
