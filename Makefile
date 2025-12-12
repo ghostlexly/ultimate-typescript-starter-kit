@@ -56,14 +56,14 @@ prisma-m-diff: ## Check if database is up to date with schema file
 
 test: ## Run tests (migrate test database and run E2E tests)
 	$(COMPOSE) exec -e NODE_ENV=test -e APP_DATABASE_CONNECTION_URL=$(POSTGRES_TEST_URL) backend npx prisma migrate reset --force
-	$(COMPOSE) exec -e NODE_ENV=test -e APP_DATABASE_CONNECTION_URL=$(POSTGRES_TEST_URL) backend npm run test:e2e
+	$(COMPOSE) exec -e NODE_ENV=test backend npm run test:e2e
 
 test-all: ## Run all tests (unit + E2E)
-	$(COMPOSE) exec -e NODE_ENV=test -e APP_DATABASE_CONNECTION_URL=$(POSTGRES_TEST_URL) backend npx prisma migrate deploy
-	$(COMPOSE) exec -e NODE_ENV=test -e APP_DATABASE_CONNECTION_URL=$(POSTGRES_TEST_URL) backend npm test
+	$(COMPOSE) exec -e NODE_ENV=test -e APP_DATABASE_CONNECTION_URL=$(POSTGRES_TEST_URL) backend npx prisma migrate reset --force
+	$(COMPOSE) exec -e NODE_ENV=test backend npm test
 
 test-watch: ## Run tests in watch mode
-	$(COMPOSE) exec -e NODE_ENV=test -e APP_DATABASE_CONNECTION_URL=$(POSTGRES_TEST_URL) backend npm run test:watch
+	$(COMPOSE) exec -e NODE_ENV=test backend npm run test:watch
 
 ##———————————— Container Management
 

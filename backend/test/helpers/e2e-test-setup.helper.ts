@@ -1,3 +1,11 @@
+/**
+ * Force the test database URL before any module loads.
+ * This ensures E2E tests NEVER run against the production database.
+ */
+const TEST_DATABASE_URL =
+  'postgresql://lunisoft:ChangeMe@postgres-test:5432/test';
+process.env.APP_DATABASE_CONNECTION_URL = TEST_DATABASE_URL;
+
 import { Test, TestingModule, TestingModuleBuilder } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { AppModule } from '../../src/app.module';
@@ -85,7 +93,6 @@ export function setupE2ETest(customize?: TestModuleCustomizer): E2ETestContext {
   });
 
   afterAll(async () => {
-    await context.dbHelper.cleanDatabase();
     await context.app.close();
   });
 
