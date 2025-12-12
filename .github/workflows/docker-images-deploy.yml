@@ -23,6 +23,9 @@ jobs:
           echo "Waiting for PostgreSQL test database to be ready..."
           docker compose exec postgres-test sh -c 'until pg_isready -h localhost -U lunisoft; do sleep 1; done'
 
+      - name: Generate prisma client
+        run: docker compose exec backend npx prisma generate
+
       - name: Run database migrations on test database
         run: docker compose exec -e NODE_ENV=test -e APP_DATABASE_CONNECTION_URL=postgresql://lunisoft:ChangeMe@postgres-test:5432/test backend npx prisma migrate reset --force
 
