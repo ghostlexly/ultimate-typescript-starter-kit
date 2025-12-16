@@ -25,7 +25,7 @@ export default async function AdminAreaLayout({
       }
     >
       <AppSidebar variant="inset" />
-      <SidebarInset>
+      <SidebarInset className="max-h-svh overflow-auto">
         <BreadcrumbProvider>
           <Header />
 
