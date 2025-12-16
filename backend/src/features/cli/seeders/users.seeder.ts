@@ -2,12 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { DatabaseService } from '../../application/services/database.service';
 import { AuthService } from '../../auth/auth.service';
 
-interface TestUser {
-  email: string;
-  password: string;
-  role: 'ADMIN' | 'CUSTOMER';
-}
-
 @Injectable()
 export class UsersSeeder {
   private readonly logger = new Logger(UsersSeeder.name);
@@ -18,80 +12,69 @@ export class UsersSeeder {
   ) {}
 
   async seed(): Promise<void> {
-    this.logger.debug('Starting users seed...');
+    this.logger.debug('Seeding users...');
 
-    const testUsers: TestUser[] = [
-      {
-        email: 'contact@lunisoft.fr',
-        password: 'password',
-        role: 'ADMIN',
-      },
-      {
-        email: 'customer@lunisoft.fr',
-        password: 'password',
-        role: 'CUSTOMER',
-      },
-    ];
+    await this.seedAdmin();
+    await this.seedCustomer();
 
-    let created = 0;
-    let skipped = 0;
-
-    for (const userData of testUsers) {
-      try {
-        if (userData.role === 'ADMIN') {
-          await this.seedAdmin(userData);
-        } else {
-          await this.seedCustomer(userData);
-        }
-        created++;
-        this.logger.debug(`Created ${userData.role}: ${userData.email}`);
-      } catch (error) {
-        if (error.code === 'P2002') {
-          skipped++;
-          this.logger.debug(`Skipped existing user: ${userData.email}`);
-        } else {
-          this.logger.error(
-            `Failed to seed user ${userData.email}: ${error.message}`,
-          );
-          skipped++;
-        }
-      }
-    }
-
-    this.logger.debug(
-      `Users seed completed: ${created} created, ${skipped} skipped`,
-    );
+    this.logger.debug(`Users seed completed !`);
   }
 
-  private async seedAdmin(userData: TestUser): Promise<void> {
-    const hashedPassword = await this.authService.hashPassword({
-      password: userData.password,
+  private async seedAdmin(): Promise<void> {
+    // If the admin already exists, return
+    const adminExists = await this.db.prisma.account.findUnique({
+      where: {
+        email: 'contact@lunisoft.fr',
+        role: 'ADMIN',
+      },
     });
 
-    await this.db.prisma.account.create({
+    if (adminExists) {
+      return;
+    }
+
+    const hashedPassword = await this.authService.hashPassword({
+      password: 'password',
+    });
+
+    await this.db.prisma.admin.create({
       data: {
-        role: 'ADMIN',
-        email: userData.email,
-        password: hashedPassword,
-        admin: {
-          create: {},
+        account: {
+          create: {
+            role: 'ADMIN',
+            email: 'contact@lunisoft.fr',
+            password: hashedPassword,
+          },
         },
       },
     });
   }
 
-  private async seedCustomer(userData: TestUser): Promise<void> {
-    const hashedPassword = await this.authService.hashPassword({
-      password: userData.password,
+  private async seedCustomer(): Promise<void> {
+    // If the admin already exists, return
+    const customerExists = await this.db.prisma.account.findUnique({
+      where: {
+        email: 'customer@lunisoft.fr',
+        role: 'CUSTOMER',
+      },
     });
 
-    await this.db.prisma.account.create({
+    if (customerExists) {
+      return;
+    }
+
+    const hashedPassword = await this.authService.hashPassword({
+      password: 'password',
+    });
+
+    await this.db.prisma.customer.create({
       data: {
-        role: 'CUSTOMER',
-        email: userData.email,
-        password: hashedPassword,
-        customer: {
-          create: {},
+        account: {
+          create: {
+            role: 'CUSTOMER',
+            email: 'customer@lunisoft.fr',
+            password: hashedPassword,
+          },
         },
       },
     });
