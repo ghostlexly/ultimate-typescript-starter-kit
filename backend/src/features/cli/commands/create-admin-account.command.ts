@@ -4,7 +4,7 @@ import { DatabaseService } from 'src/features/application/services/database.serv
 import { AuthService } from 'src/features/auth/auth.service';
 
 @Command({
-  name: 'create:admin-account',
+  name: 'create:account:admin',
   description: 'Create an admin account',
   arguments: '<email> <password>',
 })
