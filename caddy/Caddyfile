@@ -50,7 +50,7 @@
 }
 
 # Local development (self-signed certificates)
-caddy:80, localhost {
+caddy:80, localhost:80, localhost:443 {
     tls internal
     import common
 }
