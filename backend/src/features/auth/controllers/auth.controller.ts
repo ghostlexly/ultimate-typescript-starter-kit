@@ -335,7 +335,7 @@ export class AuthController {
       );
     }
 
-    const account = await this.db.prisma.account.findUnique({
+    const account = await this.db.prisma.account.findFirst({
       where: {
         email: body.email,
       },
