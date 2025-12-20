@@ -1,13 +1,10 @@
 {
     # Disable admin API for security
     admin off
-    
-    # Use local certificates for self-signed SSL (works with Cloudflare Full mode)
-    local_certs
 }
 
-# Handles localhost (dev), Docker service name (caddy), and production domains
-localhost, caddy, dispomenage.fr, www.dispomenage.fr, :80, :443 {
+# Shared configuration snippet
+(common) {
     # File upload size limit - 100MB for large file uploads
     request_body {
         max_size 100MB
@@ -17,12 +14,12 @@ localhost, caddy, dispomenage.fr, www.dispomenage.fr, :80, :443 {
     header {
         # Your custom branding
         X-Powered-By "LUNISOFT - contact@lunisoft.fr"
-        
+
         # Security headers
         X-Frame-Options "SAMEORIGIN"
         X-Content-Type-Options "nosniff"
         X-XSS-Protection "1; mode=block"
-        
+
         # Hide Caddy server info
         -Server
     }
@@ -33,12 +30,12 @@ localhost, caddy, dispomenage.fr, www.dispomenage.fr, :80, :443 {
         minimum_length 1024
     }
 
-    # API routes → ExpressJS backend
+    # API routes -> ExpressJS backend
     handle /api/* {
         reverse_proxy backend:3000
     }
 
-    # All other routes → NextJS frontend
+    # All other routes -> NextJS frontend
     handle {
         reverse_proxy frontend:3000
     }
@@ -50,4 +47,15 @@ localhost, caddy, dispomenage.fr, www.dispomenage.fr, :80, :443 {
             respond "Service temporarily unavailable" 503
         }
     }
-} 
+}
+
+# Local development (self-signed certificates)
+caddy:80, localhost {
+    tls internal
+    import common
+}
+
+# Production
+dispomenage.fr, www.dispomenage.fr {
+    import common
+}
