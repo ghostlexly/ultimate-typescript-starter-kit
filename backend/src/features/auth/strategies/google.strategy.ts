@@ -93,7 +93,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     }
 
     // 2. Find by email and link Google account
-    const existingByEmail = await this.db.prisma.account.findUnique({
+    const existingByEmail = await this.db.prisma.account.findFirst({
       where: { email },
     });
 
