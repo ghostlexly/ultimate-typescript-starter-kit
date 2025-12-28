@@ -3,7 +3,7 @@ import * as winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 import { join } from 'path';
 
-// Fonction pour créer un transport avec rotation
+// Function to create a transport with rotation
 const createRotateTransport = (
   filename: string,
   level: string,
@@ -11,9 +11,9 @@ const createRotateTransport = (
   return new DailyRotateFile({
     filename: join(process.cwd(), 'logs', filename),
     datePattern: 'YYYY-MM-DD',
-    zippedArchive: true, // Compresser les anciens logs
-    maxSize: '20m', // Taille max d'un fichier: 20MB
-    maxFiles: '14d', // Garder les logs pendant 14 jours
+    zippedArchive: true, // Compress old logs
+    maxSize: '20m', // Max file size: 20MB
+    maxFiles: '14d', // Keep logs for 14 days
     level,
     format: winston.format.combine(
       winston.format.timestamp(),
@@ -26,47 +26,45 @@ const createRotateTransport = (
 export const createWinstonConfig = () => {
   const transports: winston.transport[] = [];
 
-  // Console transport pour le développement
-  if (process.env.NODE_ENV !== 'production') {
-    transports.push(
-      new winston.transports.Console({
-        format: winston.format.combine(
-          winston.format.timestamp(),
-          winston.format.ms(),
-          nestWinstonModuleUtilities.format.nestLike('FodmapFacile', {
-            colors: true,
-            prettyPrint: true,
-            processId: true,
-            appName: true,
-          }),
-        ),
-      }),
-    );
-  }
-
-  // File transports avec rotation automatique
+  // Console transport
   transports.push(
-    // Tous les logs
+    new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.ms(),
+        nestWinstonModuleUtilities.format.nestLike('FodmapFacile', {
+          colors: true,
+          prettyPrint: true,
+          processId: true,
+          appName: true,
+        }),
+      ),
+    }),
+  );
+
+  // File transports with automatic rotation
+  transports.push(
+    // All logs
     createRotateTransport('combined-%DATE%.log', 'info'),
 
-    // Seulement les erreurs
+    // Only errors
     createRotateTransport('error-%DATE%.log', 'error'),
 
-    // Seulement les warnings
+    // Only warnings
     createRotateTransport('warn-%DATE%.log', 'warn'),
 
-    // Seulement les debug
+    // Only debug
     createRotateTransport('debug-%DATE%.log', 'debug'),
   );
 
   return {
     transports,
     exceptionHandlers: [
-      // Capturer les exceptions non gérées
+      // Capture unhandled exceptions
       createRotateTransport('exceptions-%DATE%.log', 'error'),
     ],
     rejectionHandlers: [
-      // Capturer les promesses rejetées non gérées
+      // Capture unhandled rejections
       createRotateTransport('rejections-%DATE%.log', 'error'),
     ],
   };
