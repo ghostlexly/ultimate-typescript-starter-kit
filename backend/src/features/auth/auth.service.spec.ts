@@ -16,7 +16,7 @@ describe('AuthService', () => {
   let jwtService: JwtService;
 
   beforeEach(async () => {
-    const moduleRef = await Test.createTestingModule({
+    const app = await Test.createTestingModule({
       imports: [
         JwtModule.registerAsync({
           useFactory: () => ({
@@ -41,9 +41,9 @@ describe('AuthService', () => {
       })
       .compile();
 
-    db = moduleRef.get(DatabaseService);
-    authService = moduleRef.get(AuthService);
-    jwtService = moduleRef.get(JwtService);
+    db = app.get(DatabaseService);
+    authService = app.get(AuthService);
+    jwtService = app.get(JwtService);
   });
 
   describe('comparePassword', () => {
