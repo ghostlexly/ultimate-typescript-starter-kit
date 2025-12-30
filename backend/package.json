@@ -51,6 +51,7 @@
     "hbs": "^4.2.0",
     "helmet": "^8.1.0",
     "i18n-iso-countries": "^7.14.0",
+    "jest-mock": "^30.2.0",
     "nest-commander": "^3.19.1",
     "nest-winston": "^1.10.2",
     "passport": "^0.7.0",

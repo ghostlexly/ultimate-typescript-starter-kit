@@ -15,7 +15,6 @@ import { SeedCommand } from './commands/seed.command';
 
 // Seeders
 import { UsersSeeder } from './seeders/users.seeder';
-import { FakeDataSeeder } from './seeders/fake-data.seeder';
 import { CitiesSeeder } from './seeders/cities.seeder';
 
 @Module({
@@ -49,7 +48,6 @@ import { CitiesSeeder } from './seeders/cities.seeder';
     // Seeders
     UsersSeeder,
     CitiesSeeder,
-    FakeDataSeeder,
   ],
 })
 export class CliModule {}

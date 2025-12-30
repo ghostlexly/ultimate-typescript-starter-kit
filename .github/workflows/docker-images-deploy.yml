@@ -29,7 +29,10 @@ jobs:
       - name: Run database migrations on test database
         run: docker compose exec -e NODE_ENV=test -e APP_DATABASE_CONNECTION_URL=postgresql://lunisoft:ChangeMe@postgres-test:5432/test backend npx prisma migrate reset --force
 
-      - name: Run tests
+      - name: Run unit tests
+        run: docker compose exec -e NODE_ENV=test backend npm run test
+
+      - name: Run e2e tests
         run: docker compose exec -e NODE_ENV=test backend npm run test:e2e
 
       - name: Stop services
@@ -53,6 +56,23 @@ jobs:
         with:
           username: lunisoft
           password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install backend dependencies
+        run: npm ci
+        working-directory: backend
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+        working-directory: backend
+
+      - name: Run unit tests
+        run: npm run test
+        working-directory: backend
 
       - name: Build and push docker images
         run: |

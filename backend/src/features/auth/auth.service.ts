@@ -11,12 +11,12 @@ import { authConstants } from './auth.constants';
 
 @Injectable()
 export class AuthService {
-  private jwtPublicKey: string;
+  private readonly jwtPublicKey: string;
 
   constructor(
-    private db: DatabaseService,
-    private jwtService: JwtService,
-    private configService: ConfigService,
+    private readonly db: DatabaseService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {
     const jwtPublicKey = this.configService.get<string>('APP_JWT_PUBLIC_KEY');
 
