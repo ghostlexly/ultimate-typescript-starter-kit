@@ -1,90 +1,49 @@
 import { Test } from '@nestjs/testing';
 import { AuthService } from './auth.service';
-import { ModuleMocker, MockMetadata } from 'jest-mock';
 import { DatabaseService } from '../application/services/database.service';
+import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import bcrypt from 'bcrypt';
-import { JwtService } from '@nestjs/jwt';
-
-const moduleMocker = new ModuleMocker(globalThis);
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import {
+  fakeJwtPayload,
+  fakeSession,
+  fakeVerificationToken,
+} from 'src/test/fixtures/auth.fixtures';
 
 describe('AuthService', () => {
+  let db: DeepMockProxy<DatabaseService>;
   let authService: AuthService;
-
-  // Database mocks
-  const mockSessionCreate = jest.fn();
-  const mockSessionFindUnique = jest.fn();
-  const mockSessionUpdate = jest.fn();
-  const mockVerificationTokenFindFirst = jest.fn();
-
-  // JWT mocks
-  const mockJwtSignAsync = jest.fn();
-
-  const fakeSession = {
-    id: 'session-123',
-    accountId: 'account-123',
-    ipAddress: '127.0.0.1',
-    userAgent:
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
-    expiresAt: new Date(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    account: {
-      id: 'account-123',
-      email: 'test@test.com',
-      role: 'CUSTOMER' as const,
-      password: 'hashed-password',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-  };
-
-  const fakeJwtPayload = {
-    payload: { sub: 'session-123', accountId: 'account-123' },
-  };
+  let jwtService: JwtService;
 
   beforeEach(async () => {
-    jest.clearAllMocks();
-
     const moduleRef = await Test.createTestingModule({
+      imports: [
+        JwtModule.registerAsync({
+          useFactory: () => ({
+            privateKey: Buffer.from(
+              'LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JSUV2UUlCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQktjd2dnU2pBZ0VBQW9JQkFRREVDK2xTVjdsRXlkcVUKbDlVcmQ4emp3QXlFZ1BuR0NBUU1QZVFXQlVQWXhPREhsZTI5cjlIVDdoRUtPaDlIL0hMOUhrYVFZL3ZUTFRGWgpJL3BiQW4wMjVaYUNLSFFQU0xjSlpuNG4xVFdVbnJCWnM5cGxqak5CQUUyRmh6UVh5WGxGcE42SndiVkc4VGxzCmd4UmRnWSsrM0ZycXg4ZzQzbUdnVjdNQUh6Snk1MG5zTTVkSkdvZ2ZuaFpQa3JzRVNHY1RybmZEWXI1bFdEclIKVVlmYkQ0TThRSWpORHo0Z1VkYm9xYmJaenNIREV6My9NVFl5Y1hTWFFJSnBZZGwyL29wYUNjLy9NWnBpUmZVUQpOUTNMTEQ4OUlyd2RHRGRsZURsQmo4YVhybDZFemdWYnpIQzR4R3VtOFpaT3FXMklQTnBvb0taa1BuSVZWWDNSCmIzY2xRMmlkQWdNQkFBRUNnZ0VBVHJoSHRvQXlEUHlPaitjTnVqZ1BKZzVxR0ZTZnR0Um1KN0k4WVZrNDNwUmoKZTlEb2x5ZS90ZjBjaTRJK0tFNG1zQnVWa3dvS3hzZVpUcVZqTkdNaCswYWlNbDVqQi9ZWFJTZUtGWjJIdDhjbQpvY1pWdGp5c3VQZVJxVUhhZVlpMWNQRWNTSzFuQ0hiNUsyalE1eUVNb3NOaG9HK2JKcmFvOWRUeE0rWFRBSTdJCnRTK0EzdWhTMXg2TlpDM1Ayd2dWcHBPMWdmbllKTVQ0eVdISmlWdHpGYW56d1RUWG1EUkdCTzZldzJZbytVbTgKVU9JZmJJL3RYZy84Q3FtZ3c2K0tkbkdlYVpVWllJMTRETmxNdEcxdEIvVmpOVENZZU1DYnA0OEVPV25OR3VNMgptUGppNFNUb0w4SHJocHFoUHAzMkFMSUlNc0hCN0ZBUW0yQTJPS2pBWXdLQmdRRDZtNGl3clVKQzZCVXpQSE8xCmRqSDBQV0k5ZmkvVU9hbFZtUkgxbXI4OE1lem5VSmF4K2tDVzdnem9haFBxbG1DS2pjUmFFUHNvemEvN1psZEsKK0lJM0RJaWRzdTEydWo5UkxvOXo4RDdPQXAxVWFLd21TZVdLcEhBeVg4d2ZkZ2t0L3FZTFlNZTd0VkZKSExtMQpDVjdCMlk2dDFzKzNrTGJ2bm4vd2ZjOVcyd0tCZ1FESVE5Uk1XSjhuZlFkTFB2Ry9LemkxamtXd2czNkh0MXAxCnNYbHpENzhEV3g1RjNzYi9NVjRzT1ZwRHBUWDY2b28rMy9kZ0d2Tll3QXJNaUVrVWNuTHlNU3UzalROLzc0bnIKZ3VISnpFYVUweXBtNHdsSk93cnBwRzF3bzIvK2tEajhPMGxlcnp4VWlEZGJXV2JkL1h0VFJyVVVDQlIvcHcvVQprQno4QjZQcjV3S0JnUUNra3N0Ykt3eWVuNFo4bFRCdmRHVXR2Ym5zSkJnSXlLMFpWMkpoNWZPNzloVmJlcUxiCjBqbmtaQVA2Qk45N2FMR1JpN1BzYWNabWIxMG9QWGNKOXRTY2poQ1JiMVZlYU1UMzdSbXJ5NU9TK2tpVGpBR3gKUzBvQW1DaE9ESGNpR2dQQlByK1FMVWc5VHI5SXdpSjZidUxaYnFPeUthVlRLU2ZaaUQ4QWtiNDlqUUtCZ0VwQQpjL2QycUZQdzFJSityUTF2VGhCcTFzWHlpemh3c0JhUkhmR2VkZmtka0tUaFM3RVVzZEQ5MXN6YjlaNjUxVllvCm5rVEEyVmNmcFNGZXFwSHRPVmM1Q2ZkOVlBbmdXNmU1bUZQRTdLcURmT1kyNlp1QVM3U0RKWnlzekhwN0tOWEUKZVppa3FsN0JQcDBkRWJuZklSbW9UcjFGbmF3UzJoaTY4alF6OVFBakFvR0FEU3RMNTBYbVhETWU1TENtMy9Fawpab0FZZW9uNkFHVmY1c2xhNE40eWFkZ1VnakdCRDRlQjB2RjlSRG56TU5IQW5oZnFGM0lOVnVGMWFPK2pGSXlLCjdDOWJnSmNQd0xuMXFPWWRFbHFSN1pUMnlLOWR5OTVHazNxaUEwZEVRUjdIc3pxY0NKTFpqbjd0eVd4a0dBbXUKUi9hSEJ5dkR2WWxwb3BkUFpJZ2VFVVE9Ci0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0K',
+              'base64',
+            ).toString('utf8'),
+            publicKey: Buffer.from(
+              'LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUF4QXZwVWxlNVJNbmFsSmZWSzNmTQo0OEFNaElENXhnZ0VERDNrRmdWRDJNVGd4NVh0dmEvUjArNFJDam9mUi94eS9SNUdrR1A3MHkweFdTUDZXd0o5Ck51V1dnaWgwRDBpM0NXWitKOVUxbEo2d1diUGFaWTR6UVFCTmhZYzBGOGw1UmFUZWljRzFSdkU1YklNVVhZR1AKdnR4YTZzZklPTjVob0ZlekFCOHljdWRKN0RPWFNScUlINTRXVDVLN0JFaG5FNjUzdzJLK1pWZzYwVkdIMncrRApQRUNJelE4K0lGSFc2S20yMmM3Qnd4TTkvekUyTW5GMGwwQ0NhV0haZHY2S1dnblAvekdhWWtYMUVEVU55eXcvClBTSzhIUmczWlhnNVFZL0dsNjVlaE00Rlc4eHd1TVJycHZHV1RxbHRpRHphYUtDbVpENXlGVlY5MFc5M0pVTm8KblFJREFRQUIKLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg==',
+              'base64',
+            ).toString('utf8'),
+            signOptions: { algorithm: 'RS256' },
+          }),
+        }),
+      ],
       providers: [AuthService],
     })
       .useMocker((token) => {
-        if (token === DatabaseService) {
-          return {
-            prisma: {
-              session: {
-                create: mockSessionCreate,
-                findUnique: mockSessionFindUnique,
-                update: mockSessionUpdate,
-              },
-              verificationToken: {
-                findFirst: mockVerificationTokenFindFirst,
-              },
-            },
-          };
-        }
-
-        if (token === JwtService) {
-          return {
-            signAsync: mockJwtSignAsync,
-          };
-        }
-
         if (typeof token === 'function') {
-          const mockMetadata = moduleMocker.getMetadata(token) as MockMetadata<
-            any,
-            any
-          >;
-          const Mock = moduleMocker.generateFromMetadata(
-            mockMetadata,
-          ) as ObjectConstructor;
-
-          return new Mock();
+          return mockDeep(token);
         }
       })
       .compile();
 
+    db = moduleRef.get(DatabaseService);
     authService = moduleRef.get(AuthService);
+    jwtService = moduleRef.get(JwtService);
   });
 
   describe('comparePassword', () => {
@@ -147,7 +106,7 @@ describe('AuthService', () => {
   describe('createSession', () => {
     it('should create a session with the correct account id and expiration', async () => {
       // ===== Arrange
-      mockSessionCreate.mockResolvedValue(fakeSession);
+      db.prisma.session.create.mockResolvedValue(fakeSession);
 
       // ===== Act
       const result = await authService.createSession({
@@ -155,7 +114,7 @@ describe('AuthService', () => {
       });
 
       // ===== Assert
-      expect(mockSessionCreate).toHaveBeenCalledWith({
+      expect(db.prisma.session.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
           accountId: 'account-123',
           expiresAt: expect.any(Date),
@@ -168,10 +127,8 @@ describe('AuthService', () => {
   describe('generateAuthenticationTokens', () => {
     it('should generate access and refresh tokens for a valid session', async () => {
       // ===== Arrange
-      mockSessionFindUnique.mockResolvedValue(fakeSession);
-      mockJwtSignAsync
-        .mockResolvedValueOnce('access-token')
-        .mockResolvedValueOnce('refresh-token');
+      db.prisma.session.findUnique.mockResolvedValue(fakeSession);
+      const jwtSignAsyncSpy = jest.spyOn(jwtService, 'signAsync');
 
       // ===== Act
       const result = await authService.generateAuthenticationTokens({
@@ -180,15 +137,16 @@ describe('AuthService', () => {
 
       // ===== Assert
       expect(result).toEqual({
-        accessToken: 'access-token',
-        refreshToken: 'refresh-token',
+        accessToken: expect.any(String),
+        refreshToken: expect.any(String),
       });
-      expect(mockJwtSignAsync).toHaveBeenCalledTimes(2);
+
+      expect(jwtSignAsyncSpy).toHaveBeenCalledTimes(2);
     });
 
     it('should throw error when session does not exist', async () => {
       // ===== Arrange
-      mockSessionFindUnique.mockResolvedValue(null);
+      db.prisma.session.findUnique.mockResolvedValue(null);
 
       // ===== Act & Assert
       await expect(
@@ -202,26 +160,25 @@ describe('AuthService', () => {
   describe('refreshAuthenticationTokens', () => {
     it('should refresh tokens with valid refresh token', async () => {
       // ===== Arrange
-      jest
-        .spyOn(authService, 'extractJwtPayload')
-        .mockResolvedValue(fakeJwtPayload);
+      const validRefreshToken = await jwtService.signAsync({
+        payload: fakeJwtPayload,
+        options: {
+          expiresIn: `5m`,
+        },
+      });
 
-      mockSessionFindUnique.mockResolvedValue(fakeSession);
-      mockSessionUpdate.mockResolvedValue(fakeSession);
-
-      mockJwtSignAsync
-        .mockResolvedValueOnce('new-access-token')
-        .mockResolvedValueOnce('new-refresh-token');
+      db.prisma.session.findUnique.mockResolvedValue(fakeSession);
+      db.prisma.session.update.mockResolvedValue(fakeSession);
 
       // ===== Act
       const result = await authService.refreshAuthenticationTokens({
-        refreshToken: 'valid-refresh-token',
+        refreshToken: validRefreshToken,
       });
 
       // ===== Assert
-      expect(mockSessionUpdate).toHaveBeenCalledWith({
+      expect(db.prisma.session.update).toHaveBeenCalledWith({
         where: {
-          id: 'session-123',
+          id: fakeSession.id,
         },
         data: expect.objectContaining({
           expiresAt: expect.any(Date),
@@ -229,17 +186,12 @@ describe('AuthService', () => {
       });
       expect(result).toEqual({
         session: fakeSession,
-        accessToken: 'new-access-token',
-        refreshToken: 'new-refresh-token',
+        accessToken: expect.any(String),
+        refreshToken: expect.any(String),
       });
     });
 
     it('should throw error for invalid refresh token', async () => {
-      // ===== Arrange
-      jest
-        .spyOn(authService, 'extractJwtPayload')
-        .mockRejectedValue(new Error('Invalid token'));
-
       // ===== Act & Assert
       await expect(
         authService.refreshAuthenticationTokens({
@@ -266,7 +218,7 @@ describe('AuthService', () => {
         .spyOn(authService, 'extractJwtPayload')
         .mockResolvedValue(fakeJwtPayload);
 
-      mockSessionFindUnique.mockResolvedValue(null);
+      db.prisma.session.findUnique.mockResolvedValue(null);
 
       // ===== Act & Assert
       await expect(
@@ -280,11 +232,9 @@ describe('AuthService', () => {
   describe('verifyVerificationToken', () => {
     it('should return true when token is valid', async () => {
       // ===== Arrange
-      mockVerificationTokenFindFirst.mockResolvedValue({
-        id: 'token-123',
-        token: '123456',
-        type: 'PASSWORD_RESET',
-      });
+      db.prisma.verificationToken.findFirst.mockResolvedValue(
+        fakeVerificationToken,
+      );
 
       // ===== Act
       const result = await authService.verifyVerificationToken({
@@ -299,7 +249,7 @@ describe('AuthService', () => {
 
     it('should return false when token is not found', async () => {
       // ===== Arrange
-      mockVerificationTokenFindFirst.mockResolvedValue(null);
+      db.prisma.verificationToken.findFirst.mockResolvedValue(null);
 
       // ===== Act
       const result = await authService.verifyVerificationToken({
