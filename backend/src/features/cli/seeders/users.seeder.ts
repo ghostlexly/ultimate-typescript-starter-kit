@@ -1,15 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DatabaseService } from '../../application/services/database.service';
-import { AuthService } from '../../auth/auth.service';
+import { passwordUtils } from 'src/core/utils/password';
 
 @Injectable()
 export class UsersSeeder {
   private readonly logger = new Logger(UsersSeeder.name);
 
-  constructor(
-    private readonly db: DatabaseService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly db: DatabaseService) {}
 
   async seed(): Promise<void> {
     this.logger.debug('Seeding users...');
@@ -33,9 +30,7 @@ export class UsersSeeder {
       return;
     }
 
-    const hashedPassword = await this.authService.hashPassword({
-      password: 'password',
-    });
+    const hashedPassword = await passwordUtils.hash('password');
 
     await this.db.prisma.admin.create({
       data: {
@@ -63,9 +58,7 @@ export class UsersSeeder {
       return;
     }
 
-    const hashedPassword = await this.authService.hashPassword({
-      password: 'password',
-    });
+    const hashedPassword = await passwordUtils.hash('password');
 
     await this.db.prisma.customer.create({
       data: {

@@ -1,13 +1,41 @@
 import { Module } from '@nestjs/common';
-import { AuthController } from './controllers/auth.controller';
-import { AuthService } from './auth.service';
+import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { SignInHttpController } from './commands/sign-in/sign-in.http.controller';
+import { RefreshTokenHttpController } from './commands/refresh-token/refresh-token.http.controller';
+import { ForgotPasswordHttpController } from './commands/forgot-password/forgot-password.http.controller';
+import { ResetPasswordHttpController } from './commands/reset-password/reset-password.http.controller';
+import { VerifyTokenHttpController } from './commands/verify-token/verify-token.http.controller';
+import { SignInService } from './commands/sign-in/sign-in.service';
+import { RefreshTokenService } from './commands/refresh-token/refresh-token.service';
+import { ForgotPasswordService } from './commands/forgot-password/forgot-password.service';
+import { ResetPasswordService } from './commands/reset-password/reset-password.service';
+import { VerifyTokenService } from './commands/verify-token/verify-token.service';
+import { GetCurrentUserHttpController } from './queries/get-current-user/get-current-user.http.controller';
+import { GoogleAuthHttpController } from './queries/google-auth/google-auth.http.controller';
+import { GetCurrentUserQueryHandler } from './queries/get-current-user/get-current-user.query-handler';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { ClearExpiredSessionsCron } from './crons/clear-expired-sessions.cron';
-import { ConfigService } from '@nestjs/config';
 import { ClearExpiredVerificationTokensCron } from './crons/clear-expired-verification-tokens.cron';
+import { SendPasswordResetEmailHandler } from './application/event-handlers/send-password-reset-email.handler';
+
+const CommandHandlers = [
+  SignInService,
+  RefreshTokenService,
+  ForgotPasswordService,
+  ResetPasswordService,
+  VerifyTokenService,
+];
+
+const QueryHandlers = [GetCurrentUserQueryHandler];
+
+const EventHandlers = [SendPasswordResetEmailHandler];
+
+const Strategies = [JwtStrategy, GoogleStrategy];
+
+const Crons = [ClearExpiredSessionsCron, ClearExpiredVerificationTokensCron];
 
 @Module({
   imports: [
@@ -27,14 +55,22 @@ import { ClearExpiredVerificationTokensCron } from './crons/clear-expired-verifi
     }),
     PassportModule,
   ],
-  controllers: [AuthController],
-  providers: [
-    AuthService,
-    JwtStrategy,
-    GoogleStrategy,
-    ClearExpiredSessionsCron,
-    ClearExpiredVerificationTokensCron,
+  controllers: [
+    SignInHttpController,
+    RefreshTokenHttpController,
+    ForgotPasswordHttpController,
+    ResetPasswordHttpController,
+    VerifyTokenHttpController,
+    GetCurrentUserHttpController,
+    GoogleAuthHttpController,
   ],
-  exports: [AuthService],
+  providers: [
+    ...CommandHandlers,
+    ...QueryHandlers,
+    ...EventHandlers,
+    ...Strategies,
+    ...Crons,
+  ],
+  exports: [],
 })
 export class AuthModule {}

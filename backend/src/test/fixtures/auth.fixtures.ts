@@ -40,10 +40,8 @@ export const fakeVerificationToken: VerificationToken = {
 };
 
 export const fakeJwtPayload = {
-  payload: {
-    sub: fakeSession.id,
-    accountId: fakeSession.accountId,
-    role: fakeSession.account.role,
-    email: fakeSession.account.email,
-  },
+  sub: fakeSession.id,
+  accountId: fakeSession.accountId,
+  role: fakeSession.account.role,
+  email: fakeSession.account.email,
 };

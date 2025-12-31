@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
 import { DatabaseService } from '../../src/features/application/services/database.service';
+import { passwordUtils } from '../../src/core/utils/password';
 
 export const TEST_USERS = {
   admin: {
@@ -21,7 +21,7 @@ export const TEST_USERS = {
 } as const;
 
 export async function getHashedPassword(password: string): Promise<string> {
-  return bcrypt.hash(password, 10);
+  return passwordUtils.hash(password);
 }
 
 @Injectable()
