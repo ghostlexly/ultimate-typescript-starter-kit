@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { ResetPasswordCommand } from './reset-password.command';
 import { DatabaseService } from 'src/features/application/services/database.service';
-import { passwordUtils } from 'src/core/utils/password';
+import { Password } from '../../domain/value-objects';
 
 export interface ResetPasswordResult {
   message: string;
@@ -15,6 +15,9 @@ export class ResetPasswordService
   constructor(private readonly db: DatabaseService) {}
 
   async execute(command: ResetPasswordCommand): Promise<ResetPasswordResult> {
+    // Create value objects
+    const hashedPassword = await Password.create(command.password).hash();
+
     // Verify the token
     const tokenFound = await this.db.prisma.verificationToken.findFirst({
       where: {
@@ -48,13 +51,10 @@ export class ResetPasswordService
       );
     }
 
-    // Hash new password
-    const hashedPassword = await passwordUtils.hash(command.password);
-
     // Update the account password
     await this.db.prisma.account.update({
       where: { id: account.id },
-      data: { password: hashedPassword },
+      data: { password: hashedPassword.value },
     });
 
     // Delete the verification token

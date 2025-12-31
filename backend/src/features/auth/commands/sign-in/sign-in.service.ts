@@ -1,11 +1,13 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { SignInCommand } from './sign-in.command';
 import { DatabaseService } from 'src/features/application/services/database.service';
 import { dateUtils } from 'src/core/utils/date';
-import { passwordUtils } from 'src/core/utils/password';
 import { authConstants } from '../../auth.constants';
+import { Email } from '../../domain/value-objects';
+import { ACCOUNT_REPOSITORY } from '../../domain/ports';
+import type { AccountRepositoryPort } from '../../domain/ports';
 
 export interface SignInResult {
   accountId: string;
@@ -15,38 +17,29 @@ export interface SignInResult {
 }
 
 @CommandHandler(SignInCommand)
-export class SignInService implements ICommandHandler<SignInCommand, SignInResult> {
+export class SignInService
+  implements ICommandHandler<SignInCommand, SignInResult>
+{
   constructor(
+    @Inject(ACCOUNT_REPOSITORY)
+    private readonly accountRepository: AccountRepositoryPort,
     private readonly db: DatabaseService,
     private readonly jwtService: JwtService,
   ) {}
 
   async execute(command: SignInCommand): Promise<SignInResult> {
-    // Find account by email
-    const account = await this.db.prisma.account.findFirst({
-      where: {
-        email: {
-          equals: command.email,
-          mode: 'insensitive',
-        },
-      },
-    });
+    const email = Email.create(command.email);
+
+    const account = await this.accountRepository.findByEmail(email);
 
     if (!account) {
-      // Timing attack protection
-      await passwordUtils.compare(
-        command.password,
-        '$2a$10$fakeHashToPreventTimingAttacks',
-      );
-
       throw new HttpException(
         { message: 'Mot de passe ou e-mail incorrect.' },
         HttpStatus.BAD_REQUEST,
       );
     }
 
-    // Check if account has OAuth provider (no password)
-    if (account.providerId && !account.password) {
+    if (account.isOAuthAccount) {
       throw new HttpException(
         {
           message:
@@ -56,11 +49,7 @@ export class SignInService implements ICommandHandler<SignInCommand, SignInResul
       );
     }
 
-    // Validate password
-    const isValidPassword = await passwordUtils.compare(
-      command.password,
-      account.password ?? '',
-    );
+    const isValidPassword = await account.validatePassword(command.password);
 
     if (!isValidPassword) {
       throw new HttpException(

@@ -20,6 +20,8 @@ import { GoogleStrategy } from './strategies/google.strategy';
 import { ClearExpiredSessionsCron } from './crons/clear-expired-sessions.cron';
 import { ClearExpiredVerificationTokensCron } from './crons/clear-expired-verification-tokens.cron';
 import { SendPasswordResetEmailHandler } from './application/event-handlers/send-password-reset-email.handler';
+import { ACCOUNT_REPOSITORY } from './domain/ports';
+import { AccountRepository } from './infrastructure/adapters';
 
 const CommandHandlers = [
   SignInService,
@@ -36,6 +38,13 @@ const EventHandlers = [SendPasswordResetEmailHandler];
 const Strategies = [JwtStrategy, GoogleStrategy];
 
 const Crons = [ClearExpiredSessionsCron, ClearExpiredVerificationTokensCron];
+
+const Repositories = [
+  {
+    provide: ACCOUNT_REPOSITORY,
+    useClass: AccountRepository,
+  },
+];
 
 @Module({
   imports: [
@@ -70,7 +79,8 @@ const Crons = [ClearExpiredSessionsCron, ClearExpiredVerificationTokensCron];
     ...EventHandlers,
     ...Strategies,
     ...Crons,
+    ...Repositories,
   ],
-  exports: [],
+  exports: [ACCOUNT_REPOSITORY],
 })
 export class AuthModule {}

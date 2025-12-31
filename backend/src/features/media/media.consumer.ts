@@ -1,21 +1,23 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
-import { Logger } from '@nestjs/common';
+import { Inject, Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
-import { DatabaseService } from 'src/features/application/services/database.service';
 import { FfmpegService } from 'src/features/application/services/ffmpeg.service';
+import { S3Service } from '../application/services/s3.service';
+import { MEDIA_REPOSITORY } from './domain/ports';
+import type { MediaRepositoryPort } from './domain/ports';
 import path from 'path';
 import os from 'os';
 import crypto from 'crypto';
-import { S3Service } from '../application/services/s3.service';
 
 @Processor('media')
 export class MediaConsumer extends WorkerHost {
   private logger = new Logger(MediaConsumer.name);
 
   constructor(
-    private db: DatabaseService,
-    private ffmpegService: FfmpegService,
-    private s3Service: S3Service,
+    @Inject(MEDIA_REPOSITORY)
+    private readonly mediaRepository: MediaRepositoryPort,
+    private readonly ffmpegService: FfmpegService,
+    private readonly s3Service: S3Service,
   ) {
     super();
   }
@@ -31,10 +33,8 @@ export class MediaConsumer extends WorkerHost {
   async optimizeVideo(job: Job<any, any, string>): Promise<any> {
     const { mediaId } = job.data;
 
-    // Get media
-    const media = await this.db.prisma.media.findFirst({
-      where: { id: mediaId },
-    });
+    // Get media using repository
+    const media = await this.mediaRepository.findById(mediaId);
 
     if (!media) {
       throw new Error(`Media ${mediaId} not found.`);
@@ -70,20 +70,26 @@ export class MediaConsumer extends WorkerHost {
     // Upload the optimized video file to S3
     this.logger.log(`Uploading optimized video file ${mediaId}...`);
 
+    const previousKey = media.key;
+
     const newKey = await this.s3Service.upload({
       filePath: destVideoFilePath,
       fileName: fileNameMp4,
       mimeType: 'video/mp4',
     });
 
-    // Update the media record with the new file key
-    await this.db.prisma.media.update({
-      where: { id: mediaId },
-      data: { key: newKey, mimeType: 'video/mp4', fileName: fileNameMp4 },
+    // Update media entity with new file info
+    media.updateFileInfo({
+      key: newKey,
+      fileName: fileNameMp4,
+      mimeType: 'video/mp4',
     });
 
+    // Persist changes using repository
+    await this.mediaRepository.update(media);
+
     // Delete the previous file from S3
-    await this.s3Service.deleteFile({ key: media.key });
+    await this.s3Service.deleteFile({ key: previousKey });
 
     this.logger.log(
       `Optimized video file ${mediaId} uploaded to S3 as ${newKey} successfully.`,

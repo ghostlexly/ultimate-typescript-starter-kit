@@ -2,17 +2,28 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { DatabaseService } from 'src/features/application/services/database.service';
-import { passwordUtils } from 'src/core/utils/password';
 import { fakeAccount, fakeSession } from 'src/test/fixtures/auth.fixtures';
 import { SignInService } from './sign-in.service';
+import { Password } from '../../domain/value-objects';
+import { Account } from '../../domain/entities';
+import { ACCOUNT_REPOSITORY, AccountRepositoryPort } from '../../domain/ports';
 
 describe('SignInService', () => {
   let signInService: SignInService;
   let db: DeepMockProxy<DatabaseService>;
+  let accountRepository: DeepMockProxy<AccountRepositoryPort>;
 
   beforeEach(async () => {
+    accountRepository = mockDeep<AccountRepositoryPort>();
+
     const moduleRef = await Test.createTestingModule({
-      providers: [SignInService],
+      providers: [
+        SignInService,
+        {
+          provide: ACCOUNT_REPOSITORY,
+          useValue: accountRepository,
+        },
+      ],
     })
       .useMocker((token) => {
         if (typeof token === 'function') {
@@ -28,7 +39,7 @@ describe('SignInService', () => {
   describe('execute', () => {
     it('should throw an error if the account does not exist', async () => {
       // ===== Arrange
-      db.prisma.account.findFirst.mockResolvedValue(null);
+      accountRepository.findByEmail.mockResolvedValue(null);
 
       // ===== Act & Assert
       await expect(
@@ -46,13 +57,13 @@ describe('SignInService', () => {
 
     it('should throw an error if the account has OAuth provider and no password', async () => {
       // ===== Arrange
-      const oauthAccount = {
+      const oauthAccount = Account.fromPersistence({
         ...fakeAccount,
         providerId: 'google',
         providerAccountId: '123',
         password: null,
-      };
-      db.prisma.account.findFirst.mockResolvedValue(oauthAccount);
+      });
+      accountRepository.findByEmail.mockResolvedValue(oauthAccount);
 
       // ===== Act & Assert
       await expect(
@@ -73,9 +84,12 @@ describe('SignInService', () => {
 
     it('should throw an error if the password is incorrect', async () => {
       // ===== Arrange
-      const hashedPassword = await passwordUtils.hash('correct-password');
-      const accountWithPassword = { ...fakeAccount, password: hashedPassword };
-      db.prisma.account.findFirst.mockResolvedValue(accountWithPassword);
+      const hashedPassword = await Password.create('correct-password').hash();
+      const accountWithPassword = Account.fromPersistence({
+        ...fakeAccount,
+        password: hashedPassword.value,
+      });
+      accountRepository.findByEmail.mockResolvedValue(accountWithPassword);
 
       // ===== Act & Assert
       await expect(
@@ -93,9 +107,12 @@ describe('SignInService', () => {
 
     it('should return tokens when credentials are valid', async () => {
       // ===== Arrange
-      const hashedPassword = await passwordUtils.hash('correct-password');
-      const accountWithPassword = { ...fakeAccount, password: hashedPassword };
-      db.prisma.account.findFirst.mockResolvedValue(accountWithPassword);
+      const hashedPassword = await Password.create('correct-password').hash();
+      const accountWithPassword = Account.fromPersistence({
+        ...fakeAccount,
+        password: hashedPassword.value,
+      });
+      accountRepository.findByEmail.mockResolvedValue(accountWithPassword);
       db.prisma.session.create.mockResolvedValue(fakeSession);
 
       // ===== Act

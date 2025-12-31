@@ -1,8 +1,12 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { UpdateInformationsCommand } from './update-informations.command';
 import { DatabaseService } from 'src/features/application/services/database.service';
 import { CountryService } from 'src/features/country/country.service';
+import { CountryCode } from '../../domain/value-objects';
+import { CUSTOMER_REPOSITORY } from '../../domain/ports';
+import type { CustomerRepositoryPort } from '../../domain/ports';
 
 export interface UpdateInformationsResult {
   countryCode: string;
@@ -11,35 +15,40 @@ export interface UpdateInformationsResult {
 
 @CommandHandler(UpdateInformationsCommand)
 export class UpdateInformationsService
-  implements ICommandHandler<UpdateInformationsCommand, UpdateInformationsResult>
+  implements
+    ICommandHandler<UpdateInformationsCommand, UpdateInformationsResult>
 {
   constructor(
+    @Inject(CUSTOMER_REPOSITORY)
+    private readonly customerRepository: CustomerRepositoryPort,
     private readonly db: DatabaseService,
     private readonly countryService: CountryService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async execute(
     command: UpdateInformationsCommand,
   ): Promise<UpdateInformationsResult> {
-    const customer = await this.db.prisma.customer.findFirst({
-      where: {
-        accountId: command.accountId,
-      },
-    });
+    // Validate country code format (Value Object)
+    const countryCode = CountryCode.create(command.countryCode);
 
-    if (!customer) {
+    // Validate country exists
+    const country = this.countryService.getCountryByIso2(countryCode.value);
+    if (!country) {
       throw new HttpException(
-        { message: "You don't have any information" },
+        { message: "Ce pays n'existe pas." },
         HttpStatus.BAD_REQUEST,
       );
     }
 
-    // Check if the provided country exists
-    const country = this.countryService.getCountryByIso2(command.countryCode);
+    // Find customer using repository
+    const customer = await this.customerRepository.findByAccountId(
+      command.accountId,
+    );
 
-    if (!country) {
+    if (!customer) {
       throw new HttpException(
-        { message: "This country doesn't exist" },
+        { message: "You don't have any information" },
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -58,19 +67,20 @@ export class UpdateInformationsService
       );
     }
 
-    await this.db.prisma.customer.update({
-      where: {
-        id: customer.id,
-      },
-      data: {
-        countryCode: command.countryCode,
-        cityId: command.cityId,
-      },
-    });
+    // Update using entity method (adds domain event if changed)
+    customer.updateInformations(countryCode, command.cityId);
+
+    // Persist changes using repository
+    await this.customerRepository.save(customer);
+
+    // Dispatch domain events
+    for (const event of customer.domainEvents) {
+      this.eventEmitter.emit(event.eventName, event);
+    }
 
     return {
-      countryCode: command.countryCode,
-      cityId: command.cityId,
+      countryCode: customer.countryCode!,
+      cityId: customer.cityId!,
     };
   }
 }
