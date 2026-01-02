@@ -1,4 +1,4 @@
-import { VerificationType } from 'src/generated/prisma/client';
+import { VerificationType } from '../../domain/entities';
 
 export class VerifyTokenCommand {
   constructor(

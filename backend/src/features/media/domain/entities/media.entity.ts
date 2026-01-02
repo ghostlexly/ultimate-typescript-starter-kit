@@ -6,6 +6,8 @@ export interface MediaProps extends EntityProps {
   key: string;
   mimeType: string;
   size: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface CreateMediaProps {

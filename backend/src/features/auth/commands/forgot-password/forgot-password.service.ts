@@ -1,11 +1,17 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { HttpException, HttpStatus } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { HttpException, HttpStatus, Inject } from '@nestjs/common';
 import crypto from 'crypto';
 import { ForgotPasswordCommand } from './forgot-password.command';
-import { DatabaseService } from 'src/features/application/services/database.service';
 import { dateUtils } from 'src/core/utils/date';
-import { PasswordResetRequestedEvent } from '../../domain/events/password-reset-requested.event';
+import { VerificationToken } from '../../domain/entities';
+import {
+  ACCOUNT_REPOSITORY,
+  VERIFICATION_TOKEN_REPOSITORY,
+} from '../../domain/ports';
+import type {
+  AccountRepositoryPort,
+  VerificationTokenRepositoryPort,
+} from '../../domain/ports';
 
 export interface ForgotPasswordResult {
   message: string;
@@ -16,19 +22,14 @@ export class ForgotPasswordService
   implements ICommandHandler<ForgotPasswordCommand, ForgotPasswordResult>
 {
   constructor(
-    private readonly db: DatabaseService,
-    private readonly eventEmitter: EventEmitter2,
+    @Inject(ACCOUNT_REPOSITORY)
+    private readonly accountRepository: AccountRepositoryPort,
+    @Inject(VERIFICATION_TOKEN_REPOSITORY)
+    private readonly verificationTokenRepository: VerificationTokenRepositoryPort,
   ) {}
 
   async execute(command: ForgotPasswordCommand): Promise<ForgotPasswordResult> {
-    const account = await this.db.prisma.account.findFirst({
-      where: {
-        email: {
-          equals: command.email,
-          mode: 'insensitive',
-        },
-      },
-    });
+    const account = await this.accountRepository.findByEmail(command.email);
 
     if (!account) {
       throw new HttpException(
@@ -40,25 +41,23 @@ export class ForgotPasswordService
     // Generate a random password reset token
     const passwordResetToken = crypto.randomInt(100000, 999999).toString();
 
-    // Store the token in the database
-    await this.db.prisma.verificationToken.create({
-      data: {
-        type: 'PASSWORD_RESET',
-        token: passwordResetToken,
-        accountId: account.id,
-        expiresAt: dateUtils.add(new Date(), { hours: 6 }),
-      },
+    // Create verification token entity
+    const verificationToken = VerificationToken.create({
+      id: crypto.randomUUID(),
+      token: passwordResetToken,
+      type: 'PASSWORD_RESET',
+      accountId: account.id,
+      expiresAt: dateUtils.add(new Date(), { hours: 6 }),
     });
 
-    // Fire domain event (email will be sent by event handler)
-    this.eventEmitter.emit(
-      'auth.password-reset.requested',
-      new PasswordResetRequestedEvent({
-        aggregateId: account.id,
-        email: account.email,
-        resetToken: passwordResetToken,
-      }),
-    );
+    // Store the token
+    await this.verificationTokenRepository.save(verificationToken);
+
+    // Domain entity validates business rules and emits event
+    account.requestPasswordReset(passwordResetToken);
+
+    // Repository publishes domain events after save
+    await this.accountRepository.save(account);
 
     return {
       message: 'Password reset email sent successfully.',

@@ -36,20 +36,13 @@ export interface CreateOAuthAccountProps {
  * Represents a user account with authentication capabilities.
  * Encapsulates all business rules related to account management.
  */
-const VALID_ROLES = new Set<Role>(['ADMIN', 'CUSTOMER']);
-
 export class Account extends Entity<AccountProps> {
   private constructor(props: AccountProps) {
     super(props);
   }
 
   protected validate(): void {
-    if (!this._props.email || this._props.email.trim() === '') {
-      throw new HttpException(
-        { message: 'Email is required.' },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    const VALID_ROLES = new Set<Role>(['ADMIN', 'CUSTOMER']);
 
     if (!VALID_ROLES.has(this._props.role)) {
       throw new HttpException(
@@ -74,8 +67,6 @@ export class Account extends Entity<AccountProps> {
       );
     }
   }
-
-  // ==================== Getters ====================
 
   get email(): string {
     return this._props.email;
@@ -119,8 +110,6 @@ export class Account extends Entity<AccountProps> {
       providerId: null,
       providerAccountId: null,
       isEmailVerified: false,
-      createdAt: new Date(),
-      updatedAt: new Date(),
     });
 
     account.addDomainEvent(
@@ -146,8 +135,6 @@ export class Account extends Entity<AccountProps> {
       providerId: props.providerId,
       providerAccountId: props.providerAccountId,
       isEmailVerified: true, // OAuth accounts are pre-verified
-      createdAt: new Date(),
-      updatedAt: new Date(),
     });
 
     account.addDomainEvent(
@@ -162,9 +149,9 @@ export class Account extends Entity<AccountProps> {
   }
 
   /**
-   * Reconstitute an account from persistence (no validation, no events)
+   * Reconstitute an account from persistence
    */
-  static fromPersistence(props: AccountProps): Account {
+  static fromPersistence(props: AccountProps) {
     return new Account(props);
   }
 
@@ -191,7 +178,6 @@ export class Account extends Entity<AccountProps> {
 
     const hashedPassword = await newPassword.hash();
     this._props.password = hashedPassword.value;
-    this._props.updatedAt = new Date();
   }
 
   /**
@@ -203,11 +189,10 @@ export class Account extends Entity<AccountProps> {
     }
 
     this._props.isEmailVerified = true;
-    this._props.updatedAt = new Date();
   }
 
   /**
-   * Request a password reset (emits event for email sending)
+   * Request a password reset
    */
   requestPasswordReset(resetToken: string): void {
     if (this.isOAuthAccount) {
@@ -223,20 +208,18 @@ export class Account extends Entity<AccountProps> {
     );
   }
 
-  // ==================== Persistence Helpers ====================
-
   /**
-   * Get data for Prisma update
+   * Get data for Prisma
    */
-  toPersistence(): Omit<AccountProps, 'id' | 'createdAt'> {
+  toPersistence(): AccountProps {
     return {
+      id: this._props.id,
       email: this._props.email,
       password: this._props.password,
       role: this._props.role,
       providerId: this._props.providerId,
       providerAccountId: this._props.providerAccountId,
       isEmailVerified: this._props.isEmailVerified,
-      updatedAt: new Date(),
     };
   }
 }

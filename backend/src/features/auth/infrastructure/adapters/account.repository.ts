@@ -1,18 +1,21 @@
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { DatabaseService } from 'src/features/application/services/database.service';
 import { Account, Role } from '../../domain/entities';
 import { AccountRepositoryPort } from '../../domain/ports';
-import { Email } from '../../domain/value-objects';
 
 @Injectable()
 export class AccountRepository implements AccountRepositoryPort {
-  constructor(private readonly db: DatabaseService) {}
+  constructor(
+    private readonly db: DatabaseService,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
-  async findByEmail(email: Email): Promise<Account | null> {
+  async findByEmail(email: string): Promise<Account | null> {
     const data = await this.db.prisma.account.findFirst({
       where: {
         email: {
-          equals: email.value,
+          equals: email,
           mode: 'insensitive',
         },
       },
@@ -30,8 +33,6 @@ export class AccountRepository implements AccountRepositoryPort {
       providerId: data.providerId,
       providerAccountId: data.providerAccountId,
       isEmailVerified: data.isEmailVerified,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
     });
   }
 
@@ -52,15 +53,37 @@ export class AccountRepository implements AccountRepositoryPort {
       providerId: data.providerId,
       providerAccountId: data.providerAccountId,
       isEmailVerified: data.isEmailVerified,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
     });
   }
 
+  async create(account: Account): Promise<void> {
+    const data = account.toPersistence();
+
+    await this.db.prisma.account.create({
+      data,
+    });
+
+    // Publish domain events after successful persistence
+    for (const event of account.domainEvents) {
+      this.eventEmitter.emit(event.eventName, event);
+    }
+
+    account.clearDomainEvents();
+  }
+
   async save(account: Account): Promise<void> {
+    const data = account.toPersistence();
+
     await this.db.prisma.account.update({
       where: { id: account.id },
-      data: account.toPersistence(),
+      data,
     });
+
+    // Publish domain events after successful persistence
+    for (const event of account.domainEvents) {
+      this.eventEmitter.emit(event.eventName, event);
+    }
+
+    account.clearDomainEvents();
   }
 }

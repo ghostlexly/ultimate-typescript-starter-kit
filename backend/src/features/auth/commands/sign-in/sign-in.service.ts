@@ -2,12 +2,14 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { SignInCommand } from './sign-in.command';
-import { DatabaseService } from 'src/features/application/services/database.service';
 import { dateUtils } from 'src/core/utils/date';
 import { authConstants } from '../../auth.constants';
-import { Email } from '../../domain/value-objects';
-import { ACCOUNT_REPOSITORY } from '../../domain/ports';
-import type { AccountRepositoryPort } from '../../domain/ports';
+import { Session } from '../../domain/entities';
+import { ACCOUNT_REPOSITORY, SESSION_REPOSITORY } from '../../domain/ports';
+import type {
+  AccountRepositoryPort,
+  SessionRepositoryPort,
+} from '../../domain/ports';
 
 export interface SignInResult {
   accountId: string;
@@ -23,14 +25,13 @@ export class SignInService
   constructor(
     @Inject(ACCOUNT_REPOSITORY)
     private readonly accountRepository: AccountRepositoryPort,
-    private readonly db: DatabaseService,
+    @Inject(SESSION_REPOSITORY)
+    private readonly sessionRepository: SessionRepositoryPort,
     private readonly jwtService: JwtService,
   ) {}
 
   async execute(command: SignInCommand): Promise<SignInResult> {
-    const email = Email.create(command.email);
-
-    const account = await this.accountRepository.findByEmail(email);
+    const account = await this.accountRepository.findByEmail(command.email);
 
     if (!account) {
       throw new HttpException(
@@ -58,15 +59,17 @@ export class SignInService
       );
     }
 
-    // Create session
-    const session = await this.db.prisma.session.create({
-      data: {
-        accountId: account.id,
-        expiresAt: dateUtils.add(new Date(), {
-          minutes: authConstants.refreshTokenExpirationMinutes,
-        }),
-      },
+    // Create session entity
+    const session = Session.create({
+      id: crypto.randomUUID(),
+      accountId: account.id,
+      expiresAt: dateUtils.add(new Date(), {
+        minutes: authConstants.refreshTokenExpirationMinutes,
+      }),
     });
+
+    // Persist session
+    await this.sessionRepository.save(session);
 
     // Generate tokens
     const { accessToken, refreshToken } = await this.generateTokens(

@@ -1,7 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { VerifyTokenCommand } from './verify-token.command';
-import { DatabaseService } from 'src/features/application/services/database.service';
+import { VERIFICATION_TOKEN_REPOSITORY } from '../../domain/ports';
+import type { VerificationTokenRepositoryPort } from '../../domain/ports';
 
 export interface VerifyTokenResult {
   message: string;
@@ -11,23 +12,20 @@ export interface VerifyTokenResult {
 export class VerifyTokenService
   implements ICommandHandler<VerifyTokenCommand, VerifyTokenResult>
 {
-  constructor(private readonly db: DatabaseService) {}
+  constructor(
+    @Inject(VERIFICATION_TOKEN_REPOSITORY)
+    private readonly verificationTokenRepository: VerificationTokenRepositoryPort,
+  ) {}
 
   async execute(command: VerifyTokenCommand): Promise<VerifyTokenResult> {
-    const tokenFound = await this.db.prisma.verificationToken.findFirst({
-      where: {
-        token: command.token,
-        type: command.type,
-        account: {
-          email: command.email,
-        },
-        expiresAt: {
-          gte: new Date(),
-        },
-      },
-    });
+    const verificationToken =
+      await this.verificationTokenRepository.findByTokenAndType(
+        command.token,
+        command.type,
+        command.email,
+      );
 
-    if (!tokenFound) {
+    if (!verificationToken || !verificationToken.isValid) {
       throw new HttpException(
         { message: 'This token is not valid or has expired.' },
         HttpStatus.BAD_REQUEST,

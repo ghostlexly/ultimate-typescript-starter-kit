@@ -1,20 +1,27 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
-import { DatabaseService } from 'src/features/application/services/database.service';
-import { fakeAccount, fakeSession } from 'src/test/fixtures/auth.fixtures';
+import { fakeAccount } from 'src/test/fixtures/auth.fixtures';
 import { SignInService } from './sign-in.service';
 import { Password } from '../../domain/value-objects';
 import { Account } from '../../domain/entities';
-import { ACCOUNT_REPOSITORY, AccountRepositoryPort } from '../../domain/ports';
+import {
+  ACCOUNT_REPOSITORY,
+  SESSION_REPOSITORY,
+} from '../../domain/ports';
+import type {
+  AccountRepositoryPort,
+  SessionRepositoryPort,
+} from '../../domain/ports';
 
 describe('SignInService', () => {
   let signInService: SignInService;
-  let db: DeepMockProxy<DatabaseService>;
   let accountRepository: DeepMockProxy<AccountRepositoryPort>;
+  let sessionRepository: DeepMockProxy<SessionRepositoryPort>;
 
   beforeEach(async () => {
     accountRepository = mockDeep<AccountRepositoryPort>();
+    sessionRepository = mockDeep<SessionRepositoryPort>();
 
     const moduleRef = await Test.createTestingModule({
       providers: [
@@ -22,6 +29,10 @@ describe('SignInService', () => {
         {
           provide: ACCOUNT_REPOSITORY,
           useValue: accountRepository,
+        },
+        {
+          provide: SESSION_REPOSITORY,
+          useValue: sessionRepository,
         },
       ],
     })
@@ -33,7 +44,6 @@ describe('SignInService', () => {
       .compile();
 
     signInService = moduleRef.get(SignInService);
-    db = moduleRef.get(DatabaseService);
   });
 
   describe('execute', () => {
@@ -113,7 +123,7 @@ describe('SignInService', () => {
         password: hashedPassword.value,
       });
       accountRepository.findByEmail.mockResolvedValue(accountWithPassword);
-      db.prisma.session.create.mockResolvedValue(fakeSession);
+      sessionRepository.save.mockResolvedValue();
 
       // ===== Act
       const result = await signInService.execute({
@@ -126,13 +136,7 @@ describe('SignInService', () => {
       expect(result).toHaveProperty('refreshToken');
       expect(result.accountId).toBe(fakeAccount.id);
       expect(result.role).toBe(fakeAccount.role);
-      expect(db.prisma.session.create).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: expect.objectContaining({
-            accountId: fakeAccount.id,
-          }),
-        }),
-      );
+      expect(sessionRepository.save).toHaveBeenCalled();
     });
   });
 });

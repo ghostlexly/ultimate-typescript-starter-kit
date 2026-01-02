@@ -20,8 +20,16 @@ import { GoogleStrategy } from './strategies/google.strategy';
 import { ClearExpiredSessionsCron } from './crons/clear-expired-sessions.cron';
 import { ClearExpiredVerificationTokensCron } from './crons/clear-expired-verification-tokens.cron';
 import { SendPasswordResetEmailHandler } from './application/event-handlers/send-password-reset-email.handler';
-import { ACCOUNT_REPOSITORY } from './domain/ports';
-import { AccountRepository } from './infrastructure/adapters';
+import {
+  ACCOUNT_REPOSITORY,
+  SESSION_REPOSITORY,
+  VERIFICATION_TOKEN_REPOSITORY,
+} from './domain/ports';
+import {
+  AccountRepository,
+  SessionRepository,
+  VerificationTokenRepository,
+} from './infrastructure/adapters';
 
 const CommandHandlers = [
   SignInService,
@@ -43,6 +51,14 @@ const Repositories = [
   {
     provide: ACCOUNT_REPOSITORY,
     useClass: AccountRepository,
+  },
+  {
+    provide: SESSION_REPOSITORY,
+    useClass: SessionRepository,
+  },
+  {
+    provide: VERIFICATION_TOKEN_REPOSITORY,
+    useClass: VerificationTokenRepository,
   },
 ];
 
@@ -81,6 +97,6 @@ const Repositories = [
     ...Crons,
     ...Repositories,
   ],
-  exports: [ACCOUNT_REPOSITORY],
+  exports: [ACCOUNT_REPOSITORY, SESSION_REPOSITORY, VERIFICATION_TOKEN_REPOSITORY],
 })
 export class AuthModule {}

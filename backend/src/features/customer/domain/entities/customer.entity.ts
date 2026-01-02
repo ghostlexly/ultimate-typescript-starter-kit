@@ -9,6 +9,8 @@ export interface CustomerProps extends EntityProps {
   email: string;
   countryCode: string | null;
   cityId: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface CreateCustomerProps {
@@ -74,8 +76,6 @@ export class Customer extends Entity<CustomerProps> {
       email: props.email,
       countryCode: null,
       cityId: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
     });
 
     customer.addDomainEvent(
@@ -107,7 +107,6 @@ export class Customer extends Entity<CustomerProps> {
     return {
       countryCode: this._props.countryCode,
       cityId: this._props.cityId,
-      updatedAt: new Date(),
     };
   }
 
@@ -125,7 +124,6 @@ export class Customer extends Entity<CustomerProps> {
 
     this._props.countryCode = countryCode.value;
     this._props.cityId = cityId;
-    this._props.updatedAt = new Date();
 
     this.addDomainEvent(
       new CustomerInformationsUpdatedEvent({

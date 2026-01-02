@@ -3,15 +3,31 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { RefreshTokenService } from './refresh-token.service';
-import { DatabaseService } from 'src/features/application/services/database.service';
-import { fakeJwtPayload, fakeSession } from 'src/test/fixtures/auth.fixtures';
+import {
+  fakeAccount,
+  fakeJwtPayload,
+  fakeSession,
+} from 'src/test/fixtures/auth.fixtures';
+import {
+  ACCOUNT_REPOSITORY,
+  SESSION_REPOSITORY,
+} from '../../domain/ports';
+import type {
+  AccountRepositoryPort,
+  SessionRepositoryPort,
+} from '../../domain/ports';
+import { Account, Session } from '../../domain/entities';
 
 describe('RefreshTokenService', () => {
   let refreshTokenService: RefreshTokenService;
-  let db: DeepMockProxy<DatabaseService>;
+  let sessionRepository: DeepMockProxy<SessionRepositoryPort>;
+  let accountRepository: DeepMockProxy<AccountRepositoryPort>;
   let jwtService: DeepMockProxy<JwtService>;
 
   beforeEach(async () => {
+    sessionRepository = mockDeep<SessionRepositoryPort>();
+    accountRepository = mockDeep<AccountRepositoryPort>();
+
     const app = await Test.createTestingModule({
       imports: [
         JwtModule.registerAsync({
@@ -28,7 +44,17 @@ describe('RefreshTokenService', () => {
           }),
         }),
       ],
-      providers: [RefreshTokenService],
+      providers: [
+        RefreshTokenService,
+        {
+          provide: SESSION_REPOSITORY,
+          useValue: sessionRepository,
+        },
+        {
+          provide: ACCOUNT_REPOSITORY,
+          useValue: accountRepository,
+        },
+      ],
     })
       .useMocker((token) => {
         if (typeof token === 'function') {
@@ -38,7 +64,6 @@ describe('RefreshTokenService', () => {
       .compile();
 
     refreshTokenService = app.get(RefreshTokenService);
-    db = app.get(DatabaseService);
     jwtService = app.get(JwtService);
   });
 
@@ -52,8 +77,27 @@ describe('RefreshTokenService', () => {
         },
       });
 
-      db.prisma.session.findUnique.mockResolvedValue(fakeSession);
-      db.prisma.session.update.mockResolvedValue(fakeSession);
+      const session = Session.fromPersistence({
+        id: fakeSession.id,
+        accountId: fakeSession.accountId,
+        ipAddress: fakeSession.ipAddress,
+        userAgent: fakeSession.userAgent,
+        expiresAt: new Date(Date.now() + 3600000), // 1 hour from now
+      });
+
+      const account = Account.fromPersistence({
+        id: fakeAccount.id,
+        email: fakeAccount.email,
+        password: fakeAccount.password,
+        role: fakeAccount.role as 'ADMIN' | 'CUSTOMER',
+        providerId: fakeAccount.providerId,
+        providerAccountId: fakeAccount.providerAccountId,
+        isEmailVerified: fakeAccount.isEmailVerified,
+      });
+
+      sessionRepository.findById.mockResolvedValue(session);
+      accountRepository.findById.mockResolvedValue(account);
+      sessionRepository.save.mockResolvedValue();
 
       // ===== Act
       const result = await refreshTokenService.execute({
@@ -63,11 +107,7 @@ describe('RefreshTokenService', () => {
       // ===== Assert
       expect(result).toHaveProperty('accessToken');
       expect(result).toHaveProperty('refreshToken');
-      expect(db.prisma.session.update).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: { id: fakeSession.id },
-        }),
-      );
+      expect(sessionRepository.save).toHaveBeenCalled();
     });
 
     it('should throw an error if the token is invalid', async () => {
@@ -90,7 +130,7 @@ describe('RefreshTokenService', () => {
           expiresIn: `5m`,
         },
       });
-      db.prisma.session.findUnique.mockResolvedValue(null);
+      sessionRepository.findById.mockResolvedValue(null);
 
       // ===== Act & Assert
       await expect(

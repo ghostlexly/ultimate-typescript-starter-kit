@@ -6,4 +6,5 @@ export interface CustomerRepositoryPort {
   findById(id: string): Promise<Customer | null>;
   findByAccountId(accountId: string): Promise<Customer | null>;
   save(customer: Customer): Promise<void>;
+  create(customer: Customer): Promise<void>;
 }

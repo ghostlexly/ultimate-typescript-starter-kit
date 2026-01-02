@@ -2,8 +2,6 @@ import { DomainEvent } from './domain-event.base';
 
 export interface EntityProps {
   id: string;
-  createdAt?: Date;
-  updatedAt?: Date;
 }
 
 /**
@@ -28,16 +26,10 @@ export abstract class Entity<Props extends EntityProps> {
    */
   protected abstract validate(): void;
 
+  abstract toPersistence(): unknown;
+
   get id(): string {
     return this._props.id;
-  }
-
-  get createdAt(): Date | undefined {
-    return this._props.createdAt;
-  }
-
-  get updatedAt(): Date | undefined {
-    return this._props.updatedAt;
   }
 
   /**

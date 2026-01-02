@@ -1,8 +1,15 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { ResetPasswordCommand } from './reset-password.command';
-import { DatabaseService } from 'src/features/application/services/database.service';
 import { Password } from '../../domain/value-objects';
+import {
+  ACCOUNT_REPOSITORY,
+  VERIFICATION_TOKEN_REPOSITORY,
+} from '../../domain/ports';
+import type {
+  AccountRepositoryPort,
+  VerificationTokenRepositoryPort,
+} from '../../domain/ports';
 
 export interface ResetPasswordResult {
   message: string;
@@ -12,37 +19,31 @@ export interface ResetPasswordResult {
 export class ResetPasswordService
   implements ICommandHandler<ResetPasswordCommand, ResetPasswordResult>
 {
-  constructor(private readonly db: DatabaseService) {}
+  constructor(
+    @Inject(ACCOUNT_REPOSITORY)
+    private readonly accountRepository: AccountRepositoryPort,
+    @Inject(VERIFICATION_TOKEN_REPOSITORY)
+    private readonly verificationTokenRepository: VerificationTokenRepositoryPort,
+  ) {}
 
   async execute(command: ResetPasswordCommand): Promise<ResetPasswordResult> {
-    // Create value objects
-    const hashedPassword = await Password.create(command.password).hash();
+    // Verify the token via repository
+    const verificationToken =
+      await this.verificationTokenRepository.findByTokenAndType(
+        command.token,
+        'PASSWORD_RESET',
+        command.email,
+      );
 
-    // Verify the token
-    const tokenFound = await this.db.prisma.verificationToken.findFirst({
-      where: {
-        token: command.token,
-        type: 'PASSWORD_RESET',
-        account: {
-          email: command.email,
-        },
-        expiresAt: {
-          gte: new Date(),
-        },
-      },
-    });
-
-    if (!tokenFound) {
+    if (!verificationToken?.isValid) {
       throw new HttpException(
         { message: 'This token is not valid or expired.' },
         HttpStatus.BAD_REQUEST,
       );
     }
 
-    // Find account
-    const account = await this.db.prisma.account.findFirst({
-      where: { email: command.email },
-    });
+    // Find account via repository
+    const account = await this.accountRepository.findByEmail(command.email);
 
     if (!account) {
       throw new HttpException(
@@ -51,19 +52,18 @@ export class ResetPasswordService
       );
     }
 
-    // Update the account password
-    await this.db.prisma.account.update({
-      where: { id: account.id },
-      data: { password: hashedPassword.value },
-    });
+    // Use domain entity to change password (validates business rules)
+    const newPassword = Password.create(command.password);
+    await account.changePassword(newPassword);
 
-    // Delete the verification token
-    await this.db.prisma.verificationToken.deleteMany({
-      where: {
-        accountId: account.id,
-        type: 'PASSWORD_RESET',
-      },
-    });
+    // Save via repository
+    await this.accountRepository.save(account);
+
+    // Delete the verification token via repository
+    await this.verificationTokenRepository.deleteByAccountIdAndType(
+      account.id,
+      'PASSWORD_RESET',
+    );
 
     return {
       message: 'Password reset successfully.',

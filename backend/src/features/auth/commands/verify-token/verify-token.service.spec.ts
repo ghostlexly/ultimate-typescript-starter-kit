@@ -2,32 +2,35 @@ import { Test } from '@nestjs/testing';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { VerifyTokenService } from './verify-token.service';
-import { DatabaseService } from 'src/features/application/services/database.service';
 import { fakeVerificationToken } from 'src/test/fixtures/auth.fixtures';
+import { VERIFICATION_TOKEN_REPOSITORY } from '../../domain/ports';
+import type { VerificationTokenRepositoryPort } from '../../domain/ports';
+import { VerificationToken } from '../../domain/entities';
 
 describe('VerifyTokenService', () => {
   let verifyTokenService: VerifyTokenService;
-  let db: DeepMockProxy<DatabaseService>;
+  let verificationTokenRepository: DeepMockProxy<VerificationTokenRepositoryPort>;
 
   beforeEach(async () => {
+    verificationTokenRepository = mockDeep<VerificationTokenRepositoryPort>();
+
     const moduleRef = await Test.createTestingModule({
-      providers: [VerifyTokenService],
-    })
-      .useMocker((token) => {
-        if (typeof token === 'function') {
-          return mockDeep(token);
-        }
-      })
-      .compile();
+      providers: [
+        VerifyTokenService,
+        {
+          provide: VERIFICATION_TOKEN_REPOSITORY,
+          useValue: verificationTokenRepository,
+        },
+      ],
+    }).compile();
 
     verifyTokenService = moduleRef.get<VerifyTokenService>(VerifyTokenService);
-    db = moduleRef.get(DatabaseService);
   });
 
   describe('execute', () => {
     it('should throw an error if the token is not found', async () => {
       // ===== Arrange
-      db.prisma.verificationToken.findFirst.mockResolvedValue(null);
+      verificationTokenRepository.findByTokenAndType.mockResolvedValue(null);
 
       // ===== Act & Assert
       await expect(
@@ -46,8 +49,17 @@ describe('VerifyTokenService', () => {
 
     it('should return success message when token is valid', async () => {
       // ===== Arrange
-      db.prisma.verificationToken.findFirst.mockResolvedValue(
-        fakeVerificationToken,
+      const verificationToken = VerificationToken.fromPersistence({
+        id: fakeVerificationToken.id,
+        token: fakeVerificationToken.token,
+        type: fakeVerificationToken.type as 'PASSWORD_RESET',
+        value: fakeVerificationToken.value,
+        accountId: fakeVerificationToken.accountId,
+        expiresAt: new Date(Date.now() + 3600000), // 1 hour from now
+      });
+
+      verificationTokenRepository.findByTokenAndType.mockResolvedValue(
+        verificationToken,
       );
 
       // ===== Act

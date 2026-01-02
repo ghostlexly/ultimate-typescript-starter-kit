@@ -1,13 +1,13 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { HttpException, HttpStatus, Inject } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { SignUpCommand } from './sign-up.command';
-import { DatabaseService } from 'src/features/application/services/database.service';
-import { Email, Password } from 'src/features/auth/domain/value-objects';
+import { Password } from 'src/features/auth/domain/value-objects';
 import { Account } from 'src/features/auth/domain/entities';
 import { ACCOUNT_REPOSITORY } from 'src/features/auth/domain/ports';
 import type { AccountRepositoryPort } from 'src/features/auth/domain/ports';
 import { Customer } from '../../domain/entities';
+import { CUSTOMER_REPOSITORY } from '../../domain/ports';
+import type { CustomerRepositoryPort } from '../../domain/ports';
 
 export interface SignUpResult {
   id: string;
@@ -22,17 +22,18 @@ export class SignUpService
   constructor(
     @Inject(ACCOUNT_REPOSITORY)
     private readonly accountRepository: AccountRepositoryPort,
-    private readonly db: DatabaseService,
-    private readonly eventEmitter: EventEmitter2,
+    @Inject(CUSTOMER_REPOSITORY)
+    private readonly customerRepository: CustomerRepositoryPort,
   ) {}
 
   async execute(command: SignUpCommand): Promise<SignUpResult> {
     // Create value objects
-    const email = Email.create(command.email);
     const password = Password.create(command.password);
 
     // Verify if this e-mail is already in use
-    const existingAccount = await this.accountRepository.findByEmail(email);
+    const existingAccount = await this.accountRepository.findByEmail(
+      command.email,
+    );
 
     if (existingAccount) {
       throw new HttpException(
@@ -44,7 +45,7 @@ export class SignUpService
     // Create Account entity (hashes password, adds domain event)
     const account = await Account.create({
       id: crypto.randomUUID(),
-      email,
+      email: command.email,
       password,
       role: 'CUSTOMER',
     });
@@ -56,29 +57,11 @@ export class SignUpService
       email: account.email,
     });
 
-    // Persist to database, the create() methods are not required to be in the repositories
-    await this.db.prisma.account.create({
-      data: {
-        id: account.id,
-        email: account.email,
-        password: account.password,
-        role: account.role,
-        isEmailVerified: account.isEmailVerified,
-        customer: {
-          create: {
-            id: customer.id,
-          },
-        },
-      },
-    });
+    // Persist account (repository publishes domain events)
+    await this.accountRepository.create(account);
 
-    // Dispatch domain events
-    for (const event of account.domainEvents) {
-      this.eventEmitter.emit(event.eventName, event);
-    }
-    for (const event of customer.domainEvents) {
-      this.eventEmitter.emit(event.eventName, event);
-    }
+    // Persist customer (repository publishes domain events)
+    await this.customerRepository.create(customer);
 
     return {
       id: account.id,

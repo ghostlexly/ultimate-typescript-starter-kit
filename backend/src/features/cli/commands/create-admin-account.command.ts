@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { Command, CommandRunner } from 'nest-commander';
 import { DatabaseService } from 'src/features/application/services/database.service';
-import { passwordUtils } from 'src/core/utils/password';
+import { Password } from 'src/features/auth/domain/value-objects';
 
 @Command({
   name: 'create:account:admin',
@@ -18,15 +18,15 @@ export class CreateAdminAccountCommand extends CommandRunner {
   async run(passedParams: string[]) {
     const [email, password] = passedParams;
 
-    // Hash password
-    const hashedPassword = await passwordUtils.hash(password);
+    // Hash password using domain value object
+    const hashedPassword = await Password.create(password).hash();
 
     // Create admin account
     await this.db.prisma.account.create({
       data: {
         role: 'ADMIN',
         email: email,
-        password: hashedPassword,
+        password: hashedPassword.value,
         admin: {
           create: {},
         },

@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DatabaseService } from '../../application/services/database.service';
-import { passwordUtils } from 'src/core/utils/password';
+import { Password } from 'src/features/auth/domain/value-objects';
 
 @Injectable()
 export class UsersSeeder {
@@ -30,7 +30,7 @@ export class UsersSeeder {
       return;
     }
 
-    const hashedPassword = await passwordUtils.hash('password');
+    const hashedPassword = await Password.create('password').hash();
 
     await this.db.prisma.admin.create({
       data: {
@@ -38,7 +38,7 @@ export class UsersSeeder {
           create: {
             role: 'ADMIN',
             email: 'contact@lunisoft.fr',
-            password: hashedPassword,
+            password: hashedPassword.value,
           },
         },
       },
@@ -58,7 +58,7 @@ export class UsersSeeder {
       return;
     }
 
-    const hashedPassword = await passwordUtils.hash('password');
+    const hashedPassword = await Password.create('password').hash();
 
     await this.db.prisma.customer.create({
       data: {
@@ -66,7 +66,7 @@ export class UsersSeeder {
           create: {
             role: 'CUSTOMER',
             email: 'customer@lunisoft.fr',
-            password: hashedPassword,
+            password: hashedPassword.value,
           },
         },
       },

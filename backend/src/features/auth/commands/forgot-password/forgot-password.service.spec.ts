@@ -2,32 +2,47 @@ import { Test } from '@nestjs/testing';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { ForgotPasswordService } from './forgot-password.service';
-import { DatabaseService } from 'src/features/application/services/database.service';
 import { fakeAccount } from 'src/test/fixtures/auth.fixtures';
+import {
+  ACCOUNT_REPOSITORY,
+  VERIFICATION_TOKEN_REPOSITORY,
+} from '../../domain/ports';
+import type {
+  AccountRepositoryPort,
+  VerificationTokenRepositoryPort,
+} from '../../domain/ports';
+import { Account } from '../../domain/entities';
 
 describe('ForgotPasswordService', () => {
   let forgotPasswordService: ForgotPasswordService;
-  let db: DeepMockProxy<DatabaseService>;
+  let accountRepository: DeepMockProxy<AccountRepositoryPort>;
+  let verificationTokenRepository: DeepMockProxy<VerificationTokenRepositoryPort>;
 
   beforeEach(async () => {
+    accountRepository = mockDeep<AccountRepositoryPort>();
+    verificationTokenRepository = mockDeep<VerificationTokenRepositoryPort>();
+
     const app = await Test.createTestingModule({
-      providers: [ForgotPasswordService],
-    })
-      .useMocker((token) => {
-        if (typeof token === 'function') {
-          return mockDeep(token);
-        }
-      })
-      .compile();
+      providers: [
+        ForgotPasswordService,
+        {
+          provide: ACCOUNT_REPOSITORY,
+          useValue: accountRepository,
+        },
+        {
+          provide: VERIFICATION_TOKEN_REPOSITORY,
+          useValue: verificationTokenRepository,
+        },
+      ],
+    }).compile();
 
     forgotPasswordService = app.get(ForgotPasswordService);
-    db = app.get(DatabaseService);
   });
 
   describe('execute', () => {
     it('should throw an error if the account does not exist', async () => {
       // ===== Arrange
-      db.prisma.account.findFirst.mockResolvedValue(null);
+      accountRepository.findByEmail.mockResolvedValue(null);
 
       // ===== Act & Assert
       await expect(
@@ -44,17 +59,19 @@ describe('ForgotPasswordService', () => {
 
     it('should create a password reset token and return success message', async () => {
       // ===== Arrange
-      db.prisma.account.findFirst.mockResolvedValue(fakeAccount);
-      db.prisma.verificationToken.create.mockResolvedValue({
-        id: 'token-id',
-        type: 'PASSWORD_RESET',
-        token: '123456',
-        value: '123456',
-        accountId: fakeAccount.id,
-        expiresAt: new Date(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
+      const account = Account.fromPersistence({
+        id: fakeAccount.id,
+        email: fakeAccount.email,
+        password: fakeAccount.password,
+        role: fakeAccount.role as 'ADMIN' | 'CUSTOMER',
+        providerId: fakeAccount.providerId,
+        providerAccountId: fakeAccount.providerAccountId,
+        isEmailVerified: fakeAccount.isEmailVerified,
       });
+
+      accountRepository.findByEmail.mockResolvedValue(account);
+      accountRepository.save.mockResolvedValue();
+      verificationTokenRepository.save.mockResolvedValue();
 
       // ===== Act
       const result = await forgotPasswordService.execute({
@@ -63,14 +80,8 @@ describe('ForgotPasswordService', () => {
 
       // ===== Assert
       expect(result.message).toBe('Password reset email sent successfully.');
-      expect(db.prisma.verificationToken.create).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: expect.objectContaining({
-            type: 'PASSWORD_RESET',
-            accountId: fakeAccount.id,
-          }),
-        }),
-      );
+      expect(verificationTokenRepository.save).toHaveBeenCalled();
+      expect(accountRepository.save).toHaveBeenCalledWith(account);
     });
   });
 });

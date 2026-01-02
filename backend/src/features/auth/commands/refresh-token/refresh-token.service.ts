@@ -1,11 +1,18 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshTokenCommand } from './refresh-token.command';
-import { DatabaseService } from 'src/features/application/services/database.service';
 import { dateUtils } from 'src/core/utils/date';
 import { authConstants } from '../../auth.constants';
+import {
+  ACCOUNT_REPOSITORY,
+  SESSION_REPOSITORY,
+} from '../../domain/ports';
+import type {
+  AccountRepositoryPort,
+  SessionRepositoryPort,
+} from '../../domain/ports';
 
 export interface RefreshTokenResult {
   accessToken: string;
@@ -19,7 +26,10 @@ export class RefreshTokenService
   private readonly jwtPublicKey: string;
 
   constructor(
-    private readonly db: DatabaseService,
+    @Inject(SESSION_REPOSITORY)
+    private readonly sessionRepository: SessionRepositoryPort,
+    @Inject(ACCOUNT_REPOSITORY)
+    private readonly accountRepository: AccountRepositoryPort,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {
@@ -53,38 +63,41 @@ export class RefreshTokenService
       );
     }
 
-    // Find session with account
-    const session = await this.db.prisma.session.findUnique({
-      where: {
-        id: jwt.payload.sub,
-        expiresAt: { gt: new Date() },
-      },
-      include: { account: true },
-    });
+    // Find session
+    const session = await this.sessionRepository.findById(jwt.payload.sub);
 
-    if (!session) {
+    if (!session || session.isExpired) {
       throw new HttpException(
         { message: 'This session does not exist.' },
         HttpStatus.BAD_REQUEST,
       );
     }
 
+    // Find account
+    const account = await this.accountRepository.findById(session.accountId);
+
+    if (!account) {
+      throw new HttpException(
+        { message: 'Account not found.' },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     // Extend session (Refresh Token Rotation)
-    await this.db.prisma.session.update({
-      where: { id: session.id },
-      data: {
-        expiresAt: dateUtils.add(new Date(), {
-          minutes: authConstants.refreshTokenExpirationMinutes,
-        }),
-      },
-    });
+    session.extend(
+      dateUtils.add(new Date(), {
+        minutes: authConstants.refreshTokenExpirationMinutes,
+      }),
+    );
+
+    await this.sessionRepository.save(session);
 
     // Generate new tokens
     const payload = {
       sub: session.id,
-      accountId: session.account.id,
-      role: session.account.role,
-      email: session.account.email,
+      accountId: account.id,
+      role: account.role,
+      email: account.email,
     };
 
     const accessToken = await this.jwtService.signAsync({

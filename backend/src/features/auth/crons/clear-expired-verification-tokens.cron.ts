@@ -1,29 +1,25 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
-import { DatabaseService } from 'src/features/application/services/database.service';
+import { VERIFICATION_TOKEN_REPOSITORY } from '../domain/ports';
+import type { VerificationTokenRepositoryPort } from '../domain/ports';
 
 @Injectable()
 export class ClearExpiredVerificationTokensCron {
   private logger = new Logger(ClearExpiredVerificationTokensCron.name);
 
-  constructor(private db: DatabaseService) {}
+  constructor(
+    @Inject(VERIFICATION_TOKEN_REPOSITORY)
+    private readonly verificationTokenRepository: VerificationTokenRepositoryPort,
+  ) {}
 
   @Cron('0 0 * * * *') // Every hour
   async execute() {
     this.logger.log('[⏰ CRON] Clear expired verification tokens cron started');
 
     try {
-      // Get all expired verification tokens
-      const expiredVerificationTokens =
-        await this.db.prisma.verificationToken.deleteMany({
-          where: {
-            expiresAt: { lt: new Date() },
-          },
-        });
+      const count = await this.verificationTokenRepository.deleteExpired();
 
-      this.logger.log(
-        `[CRON] ${expiredVerificationTokens.count} expired verification tokens cleared`,
-      );
+      this.logger.log(`[CRON] ${count} expired verification tokens cleared`);
     } catch (error) {
       this.logger.error(
         'Error during expired verification tokens clearing:',
