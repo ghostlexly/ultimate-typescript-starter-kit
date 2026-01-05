@@ -6,5 +6,4 @@ export const signInRequestSchema = z.object({
     password: z.string().min(1),
   }),
 });
-
 export type SignInRequestDto = z.infer<typeof signInRequestSchema>;

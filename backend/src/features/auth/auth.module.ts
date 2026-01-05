@@ -16,7 +16,6 @@ import { ResetPasswordController } from './commands/reset-password/reset-passwor
 import { ResetPasswordHandler } from './commands/reset-password/reset-password.handler';
 import { GetCurrentUserController } from './queries/get-current-user/get-current-user.http.controller';
 import { GetCurrentUserQueryHandler } from './queries/get-current-user/get-current-user.query-handler';
-import { GoogleOAuthController } from './controllers/google-oauth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { ClearExpiredSessionsCron } from './crons/clear-expired-sessions.cron';
@@ -31,16 +30,6 @@ const CommandHandlers = [
 ];
 
 const QueryHandlers = [GetCurrentUserQueryHandler];
-
-const Controllers = [
-  SignInController,
-  RefreshTokenController,
-  ForgotPasswordController,
-  VerifyTokenController,
-  ResetPasswordController,
-  GetCurrentUserController,
-  GoogleOAuthController,
-];
 
 @Module({
   imports: [
@@ -61,7 +50,14 @@ const Controllers = [
     }),
     PassportModule,
   ],
-  controllers: Controllers,
+  controllers: [
+    SignInController,
+    RefreshTokenController,
+    ForgotPasswordController,
+    VerifyTokenController,
+    ResetPasswordController,
+    GetCurrentUserController,
+  ],
   providers: [
     AuthService,
     JwtStrategy,
