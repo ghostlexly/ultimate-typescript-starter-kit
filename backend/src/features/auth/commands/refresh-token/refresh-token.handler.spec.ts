@@ -39,7 +39,10 @@ describe('RefreshTokenHandler', () => {
 
     // ===== Act
     const result = await handler.execute(
-      new RefreshTokenCommand({ refreshToken: 'valid-refresh-token', res: mockResponse }),
+      new RefreshTokenCommand({
+        refreshToken: 'valid-refresh-token',
+        res: mockResponse,
+      }),
     );
 
     // ===== Assert
@@ -59,7 +62,9 @@ describe('RefreshTokenHandler', () => {
   it('should throw error when refresh token is not provided', async () => {
     // ===== Act & Assert
     await expect(
-      handler.execute(new RefreshTokenCommand({ refreshToken: '', res: mockResponse })),
+      handler.execute(
+        new RefreshTokenCommand({ refreshToken: '', res: mockResponse }),
+      ),
     ).rejects.toThrow(
       new HttpException(
         {
@@ -79,7 +84,12 @@ describe('RefreshTokenHandler', () => {
 
     // ===== Act & Assert
     await expect(
-      handler.execute(new RefreshTokenCommand({ refreshToken: 'invalid-token', res: mockResponse })),
+      handler.execute(
+        new RefreshTokenCommand({
+          refreshToken: 'invalid-token',
+          res: mockResponse,
+        }),
+      ),
     ).rejects.toThrow(
       new HttpException(
         { message: 'Invalid or expired refresh token.' },

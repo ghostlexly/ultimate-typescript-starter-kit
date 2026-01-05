@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { Throttle } from '@nestjs/throttler';
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
 import { AllowAnonymous } from 'src/core/decorators/allow-anonymous.decorator';
 import { ZodValidationPipe } from 'src/core/pipes/zod-validation.pipe';
 import { SignInCommand } from './sign-in.command';
@@ -22,7 +22,6 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { OAuthRedirectExceptionFilter } from 'src/core/filters/oauth-redirect.filter';
 import { AuthService } from '../../auth.service';
-import type { Request } from 'express';
 
 @Controller()
 export class SignInController {

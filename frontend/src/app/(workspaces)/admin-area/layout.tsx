@@ -4,6 +4,9 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { BreadcrumbProvider } from "@/hooks/use-breadcrumb";
 import type { Metadata } from "next";
 
+// Force dynamic rendering for all admin pages
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Fodmap Facile – Administration",
   description:
