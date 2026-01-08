@@ -14,7 +14,7 @@ import { LaunchQueueController } from './commands/launch-queue/launch-queue.http
 import { LaunchQueueHandler } from './commands/launch-queue/launch-queue.handler';
 import { KillDragonController } from './commands/kill-dragon/kill-dragon.http.controller';
 import { KillDragonHandler } from './commands/kill-dragon/kill-dragon.handler';
-import { DemoMiscController } from './commands/misc/demo-misc.http.controller';
+import { DemoMiscController } from './commands/misc/misc.http.controller';
 
 const CommandHandlers = [
   TestPlayerHandler,

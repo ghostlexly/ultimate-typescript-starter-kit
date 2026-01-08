@@ -17,16 +17,15 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
-import type { Response } from 'express';
-import type { Request } from 'express';
-import fs from 'fs/promises';
+import type { Response, Request } from 'express';
+import fs from 'node:fs/promises';
 import handlebars from 'handlebars';
-import path from 'path';
+import path from 'node:path';
 import { AllowAnonymous } from 'src/core/decorators/allow-anonymous.decorator';
 import { Roles } from 'src/core/decorators/roles.decorator';
 import { DatabaseService } from 'src/features/application/services/database.service';
 import { PdfService } from 'src/features/application/services/pdf.service';
-import { DemoSerializeTestDto } from './demo.response.dto';
+import { DemoSerializeTestDto } from './misc.response.dto';
 
 @Controller()
 export class DemoMiscController {
