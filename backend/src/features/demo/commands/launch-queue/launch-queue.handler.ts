@@ -7,7 +7,7 @@ import { LaunchQueueCommand } from './launch-queue.command';
 export class LaunchQueueHandler implements ICommandHandler<LaunchQueueCommand> {
   constructor(@InjectQueue('demo') private readonly demoQueue: Queue) {}
 
-  async execute(_command: LaunchQueueCommand) {
+  async execute() {
     await this.demoQueue.add('testingJob', { message: 'Hello World' });
 
     return {
