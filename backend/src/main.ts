@@ -39,8 +39,6 @@ async function bootstrap() {
       res.header('Cross-Origin-Embedder-Policy', 'unsafe-none');
     },
   });
-  app.setBaseViewsDir(join(process.cwd(), 'views'));
-  app.setViewEngine('hbs');
 
   await app.listen(process.env.PORT ?? 3000);
 }

@@ -48,7 +48,6 @@
     "date-fns": "^4.1.0",
     "file-type": "^16.5.4",
     "handlebars": "^4.7.8",
-    "hbs": "^4.2.0",
     "helmet": "^8.1.0",
     "i18n-iso-countries": "^7.14.0",
     "jest-mock": "^30.2.0",
@@ -73,6 +72,9 @@
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
+    "@swc/cli": "^0.7.9",
+    "@swc/core": "^1.15.8",
+    "@swc/jest": "^0.2.39",
     "@tailwindcss/cli": "^4.1.13",
     "@types/bcrypt": "^6.0.0",
     "@types/cookie-parser": "^1.4.9",
@@ -111,7 +113,9 @@
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
+      "^.+\\.(t|j)s?$": [
+        "@swc/jest"
+      ]
     },
     "collectCoverageFrom": [
       "**/*.(t|j)s"
