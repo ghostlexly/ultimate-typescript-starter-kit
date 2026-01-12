@@ -1,17 +1,16 @@
+import { UpdateCustomerInformationsRequestDto } from './update-customer-informations.request.dto';
+
 interface UpdateCustomerInformationsCommandProps {
   accountId: string;
-  countryCode: string;
-  city: string;
+  data: UpdateCustomerInformationsRequestDto['body'];
 }
 
 export class UpdateCustomerInformationsCommand {
   public readonly accountId: string;
-  public readonly countryCode: string;
-  public readonly city: string;
+  public readonly data: UpdateCustomerInformationsRequestDto['body'];
 
   constructor(props: UpdateCustomerInformationsCommandProps) {
     this.accountId = props.accountId;
-    this.countryCode = props.countryCode;
-    this.city = props.city;
+    this.data = props.data;
   }
 }

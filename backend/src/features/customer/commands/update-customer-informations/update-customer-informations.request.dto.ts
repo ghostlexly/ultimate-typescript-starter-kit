@@ -6,7 +6,6 @@ export const updateCustomerInformationsRequestSchema = z.object({
     city: z.uuid(),
   }),
 });
-
 export type UpdateCustomerInformationsRequestDto = z.infer<
   typeof updateCustomerInformationsRequestSchema
 >;

@@ -36,8 +36,7 @@ export class UpdateCustomerInformationsController {
     return this.commandBus.execute(
       new UpdateCustomerInformationsCommand({
         accountId: user.accountId,
-        countryCode: body.countryCode,
-        city: body.city,
+        data: body,
       }),
     );
   }

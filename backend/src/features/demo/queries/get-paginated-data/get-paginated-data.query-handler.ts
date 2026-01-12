@@ -14,18 +14,23 @@ export class GetPaginatedDataQueryHandler
   constructor(private readonly db: DatabaseService) {}
 
   async execute({ query }: GetPaginatedDataQuery) {
-    const filterConditions: Prisma.CustomerWhereInput[] = [
+    const filterConditions: Prisma.CityWhereInput[] = [
       {
-        account: {
-          role: 'CUSTOMER',
+        population: {
+          gte: 1000,
         },
       },
     ];
 
     const { pagination, orderBy, includes } = buildQueryParams({
       query,
-      defaultSort: { createdAt: 'desc' },
-      allowedSortFields: ['createdAt', 'id', 'barcodeAnalysis.productName'],
+      defaultSort: { inseeCode: 'asc' },
+      allowedSortFields: [
+        'inseeCode',
+        'id',
+        'postalCodes.postalCode',
+        'postalCodes._count',
+      ],
     });
 
     if (query.id) {
@@ -36,9 +41,9 @@ export class GetPaginatedDataQueryHandler
       });
     }
 
-    const { data, count } = await this.db.prisma.customer.findManyAndCount({
+    const { data, count } = await this.db.prisma.city.findManyAndCount({
       include: {
-        ...(includes.has('account') && { account: true }),
+        ...(includes.has('postalCodes') && { postalCodes: true }),
       },
       where: {
         AND: filterConditions,
