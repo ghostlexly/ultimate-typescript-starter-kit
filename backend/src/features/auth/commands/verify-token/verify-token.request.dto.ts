@@ -1,12 +1,8 @@
-import { VerificationType } from 'src/generated/prisma/enums';
 import { z } from 'zod';
+import { verifyTokenSchema } from './verify-token.schema';
 
 export const verifyTokenRequestSchema = z.object({
-  body: z.object({
-    type: z.enum(VerificationType),
-    token: z.string().min(1),
-    email: z.email(),
-  }),
+  body: verifyTokenSchema,
 });
 
 export type VerifyTokenRequestDto = z.infer<typeof verifyTokenRequestSchema>;

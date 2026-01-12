@@ -4,8 +4,8 @@ import { AllowAnonymous } from 'src/core/decorators/allow-anonymous.decorator';
 import { ZodValidationPipe } from 'src/core/pipes/zod-validation.pipe';
 import { TestPlayerCommand } from './test-player.command';
 import {
-  demoTestPlayerSchema,
-  type DemoTestPlayerDto,
+  testPlayerRequestSchema,
+  type TestPlayerRequestDto,
 } from './test-player.request.dto';
 
 @Controller()
@@ -14,11 +14,11 @@ export class TestPlayerController {
 
   @Post('/demos')
   @AllowAnonymous()
-  @UsePipes(new ZodValidationPipe(demoTestPlayerSchema))
+  @UsePipes(new ZodValidationPipe(testPlayerRequestSchema))
   async create(
-    @Body() body: DemoTestPlayerDto['body'],
-    @Query() query: DemoTestPlayerDto['query'],
+    @Body() body: TestPlayerRequestDto['body'],
+    @Query() query: TestPlayerRequestDto['query'],
   ) {
-    return this.commandBus.execute(new TestPlayerCommand({ body, query }));
+    return this.commandBus.execute(new TestPlayerCommand({ data: body, query }));
   }
 }

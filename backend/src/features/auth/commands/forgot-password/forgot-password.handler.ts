@@ -11,11 +11,11 @@ export class ForgotPasswordHandler
 {
   constructor(private readonly db: DatabaseService) {}
 
-  async execute({ email }: ForgotPasswordCommand) {
+  async execute({ data }: ForgotPasswordCommand) {
     const account = await this.db.prisma.account.findFirst({
       where: {
         email: {
-          contains: email,
+          contains: data.email,
           mode: 'insensitive',
         },
       },

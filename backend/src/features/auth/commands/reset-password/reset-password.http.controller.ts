@@ -18,8 +18,6 @@ export class ResetPasswordController {
   @Throttle({ long: { limit: 10 } })
   @UsePipes(new ZodValidationPipe(resetPasswordRequestSchema))
   async resetPassword(@Body() body: ResetPasswordRequestDto['body']) {
-    return this.commandBus.execute(
-      new ResetPasswordCommand({ email: body.email, password: body.password, token: body.token }),
-    );
+    return this.commandBus.execute(new ResetPasswordCommand({ data: body }));
   }
 }

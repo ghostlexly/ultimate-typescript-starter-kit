@@ -1,11 +1,13 @@
+import { ForgotPasswordInput } from './forgot-password.schema';
+
 interface ForgotPasswordCommandProps {
-  email: string;
+  data: ForgotPasswordInput;
 }
 
 export class ForgotPasswordCommand {
-  public readonly email: string;
+  public readonly data: ForgotPasswordInput;
 
   constructor(props: ForgotPasswordCommandProps) {
-    this.email = props.email;
+    this.data = props.data;
   }
 }

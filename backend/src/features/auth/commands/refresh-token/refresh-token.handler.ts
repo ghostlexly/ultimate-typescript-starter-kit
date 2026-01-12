@@ -9,8 +9,8 @@ export class RefreshTokenHandler
 {
   constructor(private readonly authService: AuthService) {}
 
-  async execute({ refreshToken, res }: RefreshTokenCommand) {
-    if (!refreshToken) {
+  async execute({ data, res }: RefreshTokenCommand) {
+    if (!data.refreshToken) {
       throw new HttpException(
         {
           message:
@@ -20,30 +20,30 @@ export class RefreshTokenHandler
       );
     }
 
-    const { accessToken, refreshToken: newRefreshToken } =
-      await this.authService
-        .refreshAuthenticationTokens({
-          refreshToken,
-        })
-        .catch((error) => {
-          throw new HttpException(
-            {
-              message: error.message,
-            },
-            HttpStatus.BAD_REQUEST,
-          );
+    try {
+      const { accessToken, refreshToken: newRefreshToken } =
+        await this.authService.refreshAuthenticationTokens({
+          refreshToken: data.refreshToken,
         });
 
-    // Set authentication cookies
-    this.authService.setAuthCookies({
-      res,
-      accessToken,
-      refreshToken: newRefreshToken,
-    });
+      // Set authentication cookies
+      this.authService.setAuthCookies({
+        res,
+        accessToken,
+        refreshToken: newRefreshToken,
+      });
 
-    return {
-      accessToken,
-      refreshToken: newRefreshToken,
-    };
+      return {
+        accessToken,
+        refreshToken: newRefreshToken,
+      };
+    } catch (error) {
+      throw new HttpException(
+        {
+          message: error.message,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }

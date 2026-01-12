@@ -1,13 +1,13 @@
-import { UpdateCustomerInformationsRequestDto } from './update-customer-informations.request.dto';
+import { UpdateCustomerInformationsInput } from './update-customer-informations.schema';
 
 interface UpdateCustomerInformationsCommandProps {
   accountId: string;
-  data: UpdateCustomerInformationsRequestDto['body'];
+  data: UpdateCustomerInformationsInput;
 }
 
 export class UpdateCustomerInformationsCommand {
   public readonly accountId: string;
-  public readonly data: UpdateCustomerInformationsRequestDto['body'];
+  public readonly data: UpdateCustomerInformationsInput;
 
   constructor(props: UpdateCustomerInformationsCommandProps) {
     this.accountId = props.accountId;

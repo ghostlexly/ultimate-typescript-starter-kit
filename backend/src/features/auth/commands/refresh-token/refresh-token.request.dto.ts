@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+// Body is optional since refreshToken can come from cookies
 export const refreshTokenRequestSchema = z.object({
   body: z
     .object({
@@ -7,4 +8,5 @@ export const refreshTokenRequestSchema = z.object({
     })
     .optional(),
 });
+
 export type RefreshTokenRequestDto = z.infer<typeof refreshTokenRequestSchema>;

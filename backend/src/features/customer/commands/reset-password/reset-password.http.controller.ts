@@ -16,11 +16,6 @@ export class ResetPasswordController {
   @AllowAnonymous()
   @UsePipes(new ZodValidationPipe(resetPasswordRequestSchema))
   async resetPassword(@Body() body: ResetPasswordRequestDto['body']) {
-    return this.commandBus.execute(
-      new ResetPasswordCommand({
-        token: body.token,
-        password: body.password,
-      }),
-    );
+    return this.commandBus.execute(new ResetPasswordCommand({ data: body }));
   }
 }

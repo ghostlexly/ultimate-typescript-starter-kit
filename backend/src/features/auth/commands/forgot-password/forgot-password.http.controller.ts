@@ -18,6 +18,6 @@ export class ForgotPasswordController {
   @Throttle({ long: { limit: 5 } })
   @UsePipes(new ZodValidationPipe(forgotPasswordRequestSchema))
   async forgotPassword(@Body() body: ForgotPasswordRequestDto['body']) {
-    return this.commandBus.execute(new ForgotPasswordCommand({ email: body.email }));
+    return this.commandBus.execute(new ForgotPasswordCommand({ data: body }));
   }
 }

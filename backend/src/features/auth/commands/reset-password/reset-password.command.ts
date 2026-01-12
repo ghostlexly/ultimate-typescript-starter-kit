@@ -1,17 +1,13 @@
+import { ResetPasswordInput } from './reset-password.schema';
+
 interface ResetPasswordCommandProps {
-  email: string;
-  password: string;
-  token: string;
+  data: ResetPasswordInput;
 }
 
 export class ResetPasswordCommand {
-  public readonly email: string;
-  public readonly password: string;
-  public readonly token: string;
+  public readonly data: ResetPasswordInput;
 
   constructor(props: ResetPasswordCommandProps) {
-    this.email = props.email;
-    this.password = props.password;
-    this.token = props.token;
+    this.data = props.data;
   }
 }

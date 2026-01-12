@@ -15,11 +15,7 @@ export class GetAllCountriesController {
   @Get('/countries')
   @AllowAnonymous()
   @UsePipes(new ZodValidationPipe(getAllCountriesRequestSchema))
-  async getCountries(
-    @Query() query: GetAllCountriesRequestDto['query'],
-  ) {
-    return this.queryBus.execute(
-      new GetAllCountriesQuery({ language: query.language }),
-    );
+  async getCountries(@Query() query: GetAllCountriesRequestDto['query']) {
+    return this.queryBus.execute(new GetAllCountriesQuery({ query }));
   }
 }

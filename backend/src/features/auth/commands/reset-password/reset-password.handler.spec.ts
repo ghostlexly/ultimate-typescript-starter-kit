@@ -38,7 +38,13 @@ describe('ResetPasswordHandler', () => {
 
     // ===== Act
     const result = await handler.execute(
-      new ResetPasswordCommand({ email: 'test@test.com', password: 'newPassword123', token: '123456' }),
+      new ResetPasswordCommand({
+        data: {
+          email: 'test@test.com',
+          password: 'newPassword123',
+          token: '123456',
+        },
+      }),
     );
 
     // ===== Assert
@@ -61,7 +67,13 @@ describe('ResetPasswordHandler', () => {
     // ===== Act & Assert
     await expect(
       handler.execute(
-        new ResetPasswordCommand({ email: 'test@test.com', password: 'newPassword123', token: 'invalid' }),
+        new ResetPasswordCommand({
+          data: {
+            email: 'test@test.com',
+            password: 'newPassword123',
+            token: 'invalid',
+          },
+        }),
       ),
     ).rejects.toThrow(
       new HttpException(
@@ -79,7 +91,13 @@ describe('ResetPasswordHandler', () => {
     // ===== Act & Assert
     await expect(
       handler.execute(
-        new ResetPasswordCommand({ email: 'unknown@test.com', password: 'newPassword123', token: '123456' }),
+        new ResetPasswordCommand({
+          data: {
+            email: 'unknown@test.com',
+            password: 'newPassword123',
+            token: '123456',
+          },
+        }),
       ),
     ).rejects.toThrow(
       new HttpException(

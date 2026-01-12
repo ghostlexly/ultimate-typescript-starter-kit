@@ -4,7 +4,10 @@ import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import { ForgotPasswordHandler } from './forgot-password.handler';
 import { ForgotPasswordCommand } from './forgot-password.command';
 import { DatabaseService } from 'src/features/application/services/database.service';
-import { fakeAccount, fakeVerificationToken } from 'src/test/fixtures/auth.fixtures';
+import {
+  fakeAccount,
+  fakeVerificationToken,
+} from 'src/test/fixtures/auth.fixtures';
 
 describe('ForgotPasswordHandler', () => {
   let handler: ForgotPasswordHandler;
@@ -32,7 +35,7 @@ describe('ForgotPasswordHandler', () => {
 
     // ===== Act
     const result = await handler.execute(
-      new ForgotPasswordCommand({ email: 'test@test.com' }),
+      new ForgotPasswordCommand({ data: { email: 'test@test.com' } }),
     );
 
     // ===== Assert
@@ -55,7 +58,9 @@ describe('ForgotPasswordHandler', () => {
 
     // ===== Act & Assert
     await expect(
-      handler.execute(new ForgotPasswordCommand({ email: 'unknown@test.com' })),
+      handler.execute(
+        new ForgotPasswordCommand({ data: { email: 'unknown@test.com' } }),
+      ),
     ).rejects.toThrow(
       new HttpException(
         { message: 'Account not found.' },

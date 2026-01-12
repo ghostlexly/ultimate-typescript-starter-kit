@@ -40,7 +40,7 @@ describe('RefreshTokenHandler', () => {
     // ===== Act
     const result = await handler.execute(
       new RefreshTokenCommand({
-        refreshToken: 'valid-refresh-token',
+        data: { refreshToken: 'valid-refresh-token' },
         res: mockResponse,
       }),
     );
@@ -63,7 +63,10 @@ describe('RefreshTokenHandler', () => {
     // ===== Act & Assert
     await expect(
       handler.execute(
-        new RefreshTokenCommand({ refreshToken: '', res: mockResponse }),
+        new RefreshTokenCommand({
+          data: { refreshToken: '' },
+          res: mockResponse,
+        }),
       ),
     ).rejects.toThrow(
       new HttpException(
@@ -86,7 +89,7 @@ describe('RefreshTokenHandler', () => {
     await expect(
       handler.execute(
         new RefreshTokenCommand({
-          refreshToken: 'invalid-token',
+          data: { refreshToken: 'invalid-token' },
           res: mockResponse,
         }),
       ),

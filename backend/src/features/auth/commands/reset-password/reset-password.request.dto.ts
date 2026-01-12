@@ -1,11 +1,8 @@
 import { z } from 'zod';
+import { resetPasswordSchema } from './reset-password.schema';
 
 export const resetPasswordRequestSchema = z.object({
-  body: z.object({
-    email: z.email(),
-    password: z.string().min(8).max(100),
-    token: z.string().min(1),
-  }),
+  body: resetPasswordSchema,
 });
 
 export type ResetPasswordRequestDto = z.infer<

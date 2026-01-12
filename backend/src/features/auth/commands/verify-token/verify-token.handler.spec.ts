@@ -30,7 +30,13 @@ describe('VerifyTokenHandler', () => {
 
     // ===== Act
     const result = await handler.execute(
-      new VerifyTokenCommand({ type: 'PASSWORD_RESET', token: '123456', email: 'test@test.com' }),
+      new VerifyTokenCommand({
+        data: {
+          type: 'PASSWORD_RESET',
+          token: '123456',
+          email: 'test@test.com',
+        },
+      }),
     );
 
     // ===== Assert
@@ -54,7 +60,13 @@ describe('VerifyTokenHandler', () => {
     // ===== Act & Assert
     await expect(
       handler.execute(
-        new VerifyTokenCommand({ type: 'PASSWORD_RESET', token: 'invalid', email: 'test@test.com' }),
+        new VerifyTokenCommand({
+          data: {
+            type: 'PASSWORD_RESET',
+            token: 'invalid',
+            email: 'test@test.com',
+          },
+        }),
       ),
     ).rejects.toThrow(
       new HttpException(

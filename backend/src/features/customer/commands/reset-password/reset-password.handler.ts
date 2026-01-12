@@ -13,12 +13,12 @@ export class ResetPasswordHandler
     private readonly authService: AuthService,
   ) {}
 
-  async execute({ token, password }: ResetPasswordCommand) {
+  async execute({ data }: ResetPasswordCommand) {
     const passwordResetToken = await this.db.prisma.verificationToken.findFirst(
       {
         where: {
           type: 'PASSWORD_RESET',
-          token,
+          token: data.token,
           expiresAt: {
             gt: new Date(),
           },
@@ -50,7 +50,7 @@ export class ResetPasswordHandler
     }
 
     const hashedPassword = await this.authService.hashPassword({
-      password,
+      password: data.password,
     });
 
     await this.db.prisma.account.update({

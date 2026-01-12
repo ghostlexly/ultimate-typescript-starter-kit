@@ -15,12 +15,12 @@ export class RequestPasswordResetHandler
     private readonly authService: AuthService,
   ) {}
 
-  async execute({ email }: RequestPasswordResetCommand) {
+  async execute({ data }: RequestPasswordResetCommand) {
     const account = await this.db.prisma.account.findFirst({
       where: {
         role: 'CUSTOMER',
         email: {
-          equals: email,
+          equals: data.email,
           mode: 'insensitive',
         },
       },

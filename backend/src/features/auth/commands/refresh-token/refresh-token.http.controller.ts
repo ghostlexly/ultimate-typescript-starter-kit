@@ -1,4 +1,13 @@
-import { Body, Controller, Post, Req, Res, UsePipes } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpException,
+  HttpStatus,
+  Post,
+  Req,
+  Res,
+  UsePipes,
+} from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { Throttle } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
@@ -25,9 +34,20 @@ export class RefreshTokenController {
   ) {
     const refreshToken =
       body?.refreshToken ??
-      (req.cookies?.lunisoft_refresh_token as string | undefined) ??
-      '';
+      (req.cookies?.lunisoft_refresh_token as string | undefined);
 
-    return this.commandBus.execute(new RefreshTokenCommand({ refreshToken, res }));
+    if (!refreshToken) {
+      throw new HttpException(
+        {
+          message:
+            'Refresh token not found. Please set it in the body parameter or in your cookies.',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    return this.commandBus.execute(
+      new RefreshTokenCommand({ data: { refreshToken }, res }),
+    );
   }
 }

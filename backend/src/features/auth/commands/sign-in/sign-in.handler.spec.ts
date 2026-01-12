@@ -45,7 +45,10 @@ describe('SignInHandler', () => {
 
     // ===== Act
     const result = await handler.execute(
-      new SignInCommand({ email: 'test@test.com', password: 'password', res: mockResponse }),
+      new SignInCommand({
+        data: { email: 'test@test.com', password: 'password' },
+        res: mockResponse,
+      }),
     );
 
     // ===== Assert
@@ -71,7 +74,10 @@ describe('SignInHandler', () => {
     // ===== Act & Assert
     await expect(
       handler.execute(
-        new SignInCommand({ email: 'test@test.com', password: 'password', res: mockResponse }),
+        new SignInCommand({
+          data: { email: 'test@test.com', password: 'password' },
+          res: mockResponse,
+        }),
       ),
     ).rejects.toThrow(
       new HttpException(
@@ -89,7 +95,10 @@ describe('SignInHandler', () => {
     // ===== Act & Assert
     await expect(
       handler.execute(
-        new SignInCommand({ email: 'test@test.com', password: 'password', res: mockResponse }),
+        new SignInCommand({
+          data: { email: 'test@test.com', password: 'password' },
+          res: mockResponse,
+        }),
       ),
     ).rejects.toThrow(
       new HttpException(
@@ -111,7 +120,10 @@ describe('SignInHandler', () => {
     // ===== Act & Assert
     await expect(
       handler.execute(
-        new SignInCommand({ email: 'test@test.com', password: 'wrong-password', res: mockResponse }),
+        new SignInCommand({
+          data: { email: 'test@test.com', password: 'wrong-password' },
+          res: mockResponse,
+        }),
       ),
     ).rejects.toThrow(
       new HttpException(

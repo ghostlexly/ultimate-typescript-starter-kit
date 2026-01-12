@@ -1,14 +1,8 @@
-import { pageQuerySchema } from 'src/core/utils/page-query';
 import { z } from 'zod';
+import { getCitiesSchema } from './get-cities.schema';
 
-export const demoGetCitiesSchema = z.object({
-  query: pageQuerySchema.and(
-    z
-      .object({
-        search: z.string(),
-      })
-      .partial(),
-  ),
+export const getCitiesRequestSchema = z.object({
+  query: getCitiesSchema,
 });
 
-export type DemoGetCitiesDto = z.infer<typeof demoGetCitiesSchema>;
+export type GetCitiesRequestDto = z.infer<typeof getCitiesRequestSchema>;

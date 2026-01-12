@@ -1,18 +1,9 @@
 import { z } from 'zod';
+import { testPlayerBodySchema, testPlayerQuerySchema } from './test-player.schema';
 
-export const demoTestPlayerSchema = z.object({
-  body: z.object({
-    name: z.string(),
-    age: z.coerce.number(),
-    person: z.object({
-      name: z.string(),
-    }),
-  }),
-  query: z
-    .object({
-      id: z.uuid(),
-    })
-    .partial(),
+export const testPlayerRequestSchema = z.object({
+  body: testPlayerBodySchema,
+  query: testPlayerQuerySchema,
 });
 
-export type DemoTestPlayerDto = z.infer<typeof demoTestPlayerSchema>;
+export type TestPlayerRequestDto = z.infer<typeof testPlayerRequestSchema>;

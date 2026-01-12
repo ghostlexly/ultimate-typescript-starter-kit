@@ -19,7 +19,7 @@ export class RequestPasswordResetController {
     @Body() body: RequestPasswordResetRequestDto['body'],
   ) {
     return this.commandBus.execute(
-      new RequestPasswordResetCommand({ email: body.email }),
+      new RequestPasswordResetCommand({ data: body }),
     );
   }
 }

@@ -1,11 +1,13 @@
+import { GetAllCountriesInput } from './get-all-countries.schema';
+
 interface GetAllCountriesQueryProps {
-  language: string;
+  query: GetAllCountriesInput;
 }
 
 export class GetAllCountriesQuery {
-  public readonly language: string;
+  public readonly query: GetAllCountriesInput;
 
   constructor(props: GetAllCountriesQueryProps) {
-    this.language = props.language;
+    this.query = props.query;
   }
 }

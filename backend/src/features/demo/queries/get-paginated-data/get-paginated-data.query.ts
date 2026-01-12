@@ -1,11 +1,11 @@
-import type { DemoGetPaginatedDataDto } from './get-paginated-data.request.dto';
+import { GetPaginatedDataInput } from './get-paginated-data.schema';
 
 interface GetPaginatedDataQueryProps {
-  query: DemoGetPaginatedDataDto['query'];
+  query: GetPaginatedDataInput;
 }
 
 export class GetPaginatedDataQuery {
-  public readonly query: DemoGetPaginatedDataDto['query'];
+  public readonly query: GetPaginatedDataInput;
 
   constructor(props: GetPaginatedDataQueryProps) {
     this.query = props.query;

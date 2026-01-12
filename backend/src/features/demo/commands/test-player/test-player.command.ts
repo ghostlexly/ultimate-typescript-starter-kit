@@ -1,16 +1,19 @@
-import type { DemoTestPlayerDto } from './test-player.request.dto';
+import {
+  TestPlayerBodyInput,
+  TestPlayerQueryInput,
+} from './test-player.schema';
 
 interface TestPlayerCommandProps {
-  body: DemoTestPlayerDto['body'];
-  query: DemoTestPlayerDto['query'];
+  data: TestPlayerBodyInput;
+  query: TestPlayerQueryInput;
 }
 
 export class TestPlayerCommand {
-  public readonly body: DemoTestPlayerDto['body'];
-  public readonly query: DemoTestPlayerDto['query'];
+  public readonly data: TestPlayerBodyInput;
+  public readonly query: TestPlayerQueryInput;
 
   constructor(props: TestPlayerCommandProps) {
-    this.body = props.body;
+    this.data = props.data;
     this.query = props.query;
   }
 }
