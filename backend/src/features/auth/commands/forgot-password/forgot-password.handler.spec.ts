@@ -4,10 +4,35 @@ import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import { ForgotPasswordHandler } from './forgot-password.handler';
 import { ForgotPasswordCommand } from './forgot-password.command';
 import { DatabaseService } from 'src/features/application/services/database.service';
-import {
-  fakeAccount,
-  fakeVerificationToken,
-} from 'src/test/fixtures/auth.fixtures';
+
+function createMockAccount(overrides = {}): any {
+  return {
+    id: 'account-123',
+    email: 'test@test.com',
+    role: 'CUSTOMER',
+    password: 'hashed-password',
+    providerId: null,
+    providerAccountId: null,
+    isEmailVerified: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides,
+  };
+}
+
+function createMockVerificationToken(overrides = {}): any {
+  return {
+    id: 'token-123',
+    token: '123456',
+    type: 'PASSWORD_RESET',
+    accountId: 'account-123',
+    value: '123456',
+    expiresAt: new Date(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides,
+  };
+}
 
 describe('ForgotPasswordHandler', () => {
   let handler: ForgotPasswordHandler;
@@ -30,8 +55,11 @@ describe('ForgotPasswordHandler', () => {
 
   it('should successfully send password reset email', async () => {
     // ===== Arrange
+    const fakeAccount = createMockAccount();
     db.prisma.account.findFirst.mockResolvedValue(fakeAccount);
-    db.prisma.verificationToken.create.mockResolvedValue(fakeVerificationToken);
+    db.prisma.verificationToken.create.mockResolvedValue(
+      createMockVerificationToken(),
+    );
 
     // ===== Act
     const result = await handler.execute(

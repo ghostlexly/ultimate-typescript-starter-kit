@@ -5,8 +5,37 @@ import { SignInHandler } from './sign-in.handler';
 import { SignInCommand } from './sign-in.command';
 import { DatabaseService } from 'src/features/application/services/database.service';
 import { AuthService } from '../../auth.service';
-import { fakeAccount, fakeSession } from 'src/test/fixtures/auth.fixtures';
 import type { Response } from 'express';
+
+function createMockAccount(overrides = {}): any {
+  return {
+    id: 'account-123',
+    email: 'test@test.com',
+    role: 'CUSTOMER',
+    password: 'hashed-password',
+    providerId: null,
+    providerAccountId: null,
+    isEmailVerified: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides,
+  };
+}
+
+function createMockSession(overrides = {}): any {
+  return {
+    id: 'session-123',
+    accountId: 'account-123',
+    ipAddress: '127.0.0.1',
+    userAgent:
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
+    expiresAt: new Date(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    account: createMockAccount(),
+    ...overrides,
+  };
+}
 
 describe('SignInHandler', () => {
   let handler: SignInHandler;
@@ -34,10 +63,11 @@ describe('SignInHandler', () => {
 
   it('should successfully sign in with valid credentials', async () => {
     // ===== Arrange
+    const fakeAccount = createMockAccount();
     const accountWithPassword = { ...fakeAccount, password: 'hashed-password' };
     db.prisma.account.findFirst.mockResolvedValue(accountWithPassword);
     authService.comparePassword.mockResolvedValue(true);
-    authService.createSession.mockResolvedValue(fakeSession);
+    authService.createSession.mockResolvedValue(createMockSession());
     authService.generateAuthenticationTokens.mockResolvedValue({
       accessToken: 'access-token',
       refreshToken: 'refresh-token',
@@ -57,7 +87,7 @@ describe('SignInHandler', () => {
       accessToken: 'access-token',
       refreshToken: 'refresh-token',
     });
-    // eslint-disable-next-line @typescript-eslint/unbound-method
+
     expect(authService.setAuthCookies).toHaveBeenCalledWith(
       expect.objectContaining({
         accessToken: 'access-token',
@@ -89,7 +119,9 @@ describe('SignInHandler', () => {
 
   it('should throw error when account has no password (OAuth only)', async () => {
     // ===== Arrange
-    const accountWithoutPassword = { ...fakeAccount, password: null };
+    const accountWithoutPassword = createMockAccount({
+      password: null,
+    });
     db.prisma.account.findFirst.mockResolvedValue(accountWithoutPassword);
 
     // ===== Act & Assert
@@ -113,7 +145,9 @@ describe('SignInHandler', () => {
 
   it('should throw error when password is invalid', async () => {
     // ===== Arrange
-    const accountWithPassword = { ...fakeAccount, password: 'hashed-password' };
+    const accountWithPassword = createMockAccount({
+      password: 'hashed-password',
+    });
     db.prisma.account.findFirst.mockResolvedValue(accountWithPassword);
     authService.comparePassword.mockResolvedValue(false);
 

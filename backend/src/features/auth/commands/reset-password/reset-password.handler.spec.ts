@@ -5,7 +5,21 @@ import { ResetPasswordHandler } from './reset-password.handler';
 import { ResetPasswordCommand } from './reset-password.command';
 import { DatabaseService } from 'src/features/application/services/database.service';
 import { AuthService } from '../../auth.service';
-import { fakeAccount } from 'src/test/fixtures/auth.fixtures';
+
+function createMockAccount(overrides = {}): any {
+  return {
+    id: 'account-123',
+    email: 'test@test.com',
+    role: 'CUSTOMER',
+    password: 'hashed-password',
+    providerId: null,
+    providerAccountId: null,
+    isEmailVerified: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides,
+  };
+}
 
 describe('ResetPasswordHandler', () => {
   let handler: ResetPasswordHandler;
@@ -30,6 +44,7 @@ describe('ResetPasswordHandler', () => {
 
   it('should successfully reset password with valid token', async () => {
     // ===== Arrange
+    const fakeAccount = createMockAccount();
     authService.verifyVerificationToken.mockResolvedValue(true);
     db.prisma.account.findFirst.mockResolvedValue(fakeAccount);
     authService.hashPassword.mockResolvedValue('new-hashed-password');

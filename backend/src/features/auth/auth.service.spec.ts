@@ -4,11 +4,64 @@ import { DatabaseService } from '../application/services/database.service';
 import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import bcrypt from 'bcrypt';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import {
-  fakeJwtPayload,
-  fakeSession,
-  fakeVerificationToken,
-} from 'src/test/fixtures/auth.fixtures';
+
+function createMockAccount(overrides = {}): any {
+  return {
+    id: 'account-123',
+    email: 'test@test.com',
+    role: 'CUSTOMER',
+    password: 'hashed-password',
+    providerId: null,
+    providerAccountId: null,
+    isEmailVerified: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides,
+  };
+}
+
+function createMockSession(overrides = {}): any {
+  return {
+    id: 'session-123',
+    accountId: 'account-123',
+    ipAddress: '127.0.0.1',
+    userAgent:
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
+    expiresAt: new Date(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    account: createMockAccount(),
+    ...overrides,
+  };
+}
+
+function createMockVerificationToken(overrides = {}): any {
+  return {
+    id: 'token-123',
+    token: '123456',
+    type: 'PASSWORD_RESET',
+    accountId: 'account-123',
+    value: '123456',
+    expiresAt: new Date(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides,
+  };
+}
+
+function createMockJwtPayload(overrides = {}): any {
+  const fakeSession = createMockSession();
+
+  return {
+    payload: {
+      sub: fakeSession.id,
+      accountId: fakeSession.accountId,
+      role: fakeSession.account.role,
+      email: fakeSession.account.email,
+    },
+    ...overrides,
+  };
+}
 
 describe('AuthService', () => {
   let db: DeepMockProxy<DatabaseService>;
@@ -106,6 +159,7 @@ describe('AuthService', () => {
   describe('createSession', () => {
     it('should create a session with the correct account id and expiration', async () => {
       // ===== Arrange
+      const fakeSession = createMockSession();
       db.prisma.session.create.mockResolvedValue(fakeSession);
 
       // ===== Act
@@ -127,6 +181,7 @@ describe('AuthService', () => {
   describe('generateAuthenticationTokens', () => {
     it('should generate access and refresh tokens for a valid session', async () => {
       // ===== Arrange
+      const fakeSession = createMockSession();
       db.prisma.session.findUnique.mockResolvedValue(fakeSession);
       const jwtSignAsyncSpy = jest.spyOn(jwtService, 'signAsync');
 
@@ -161,12 +216,13 @@ describe('AuthService', () => {
     it('should refresh tokens with valid refresh token', async () => {
       // ===== Arrange
       const validRefreshToken = await jwtService.signAsync({
-        payload: fakeJwtPayload,
+        payload: createMockJwtPayload(),
         options: {
           expiresIn: `5m`,
         },
       });
 
+      const fakeSession = createMockSession();
       db.prisma.session.findUnique.mockResolvedValue(fakeSession);
       db.prisma.session.update.mockResolvedValue(fakeSession);
 
@@ -216,7 +272,7 @@ describe('AuthService', () => {
       // ===== Arrange
       jest
         .spyOn(authService, 'extractJwtPayload')
-        .mockResolvedValue(fakeJwtPayload);
+        .mockResolvedValue(createMockJwtPayload());
 
       db.prisma.session.findUnique.mockResolvedValue(null);
 
@@ -233,7 +289,7 @@ describe('AuthService', () => {
     it('should return true when token is valid', async () => {
       // ===== Arrange
       db.prisma.verificationToken.findFirst.mockResolvedValue(
-        fakeVerificationToken,
+        createMockVerificationToken(),
       );
 
       // ===== Act

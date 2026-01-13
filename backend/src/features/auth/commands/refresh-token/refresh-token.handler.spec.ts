@@ -4,8 +4,37 @@ import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import { RefreshTokenHandler } from './refresh-token.handler';
 import { RefreshTokenCommand } from './refresh-token.command';
 import { AuthService } from '../../auth.service';
-import { fakeSession } from 'src/test/fixtures/auth.fixtures';
 import type { Response } from 'express';
+
+function createMockAccount(overrides = {}): any {
+  return {
+    id: 'account-123',
+    email: 'test@test.com',
+    role: 'CUSTOMER',
+    password: 'hashed-password',
+    providerId: null,
+    providerAccountId: null,
+    isEmailVerified: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides,
+  };
+}
+
+function createMockSession(overrides = {}): any {
+  return {
+    id: 'session-123',
+    accountId: 'account-123',
+    ipAddress: '127.0.0.1',
+    userAgent:
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
+    expiresAt: new Date(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    account: createMockAccount(),
+    ...overrides,
+  };
+}
 
 describe('RefreshTokenHandler', () => {
   let handler: RefreshTokenHandler;
@@ -32,7 +61,7 @@ describe('RefreshTokenHandler', () => {
   it('should successfully refresh tokens with valid refresh token', async () => {
     // ===== Arrange
     authService.refreshAuthenticationTokens.mockResolvedValue({
-      session: fakeSession,
+      session: createMockSession(),
       accessToken: 'new-access-token',
       refreshToken: 'new-refresh-token',
     });
@@ -50,7 +79,7 @@ describe('RefreshTokenHandler', () => {
       accessToken: 'new-access-token',
       refreshToken: 'new-refresh-token',
     });
-    // eslint-disable-next-line @typescript-eslint/unbound-method
+
     expect(authService.setAuthCookies).toHaveBeenCalledWith(
       expect.objectContaining({
         accessToken: 'new-access-token',
