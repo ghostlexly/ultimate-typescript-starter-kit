@@ -1,0 +1,40 @@
+name: Docker Images Deploy
+
+on:
+  push:
+    branches: [master, main]
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup environment file
+        run: cp .env.example .env
+
+      - name: Start services with docker compose
+        run: docker compose up -d postgres-test redis backend
+
+      - name: Wait for services to be ready
+        run: |
+          echo "Waiting for PostgreSQL test database to be ready..."
+          docker compose exec postgres-test sh -c 'until pg_isready -h localhost -U lunisoft; do sleep 1; done'
+
+      - name: Generate prisma client
+        run: docker compose exec backend npx prisma generate
+
+      - name: Run database migrations on test database
+        run: docker compose exec -e NODE_ENV=test -e APP_DATABASE_CONNECTION_URL=postgresql://lunisoft:ChangeMe@postgres-test:5432/test backend npx prisma migrate reset --force
+
+      - name: Run unit tests
+        run: docker compose exec -e NODE_ENV=test backend npm run test
+
+      - name: Run e2e tests
+        run: docker compose exec -e NODE_ENV=test backend npm run test:e2e
+
+      - name: Stop services
+        if: always()
+        run: docker compose down -v
