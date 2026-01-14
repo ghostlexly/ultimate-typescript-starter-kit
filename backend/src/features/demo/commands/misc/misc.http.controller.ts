@@ -137,7 +137,7 @@ export class DemoMiscController {
   @AllowAnonymous()
   async testPdfGeneration(@Res() res: Response) {
     const template = await fs.readFile(
-      path.join(process.cwd(), 'views', 'invoice.hbs'),
+      path.join(process.cwd(), 'dist', 'views', 'invoice.hbs'),
       'utf-8',
     );
 

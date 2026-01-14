@@ -11,6 +11,14 @@
     "deleteOutDir": true,
     "assets": [
       {
+        "include": "views/**/*",
+        "watchAssets": true
+      },
+      {
+        "include": "public/**/*",
+        "watchAssets": true
+      },
+      {
         "include": "**/*.json",
         "exclude": "node_modules/**",
         "watchAssets": true

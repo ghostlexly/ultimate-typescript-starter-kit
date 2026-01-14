@@ -30,7 +30,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   // Handlebars is a template engine for Node.js
-  app.useStaticAssets(join(process.cwd(), 'public'), {
+  app.useStaticAssets(join(process.cwd(), 'dist', 'public'), {
     prefix: '/public',
     setHeaders: (res: Response) => {
       // Disable CORS for Playwright
