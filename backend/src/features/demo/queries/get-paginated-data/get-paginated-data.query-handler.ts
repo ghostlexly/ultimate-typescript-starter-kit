@@ -41,7 +41,7 @@ export class GetPaginatedDataQueryHandler
       });
     }
 
-    const { data, count } = await this.db.prisma.city.findManyAndCount({
+    const { data, count } = await this.db.prisma.findManyAndCount('city', {
       include: {
         ...(includes.has('postalCodes') && { postalCodes: true }),
       },

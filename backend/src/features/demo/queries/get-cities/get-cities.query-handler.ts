@@ -43,7 +43,7 @@ export class GetCitiesQueryHandler implements IQueryHandler<GetCitiesQuery> {
       });
     }
 
-    const { data, count } = await this.db.prisma.city.findManyAndCount({
+    const { data, count } = await this.db.prisma.findManyAndCount('city', {
       where: {
         AND: filterConditions,
       },

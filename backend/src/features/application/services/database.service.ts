@@ -5,16 +5,43 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 import { ConfigService } from '@nestjs/config';
 
+type ModelName = Uncapitalize<Prisma.ModelName>;
+
+class ExtendedPrismaClient extends PrismaClient {
+  async findManyAndCount<M extends ModelName>(
+    model: M,
+    args: Prisma.Args<PrismaClient[M], 'findMany'>,
+  ): Promise<{
+    data: Prisma.Result<PrismaClient[M], typeof args, 'findMany'>;
+    count: number;
+  }> {
+    const delegate = this[model] as {
+      findMany(args: unknown): Promise<unknown[]>;
+      count(args: unknown): Promise<number>;
+    };
+
+    const [data, count] = await Promise.all([
+      delegate.findMany(args),
+      delegate.count({ where: (args as { where?: unknown }).where }),
+    ]);
+
+    return {
+      data: data as Prisma.Result<PrismaClient[M], typeof args, 'findMany'>,
+      count,
+    };
+  }
+}
+
 export type PrismaTransactionClient = Omit<
-  typeof DatabaseService.prototype.prisma,
+  ExtendedPrismaClient,
   '$extends' | '$transaction' | '$disconnect' | '$connect' | '$on' | '$use'
 >;
 
 @Injectable()
 export class DatabaseService implements OnModuleInit, OnModuleDestroy {
-  public prisma: ReturnType<typeof this.createPrismaClient>;
-  private pool: Pool;
-  private adapter: PrismaPg;
+  public prisma: ExtendedPrismaClient;
+  private readonly pool: Pool;
+  private readonly adapter: PrismaPg;
 
   constructor(
     private configService: ConfigService,
@@ -26,7 +53,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
 
     this.pool = new Pool({ connectionString });
     this.adapter = new PrismaPg(this.pool);
-    this.prisma = this.createPrismaClient();
+    this.prisma = new ExtendedPrismaClient({ adapter: this.adapter });
   }
 
   async onModuleInit() {
@@ -38,64 +65,19 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     await this.pool.end();
   }
 
-  private createPrismaClient() {
-    return new PrismaClient({ adapter: this.adapter })
-      .$extends({
-        model: {
-          $allModels: {
-            async findManyAndCount<Model, Args>(
-              this: Model,
-              args: Prisma.Exact<Args, Prisma.Args<Model, 'findMany'>>,
-            ): Promise<{
-              data: Prisma.Result<Model, Args, 'findMany'>;
-              count: number;
-            }> {
-              type FindManyArgs = Prisma.Args<Model, 'findMany'>;
-              type CountArgs = Prisma.Args<Model, 'count'>;
+  async deleteMedia(id: string) {
+    const media = await this.prisma.media.findUnique({
+      where: { id },
+    });
 
-              const modelDelegate = this as unknown as {
-                findMany(
-                  a: FindManyArgs,
-                ): Promise<Prisma.Result<Model, Args, 'findMany'>>;
-                count(a: CountArgs): Promise<number>;
-              };
+    const result = await this.prisma.media.delete({
+      where: { id },
+    });
 
-              type WhereType = CountArgs extends { where: infer W } ? W : never;
+    if (media) {
+      await this.s3Service.deleteFile({ key: media.key });
+    }
 
-              const [data, count] = await Promise.all([
-                modelDelegate.findMany(args as FindManyArgs),
-                modelDelegate.count({
-                  where: (args as FindManyArgs).where as WhereType,
-                } as CountArgs),
-              ]);
-
-              return { data, count };
-            },
-          },
-        },
-      })
-      .$extends({
-        query: {
-          media: {
-            delete: async ({ args, query }) => {
-              // -- Fetch the media record to get the key
-              const media = await this.prisma.media.findUnique({
-                where: { id: args.where.id },
-              });
-
-              // -- Run the query and throw an error if the query fails
-              const queryResult = await query(args);
-
-              // -- The record was deleted successfully...
-              if (media) {
-                // Delete the file from S3
-                await this.s3Service.deleteFile({ key: media.key });
-              }
-
-              return queryResult;
-            },
-          },
-        },
-      });
+    return result;
   }
 }

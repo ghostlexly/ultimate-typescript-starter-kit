@@ -9,6 +9,6 @@ export class FindAllAccountsQueryHandler
   constructor(private readonly db: DatabaseService) {}
 
   async execute(_query: FindAllAccountsQuery) {
-    return await this.db.prisma.account.findManyAndCount({});
+    return await this.db.prisma.findManyAndCount('account', {});
   }
 }
