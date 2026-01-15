@@ -43,7 +43,7 @@ describe('VerifyTokenHandler', () => {
     expect(result).toEqual({
       message: 'Token is valid.',
     });
-    // eslint-disable-next-line @typescript-eslint/unbound-method
+     
     expect(authService.verifyVerificationToken).toHaveBeenCalledWith(
       expect.objectContaining({
         type: 'PASSWORD_RESET',

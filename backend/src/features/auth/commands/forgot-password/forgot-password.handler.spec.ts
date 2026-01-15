@@ -1,9 +1,11 @@
 import { Test } from '@nestjs/testing';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { EventBus } from '@nestjs/cqrs';
 import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import { ForgotPasswordHandler } from './forgot-password.handler';
 import { ForgotPasswordCommand } from './forgot-password.command';
 import { DatabaseService } from 'src/features/application/services/database.service';
+import { PasswordResetRequestedEvent } from '../../events/password-reset-requested/password-reset-requested.event';
 
 function createMockAccount(overrides = {}): any {
   return {
@@ -37,6 +39,7 @@ function createMockVerificationToken(overrides = {}): any {
 describe('ForgotPasswordHandler', () => {
   let handler: ForgotPasswordHandler;
   let db: DeepMockProxy<DatabaseService>;
+  let eventBus: DeepMockProxy<EventBus>;
 
   beforeEach(async () => {
     const app = await Test.createTestingModule({
@@ -51,9 +54,10 @@ describe('ForgotPasswordHandler', () => {
 
     handler = app.get(ForgotPasswordHandler);
     db = app.get(DatabaseService);
+    eventBus = app.get(EventBus);
   });
 
-  it('should successfully send password reset email', async () => {
+  it('should successfully create token and publish event', async () => {
     // ===== Arrange
     const fakeAccount = createMockAccount();
     db.prisma.account.findFirst.mockResolvedValue(fakeAccount);
@@ -78,6 +82,9 @@ describe('ForgotPasswordHandler', () => {
         expiresAt: expect.any(Date),
       }),
     });
+    expect(eventBus.publish).toHaveBeenCalledWith(
+      expect.any(PasswordResetRequestedEvent),
+    );
   });
 
   it('should throw error when account does not exist', async () => {

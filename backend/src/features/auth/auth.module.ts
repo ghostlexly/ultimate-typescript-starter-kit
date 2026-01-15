@@ -16,6 +16,7 @@ import { ResetPasswordController } from './commands/reset-password/reset-passwor
 import { ResetPasswordHandler } from './commands/reset-password/reset-password.handler';
 import { GetCurrentUserController } from './queries/get-current-user/get-current-user.http.controller';
 import { GetCurrentUserQueryHandler } from './queries/get-current-user/get-current-user.query-handler';
+import { PasswordResetRequestedEventHandler } from './events/password-reset-requested/password-reset-requested.event-handler';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { ClearExpiredSessionsCron } from './crons/clear-expired-sessions.cron';
@@ -30,6 +31,8 @@ const CommandHandlers = [
 ];
 
 const QueryHandlers = [GetCurrentUserQueryHandler];
+
+const EventHandlers = [PasswordResetRequestedEventHandler];
 
 @Module({
   imports: [
@@ -66,6 +69,7 @@ const QueryHandlers = [GetCurrentUserQueryHandler];
     ClearExpiredVerificationTokensCron,
     ...CommandHandlers,
     ...QueryHandlers,
+    ...EventHandlers,
   ],
   exports: [AuthService],
 })
