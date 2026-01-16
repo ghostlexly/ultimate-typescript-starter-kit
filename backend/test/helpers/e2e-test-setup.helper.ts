@@ -14,9 +14,9 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { TestUsersFixture, TEST_USERS } from '../fixtures/test-users.fixture';
-import { DatabaseService } from 'src/features/application/services/database.service';
+import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { JwtService } from '@nestjs/jwt';
-import { authConstants } from 'src/features/auth/auth.constants';
+import { authConstants } from 'src/modules/auth/auth.constants';
 import { TestCitiesFixture } from '../fixtures/test-cities.fixture';
 
 export type TestUserKey = keyof typeof TEST_USERS;

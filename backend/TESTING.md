@@ -419,7 +419,7 @@ describe('POST /api/customers - Validation', () => {
 ```typescript
 import { Test, TestingModule } from '@nestjs/testing';
 import { CustomerService } from './customer.service';
-import { DatabaseService } from '../application/services/database.service';
+import { DatabaseService } from '../shared/services/database.service';
 
 describe('CustomerService', () => {
   let service: CustomerService;

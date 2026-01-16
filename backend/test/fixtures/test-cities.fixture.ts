@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../../src/features/application/services/database.service';
+import { DatabaseService } from '../../src/modules/shared/services/database.service';
 
 export const TEST_CITIES = {
   marseille: {

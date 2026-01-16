@@ -17,7 +17,7 @@ async function bootstrap() {
   // Enable shutdown hooks
   app.enableShutdownHooks();
 
-  // Set application settings
+  // Set shared settings
   app.setGlobalPrefix('api');
   app.disable('x-powered-by');
   app.set('trust proxy', 'loopback'); // This is important for the throttler to work correctly behind a proxy
