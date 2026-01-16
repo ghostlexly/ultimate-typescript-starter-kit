@@ -11,13 +11,31 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  CheckCircleIcon,
   AlertCircleIcon,
+  CheckCircleIcon,
   InfoIcon,
   XCircleIcon,
 } from "lucide-react";
+import { useBreadcrumb } from "@/hooks/use-breadcrumb";
+import { useEffect } from "react";
 
 export default function TestPage() {
+  const { setBreadcrumbs } = useBreadcrumb();
+
+  useEffect(() => {
+    setBreadcrumbs([
+      {
+        href: "/admin-area/example-breadcrumb-1",
+        label: "breadcrumb example 1",
+      },
+      {
+        href: "/admin-area/example-breadcrumb-2",
+        label: "breadcrumb example 2",
+      },
+      { href: "#", label: "Example" },
+    ]);
+  }, [setBreadcrumbs]);
+
   return (
     <Container>
       <div className="flex flex-col gap-6">

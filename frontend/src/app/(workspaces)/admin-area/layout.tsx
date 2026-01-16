@@ -1,8 +1,8 @@
-import { AppSidebar } from "@/app/(workspaces)/admin-area/_components/app-sidebar";
-import { Header } from "@/app/(workspaces)/admin-area/_components/header";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { BreadcrumbProvider } from "@/hooks/use-breadcrumb";
-import type { Metadata } from "next";
+import {AppSidebar} from "@/app/(workspaces)/admin-area/_components/app-sidebar";
+import {Header} from "@/app/(workspaces)/admin-area/_components/header";
+import {SidebarInset, SidebarProvider} from "@/components/ui/sidebar";
+import {BreadcrumbProvider} from "@/hooks/use-breadcrumb";
+import type {Metadata} from "next";
 
 // Force dynamic rendering for all admin pages
 export const dynamic = "force-dynamic";
@@ -28,7 +28,7 @@ export default async function AdminAreaLayout({
       }
     >
       <AppSidebar variant="inset" />
-      <SidebarInset className="max-h-svh overflow-auto">
+      <SidebarInset className="max-h-svh overflow-auto bg-muted/40">
         <BreadcrumbProvider>
           <Header />
 

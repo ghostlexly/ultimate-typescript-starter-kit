@@ -14,7 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { BellIcon, ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { useBreadcrumb } from "@/hooks/use-breadcrumb";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export function Header() {
@@ -63,7 +63,7 @@ export function Header() {
               <>
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link href="/admin-area">Home</Link>
+                    <Link href="/admin-area">Dashboard</Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 {breadcrumbs.length > 0 && <BreadcrumbSeparator />}
