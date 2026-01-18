@@ -84,8 +84,8 @@ export class S3Service {
 
   /**
    * Download a file from S3 to /tmp directory and return the path
-   * @param params.key The key of the file in S3
-   * @param params.destinationPath The path to save the downloaded file
+   * @param key The key of the file in S3
+   * @param destinationPath The path to save the downloaded file
    * @returns The path to the downloaded file
    */
   downloadToFile = async ({
@@ -193,7 +193,7 @@ export class S3Service {
     key: string;
     storageClass?: StorageClass;
   }) => {
-    const presignedUrl = await getSignedUrl(
+    return await getSignedUrl(
       this.client,
       new PutObjectCommand({
         Bucket: this.bucketName,
@@ -202,8 +202,6 @@ export class S3Service {
       }),
       { expiresIn: 3600 }, // 1 hour
     );
-
-    return presignedUrl;
   };
 
   getPresignedUrl = async ({

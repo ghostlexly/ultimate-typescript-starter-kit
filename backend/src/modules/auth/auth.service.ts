@@ -55,7 +55,7 @@ export class AuthService {
   }
 
   async createSession({ accountId }: { accountId: string }) {
-    return await this.db.prisma.session.create({
+    return this.db.prisma.session.create({
       data: {
         expiresAt: dateUtils.add(new Date(), {
           minutes: authConstants.refreshTokenExpirationMinutes,
@@ -216,7 +216,7 @@ export class AuthService {
     type: VerificationType;
     token: string;
     email: string;
-  }) {
+  }): Promise<boolean> {
     const tokenFound = await this.db.prisma.verificationToken.findFirst({
       where: {
         token: token,
@@ -230,10 +230,6 @@ export class AuthService {
       },
     });
 
-    if (!tokenFound) {
-      return false;
-    }
-
-    return true;
+    return !!tokenFound;
   }
 }

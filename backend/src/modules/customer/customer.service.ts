@@ -18,10 +18,6 @@ export class CustomerService {
       },
     });
 
-    if (existingCustomer) {
-      return true;
-    }
-
-    return false;
+    return !!existingCustomer;
   }
 }

@@ -68,8 +68,6 @@ export class FilesService {
     const cleaned = finalName.replace(/[^a-zA-Z0-9.]+/g, '_');
 
     // Join directory and normalized filename components back together
-    const normalizedFilename = path.join(path.dirname(normalized), cleaned);
-
-    return normalizedFilename;
+    return path.join(path.dirname(normalized), cleaned);
   }
 }

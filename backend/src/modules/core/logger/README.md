@@ -26,7 +26,7 @@ Logs follow these rotation rules:
 
 ### Logger Injection
 
-```typescript
+```ts
 import { Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
@@ -54,7 +54,7 @@ export class MyService {
 
 ### Example with Context
 
-```typescript
+```ts
 async findUser(id: string) {
   this.logger.log(`Searching for user with ID: ${id}`);
 
@@ -81,13 +81,13 @@ Configuration is located in `logger.config.ts`:
 
 ### Modify Log Retention
 
-```typescript
+```ts
 maxFiles: '30d', // Keep 30 days instead of 14
 ```
 
 ### Modify Maximum File Size
 
-```typescript
+```ts
 maxSize: '50m', // 50MB instead of 20MB
 ```
 

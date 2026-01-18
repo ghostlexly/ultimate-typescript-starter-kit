@@ -48,8 +48,7 @@ export class ZodValidationPipe implements PipeTransform {
           }
         }
 
-        const parsedValue = schemaToUse.parse(value);
-        return parsedValue;
+        return schemaToUse.parse(value);
       }
 
       return value;

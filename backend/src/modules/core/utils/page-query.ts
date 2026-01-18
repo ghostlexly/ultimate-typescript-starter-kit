@@ -179,9 +179,8 @@ const parseIncludes = (include?: string | string[]) => {
   // Handle array input
   if (Array.isArray(include)) {
     include.forEach((i) => includes.add(i));
-  }
-  // Handle string input (comma-separated)
-  else if (typeof include === 'string') {
+  } else {
+    // Handle string input (comma-separated)
     include
       .split(',')
       .map((i) => i.trim())

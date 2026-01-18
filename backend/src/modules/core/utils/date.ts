@@ -1,28 +1,29 @@
 import {
-  NearestMinutes,
   add,
+  differenceInMinutes,
+  endOfDay,
+  endOfMonth,
   format,
+  intervalToDuration,
   isAfter,
   isBefore,
   isSameHour,
   isSameMinute,
-  isSunday,
   isSameMonth,
+  isSunday,
   isValid,
+  lastDayOfMonth,
+  NearestMinutes,
   parse,
   parseISO,
   roundToNearestMinutes,
-  sub,
+  setDefaultOptions,
   startOfDay,
-  endOfDay,
-  intervalToDuration,
-  differenceInMinutes,
   startOfMonth,
-  lastDayOfMonth,
-  endOfMonth,
+  sub,
 } from 'date-fns';
-import { setDefaultOptions } from 'date-fns';
 import { fr } from 'date-fns/locale';
+
 setDefaultOptions({ locale: fr });
 
 /**
@@ -75,7 +76,7 @@ const eachTimeOfInterval = (
     });
 
     // verify if the interval is not already in the output
-    if (output.includes(roundedToQuarterMinutes.toISOString()) === false) {
+    if (!output.includes(roundedToQuarterMinutes.toISOString())) {
       // add the interval to the output
       output.push(roundedToQuarterMinutes.toISOString());
     }

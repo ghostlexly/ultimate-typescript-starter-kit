@@ -13,7 +13,7 @@ import { TestDatabaseHelper } from './test-database.helper';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
-import { TestUsersFixture, TEST_USERS } from '../fixtures/test-users.fixture';
+import { TEST_USERS, TestUsersFixture } from '../fixtures/test-users.fixture';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { JwtService } from '@nestjs/jwt';
 import { authConstants } from 'src/modules/auth/auth.constants';
@@ -85,9 +85,7 @@ export function setupE2ETest(customize?: TestModuleCustomizer): E2ETestContext {
     context.db = testingModule.get(DatabaseService);
     context.getTokenFor = createTokenGenerator(context.db, testingModule);
 
-    const app = createConfiguredApp(testingModule);
-
-    context.app = app;
+    context.app = createConfiguredApp(testingModule);
     await context.app.init();
     context.httpServer = context.app.getHttpServer();
   });

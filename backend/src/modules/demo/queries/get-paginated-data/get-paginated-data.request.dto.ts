@@ -1,8 +1,14 @@
+import { pageQuerySchema } from 'src/modules/core/utils/page-query';
 import { z } from 'zod';
-import { getPaginatedDataSchema } from './get-paginated-data.schema';
 
 export const demoGetPaginatedDataSchema = z.object({
-  query: getPaginatedDataSchema,
+  query: pageQuerySchema.and(
+    z
+      .object({
+        id: z.uuid(),
+      })
+      .partial(),
+  ),
 });
 
 export type DemoGetPaginatedDataDto = z.infer<

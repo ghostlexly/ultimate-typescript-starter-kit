@@ -45,6 +45,7 @@ export class PdfService implements OnModuleDestroy {
   /**
    * Generate a PDF from an HTML string
    * @param html - The HTML string to generate a PDF from
+   * @param footerHtml - Optional HTML string for the footer
    */
   htmlToPdf = async ({
     html,
@@ -75,7 +76,7 @@ export class PdfService implements OnModuleDestroy {
         left: '20px',
       },
       printBackground: true,
-      displayHeaderFooter: footerHtml ? true : false,
+      displayHeaderFooter: !!footerHtml,
       footerTemplate: footerHtml,
       headerTemplate: '<div></div>', // Empty header template to avoid default header
     });

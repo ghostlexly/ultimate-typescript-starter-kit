@@ -89,8 +89,6 @@ export class CitiesSeeder {
       'utf-8',
     );
 
-    const citiesParsed = JSON.parse(citiesData);
-
-    return citiesParsed;
+    return JSON.parse(citiesData);
   }
 }

@@ -49,21 +49,16 @@ export class DeleteOrphanMediasCron {
           this.logger.error(
             `Error deleting orphan media #${orphanMedia.id}: Media to delete cannot be found.`,
           );
-          throw new Error('Media to delete cannot be found.');
+
+          return false;
         }
 
         // Delete the record from the database
-        await this.db.prisma.media
-          .delete({
-            where: {
-              id: media.id,
-            },
-          })
-          .catch((err) => {
-            this.logger.error(
-              `Error deleting orphan media #${media.id}: ${err.message}`,
-            );
-          });
+        await this.db.prisma.media.delete({
+          where: {
+            id: media.id,
+          },
+        });
       }
 
       this.logger.debug('All orphan medias are been removed successfully.');

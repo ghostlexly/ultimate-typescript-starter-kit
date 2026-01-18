@@ -1,4 +1,4 @@
-import { QueryHandler, IQueryHandler } from '@nestjs/cqrs';
+import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { FindAllAccountsQuery } from './find-all-accounts.query';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 
@@ -8,7 +8,7 @@ export class FindAllAccountsQueryHandler
 {
   constructor(private readonly db: DatabaseService) {}
 
-  async execute(_query: FindAllAccountsQuery) {
+  async execute() {
     return await this.db.prisma.findManyAndCount('account', {});
   }
 }

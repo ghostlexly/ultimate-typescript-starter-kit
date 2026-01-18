@@ -14,8 +14,8 @@ export class MediaService {
   /**
    * Save a file uploaded with Multer to S3 and create a media record.
    *
-   * @param params.filePath The path to the file
-   * @param params.originalFileName The original file name
+   * @param filePath The path to the file
+   * @param originalFileName The original file name
    * @returns The media record
    */
   uploadFileToS3 = async ({
@@ -37,7 +37,7 @@ export class MediaService {
       mimeType: fileInfos.mimeType,
     });
 
-    const media = await this.db.prisma.media.create({
+    return await this.db.prisma.media.create({
       data: {
         key: key,
         fileName: originalFileName,
@@ -45,17 +45,15 @@ export class MediaService {
         size: fileInfos.size,
       },
     });
-
-    return media;
   };
 
   /**
    * Verify that the file has the correct size and type.
    * Throws an exception if the file does not meet the requirements.
    *
-   * @param params.file The file to verify
-   * @param params.allowedTypes The allowed MIME types
-   * @param params.maxFileSize The maximum file size in Mb
+   * @param file The file to verify
+   * @param allowedTypes The allowed MIME types
+   * @param maxFileSize The maximum file size in Mb
    */
   verifyMulterMaxSizeAndMimeType = async ({
     file,
@@ -93,9 +91,9 @@ export class MediaService {
    * Verify that the media has the correct size and type.
    * Throws an exception if the media does not meet the requirements.
    *
-   * @param params.mediaId The media ID
-   * @param params.allowedMimeTypes The allowed MIME types
-   * @param params.maxFileSize The maximum file size in Mb
+   * @param mediaId The media ID
+   * @param allowedMimeTypes The allowed MIME types
+   * @param maxFileSize The maximum file size in Mb
    */
   verifyMediaMaxSizeAndMimeType = async ({
     mediaId,
