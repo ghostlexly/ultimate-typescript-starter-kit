@@ -16,6 +16,6 @@ export class GetCitiesController {
   @AllowAnonymous()
   @UsePipes(new ZodValidationPipe(getCitiesRequestSchema))
   async getCities(@Query() query: GetCitiesRequestDto['query']) {
-    return this.queryBus.execute(new GetCitiesQuery({ query }));
+    return this.queryBus.execute(new GetCitiesQuery(query));
   }
 }

@@ -1,8 +1,9 @@
 import { z } from 'zod';
-import { requestPasswordResetSchema } from './request-password-reset.schema';
 
 export const requestPasswordResetRequestSchema = z.object({
-  body: requestPasswordResetSchema,
+  body: z.object({
+    email: z.email(),
+  }),
 });
 
 export type RequestPasswordResetRequestDto = z.infer<

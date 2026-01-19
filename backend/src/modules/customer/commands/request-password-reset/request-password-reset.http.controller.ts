@@ -18,8 +18,6 @@ export class RequestPasswordResetController {
   async requestPasswordReset(
     @Body() body: RequestPasswordResetRequestDto['body'],
   ) {
-    return this.commandBus.execute(
-      new RequestPasswordResetCommand({ data: body }),
-    );
+    return this.commandBus.execute(new RequestPasswordResetCommand(body));
   }
 }

@@ -15,9 +15,9 @@ export class RegisterCustomerHandler
     private readonly customerService: CustomerService,
   ) {}
 
-  async execute({ data }: RegisterCustomerCommand) {
+  async execute({ email, password, country }: RegisterCustomerCommand) {
     const existingCustomer = await this.customerService.verifyExistingEmail({
-      email: data.email,
+      email,
     });
 
     if (existingCustomer) {
@@ -30,12 +30,12 @@ export class RegisterCustomerHandler
     }
 
     const hashedPassword = await this.authService.hashPassword({
-      password: data.password,
+      password,
     });
 
     return await this.db.prisma.account.create({
       data: {
-        email: data.email,
+        email,
         password: hashedPassword,
         role: 'CUSTOMER',
         customer: {

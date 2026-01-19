@@ -16,6 +16,6 @@ export class RegisterCustomerController {
   @AllowAnonymous()
   @UsePipes(new ZodValidationPipe(registerCustomerRequestSchema))
   async registerCustomer(@Body() body: RegisterCustomerRequestDto['body']) {
-    return this.commandBus.execute(new RegisterCustomerCommand({ data: body }));
+    return this.commandBus.execute(new RegisterCustomerCommand(body));
   }
 }

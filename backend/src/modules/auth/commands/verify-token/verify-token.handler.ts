@@ -7,11 +7,11 @@ import { AuthService } from '../../auth.service';
 export class VerifyTokenHandler implements ICommandHandler<VerifyTokenCommand> {
   constructor(private readonly authService: AuthService) {}
 
-  async execute({ data }: VerifyTokenCommand) {
+  async execute({ type, token, email }: VerifyTokenCommand) {
     const tokenValid = await this.authService.verifyVerificationToken({
-      type: data.type,
-      token: data.token,
-      email: data.email,
+      type,
+      token,
+      email,
     });
 
     if (!tokenValid) {

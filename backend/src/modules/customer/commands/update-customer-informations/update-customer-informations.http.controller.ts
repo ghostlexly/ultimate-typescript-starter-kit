@@ -36,7 +36,7 @@ export class UpdateCustomerInformationsController {
     return this.commandBus.execute(
       new UpdateCustomerInformationsCommand({
         accountId: user.accountId,
-        data: body,
+        ...body,
       }),
     );
   }

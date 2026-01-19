@@ -1,16 +1,11 @@
-import { UpdateCustomerInformationsInput } from './update-customer-informations.schema';
-
-interface UpdateCustomerInformationsCommandProps {
-  accountId: string;
-  data: UpdateCustomerInformationsInput;
-}
-
 export class UpdateCustomerInformationsCommand {
   public readonly accountId: string;
-  public readonly data: UpdateCustomerInformationsInput;
+  public readonly countryCode: string;
+  public readonly city: string;
 
-  constructor(props: UpdateCustomerInformationsCommandProps) {
+  constructor(props: { accountId: string; countryCode: string; city: string }) {
     this.accountId = props.accountId;
-    this.data = props.data;
+    this.countryCode = props.countryCode;
+    this.city = props.city;
   }
 }

@@ -9,7 +9,7 @@ export class GetAllCountriesQueryHandler
   constructor(private readonly countryService: CountryService) {}
 
   // eslint-disable-next-line @typescript-eslint/require-await
-  async execute({ query }: GetAllCountriesQuery) {
-    return this.countryService.getAllCountries(query.language);
+  async execute({ language }: GetAllCountriesQuery) {
+    return this.countryService.getAllCountries(language);
   }
 }

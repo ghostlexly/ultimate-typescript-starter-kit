@@ -47,7 +47,7 @@ export class RefreshTokenController {
     }
 
     return this.commandBus.execute(
-      new RefreshTokenCommand({ data: { refreshToken }, res }),
+      new RefreshTokenCommand({ refreshToken, res }),
     );
   }
 }

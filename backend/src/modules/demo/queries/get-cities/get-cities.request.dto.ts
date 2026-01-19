@@ -1,8 +1,14 @@
+import { pageQuerySchema } from 'src/modules/core/utils/page-query';
 import { z } from 'zod';
-import { getCitiesSchema } from './get-cities.schema';
 
 export const getCitiesRequestSchema = z.object({
-  query: getCitiesSchema,
+  query: pageQuerySchema.and(
+    z
+      .object({
+        search: z.string(),
+      })
+      .partial(),
+  ),
 });
 
 export type GetCitiesRequestDto = z.infer<typeof getCitiesRequestSchema>;

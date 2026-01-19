@@ -13,7 +13,11 @@ export class UpdateCustomerInformationsHandler
     private readonly countryService: CountryService,
   ) {}
 
-  async execute({ accountId, data }: UpdateCustomerInformationsCommand) {
+  async execute({
+    accountId,
+    countryCode,
+    city,
+  }: UpdateCustomerInformationsCommand) {
     const customerInformations = await this.db.prisma.customer.findFirst({
       where: {
         accountId,
@@ -27,7 +31,7 @@ export class UpdateCustomerInformationsHandler
       );
     }
 
-    const country = this.countryService.getCountryByIso2(data.countryCode);
+    const country = this.countryService.getCountryByIso2(countryCode);
 
     if (!country) {
       throw new HttpException(
@@ -38,7 +42,7 @@ export class UpdateCustomerInformationsHandler
 
     const cityRecord = await this.db.prisma.city.findUnique({
       where: {
-        id: data.city,
+        id: city,
       },
     });
 
@@ -54,14 +58,14 @@ export class UpdateCustomerInformationsHandler
         id: customerInformations.id,
       },
       data: {
-        countryCode: data.countryCode,
-        cityId: data.city,
+        countryCode,
+        cityId: city,
       },
     });
 
     return {
-      countryCode: data.countryCode,
-      cityId: data.city,
+      countryCode,
+      cityId: city,
     };
   }
 }

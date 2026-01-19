@@ -38,7 +38,7 @@ export class SignInController {
     @Res({ passthrough: true }) res: Response,
     @Body() body: SignInRequestDto['body'],
   ) {
-    return this.commandBus.execute(new SignInCommand({ data: body, res }));
+    return this.commandBus.execute(new SignInCommand({ ...body, res }));
   }
 
   @Get('/auth/google')

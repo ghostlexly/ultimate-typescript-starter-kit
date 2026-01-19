@@ -1,13 +1,7 @@
-import { RequestPasswordResetInput } from './request-password-reset.schema';
-
-interface RequestPasswordResetCommandProps {
-  data: RequestPasswordResetInput;
-}
-
 export class RequestPasswordResetCommand {
-  public readonly data: RequestPasswordResetInput;
+  public readonly email: string;
 
-  constructor(props: RequestPasswordResetCommandProps) {
-    this.data = props.data;
+  constructor(props: { email: string }) {
+    this.email = props.email;
   }
 }

@@ -18,6 +18,6 @@ export class VerifyTokenController {
   @Throttle({ long: { limit: 10 } })
   @UsePipes(new ZodValidationPipe(verifyTokenRequestSchema))
   async verifyToken(@Body() body: VerifyTokenRequestDto['body']) {
-    return this.commandBus.execute(new VerifyTokenCommand({ data: body }));
+    return this.commandBus.execute(new VerifyTokenCommand(body));
   }
 }

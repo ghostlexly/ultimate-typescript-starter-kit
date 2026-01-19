@@ -1,17 +1,13 @@
 import type { Response } from 'express';
-import { SignInInput } from './sign-in.schema';
-
-interface SignInCommandProps {
-  data: SignInInput;
-  res: Response;
-}
 
 export class SignInCommand {
-  public readonly data: SignInInput;
+  public readonly email: string;
+  public readonly password: string;
   public readonly res: Response;
 
-  constructor(props: SignInCommandProps) {
-    this.data = props.data;
+  constructor(props: { email: string; password: string; res: Response }) {
+    this.email = props.email;
+    this.password = props.password;
     this.res = props.res;
   }
 }

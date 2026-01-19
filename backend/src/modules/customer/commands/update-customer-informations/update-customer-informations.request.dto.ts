@@ -1,8 +1,10 @@
 import { z } from 'zod';
-import { updateCustomerInformationsSchema } from './update-customer-informations.schema';
 
 export const updateCustomerInformationsRequestSchema = z.object({
-  body: updateCustomerInformationsSchema,
+  body: z.object({
+    countryCode: z.string().min(2).max(2),
+    city: z.uuid(),
+  }),
 });
 
 export type UpdateCustomerInformationsRequestDto = z.infer<
