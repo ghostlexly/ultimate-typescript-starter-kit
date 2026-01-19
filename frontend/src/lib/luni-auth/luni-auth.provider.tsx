@@ -1,13 +1,7 @@
 "use client";
 
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import { getServerSession, clearAuthCookies } from "./luni-auth.server";
+import { createContext, ReactNode, useContext, useState } from "react";
+import { clearAuthCookies, getServerSession } from "./luni-auth.server";
 
 type SessionStatus = "loading" | "authenticated" | "unauthenticated";
 
@@ -36,20 +30,11 @@ const useSession = (): AuthContextProps => useContext(AuthContext);
 
 type ProviderProps = {
   children: ReactNode;
+  initialSession: SessionData;
 };
 
-const LuniAuthProvider = ({ children }: ProviderProps) => {
-  const [sessionData, setSessionData] = useState<SessionData>({
-    status: "loading",
-    data: null,
-  });
-
-  // Load user session when component mounts or status changes to loading
-  useEffect(() => {
-    if (sessionData.status === "loading") {
-      refresh();
-    }
-  }, [sessionData.status]);
+const LuniAuthProvider = ({ children, initialSession }: ProviderProps) => {
+  const [sessionData, setSessionData] = useState<SessionData>(initialSession);
 
   const destroy = () => {
     clearAuthCookies();
@@ -76,3 +61,4 @@ const LuniAuthProvider = ({ children }: ProviderProps) => {
 };
 
 export { LuniAuthProvider, useSession };
+export type { SessionData };

@@ -3,13 +3,21 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ToastContainer } from "react-toastify";
 import { getQueryClient } from "@/lib/query-client";
-import { LuniAuthProvider } from "@/lib/luni-auth/luni-auth.provider";
+import {
+  LuniAuthProvider,
+  SessionData,
+} from "@/lib/luni-auth/luni-auth.provider";
 
-const Providers = ({ children }: { children: React.ReactNode }) => {
+interface ProvidersProps {
+  children: React.ReactNode;
+  initialSession: SessionData;
+}
+
+const Providers = ({ children, initialSession }: ProvidersProps) => {
   const queryClient = getQueryClient();
 
   return (
-    <LuniAuthProvider>
+    <LuniAuthProvider initialSession={initialSession}>
       <QueryClientProvider client={queryClient}>
         <ToastContainer autoClose={5000} />
 
