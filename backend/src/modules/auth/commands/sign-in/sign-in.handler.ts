@@ -12,7 +12,7 @@ export class SignInHandler implements ICommandHandler<SignInCommand> {
     private readonly authService: AuthService,
   ) {}
 
-  async execute({ email, password, res }: SignInCommand) {
+  async execute({ email, password }: SignInCommand) {
     // Verify if user exists
     const account: Account | null = await this.db.prisma.account.findFirst({
       where: {
@@ -73,13 +73,6 @@ export class SignInHandler implements ICommandHandler<SignInCommand> {
       await this.authService.generateAuthenticationTokens({
         sessionId: session.id,
       });
-
-    // Set authentication cookies
-    this.authService.setAuthCookies({
-      res,
-      accessToken,
-      refreshToken,
-    });
 
     return {
       role: account.role,

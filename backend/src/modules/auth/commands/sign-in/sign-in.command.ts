@@ -1,13 +1,17 @@
-import type { Response } from 'express';
+import { Command } from '@nestjs/cqrs';
+import { Role } from '../../../../generated/prisma/enums';
 
-export class SignInCommand {
+export class SignInCommand extends Command<{
+  accessToken: string;
+  refreshToken: string;
+  role: Role;
+}> {
   public readonly email: string;
   public readonly password: string;
-  public readonly res: Response;
 
-  constructor(props: { email: string; password: string; res: Response }) {
+  constructor(props: { email: string; password: string }) {
+    super();
     this.email = props.email;
     this.password = props.password;
-    this.res = props.res;
   }
 }

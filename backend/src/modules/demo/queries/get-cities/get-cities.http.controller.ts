@@ -4,8 +4,8 @@ import { AllowAnonymous } from 'src/modules/core/decorators/allow-anonymous.deco
 import { ZodValidationPipe } from 'src/modules/core/pipes/zod-validation.pipe';
 import { GetCitiesQuery } from './get-cities.query';
 import {
-  getCitiesRequestSchema,
   type GetCitiesRequestDto,
+  getCitiesRequestSchema,
 } from './get-cities.request.dto';
 
 @Controller()
@@ -16,6 +16,6 @@ export class GetCitiesController {
   @AllowAnonymous()
   @UsePipes(new ZodValidationPipe(getCitiesRequestSchema))
   async getCities(@Query() query: GetCitiesRequestDto['query']) {
-    return this.queryBus.execute(new GetCitiesQuery(query));
+    return this.queryBus.execute(new GetCitiesQuery({ query }));
   }
 }

@@ -16,8 +16,8 @@ import { AllowAnonymous } from 'src/modules/core/decorators/allow-anonymous.deco
 import { ZodValidationPipe } from 'src/modules/core/pipes/zod-validation.pipe';
 import { SignInCommand } from './sign-in.command';
 import {
-  signInRequestSchema,
   type SignInRequestDto,
+  signInRequestSchema,
 } from './sign-in.request.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { OAuthRedirectExceptionFilter } from 'src/modules/core/filters/oauth-redirect.filter';
@@ -38,7 +38,22 @@ export class SignInController {
     @Res({ passthrough: true }) res: Response,
     @Body() body: SignInRequestDto['body'],
   ) {
-    return this.commandBus.execute(new SignInCommand({ ...body, res }));
+    const { accessToken, refreshToken, role } = await this.commandBus.execute(
+      new SignInCommand({ ...body }),
+    );
+
+    // Set authentication cookies
+    this.authService.setAuthCookies({
+      res,
+      accessToken,
+      refreshToken,
+    });
+
+    return {
+      role,
+      accessToken,
+      refreshToken,
+    };
   }
 
   @Get('/auth/google')

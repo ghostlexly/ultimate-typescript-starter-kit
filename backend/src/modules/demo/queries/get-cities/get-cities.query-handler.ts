@@ -15,17 +15,17 @@ export class GetCitiesQueryHandler implements IQueryHandler<GetCitiesQuery> {
     const filterConditions: Prisma.CityWhereInput[] = [];
 
     const { pagination, orderBy } = buildQueryParams({
-      query: command,
+      query: command.query,
       defaultSort: { population: 'desc' },
       allowedSortFields: ['population', 'id', 'name'],
     });
 
-    if (command.search) {
+    if (command.query.search) {
       filterConditions.push({
         OR: [
           {
             name: {
-              contains: command.search,
+              contains: command.query.search,
               mode: 'insensitive',
             },
           },
@@ -33,7 +33,7 @@ export class GetCitiesQueryHandler implements IQueryHandler<GetCitiesQuery> {
             postalCodes: {
               some: {
                 postalCode: {
-                  contains: command.search,
+                  contains: command.query.search,
                   mode: 'insensitive',
                 },
               },

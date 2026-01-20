@@ -9,8 +9,8 @@ export class RefreshTokenHandler
 {
   constructor(private readonly authService: AuthService) {}
 
-  async execute({ refreshToken }: RefreshTokenCommand) {
-    if (!refreshToken) {
+  async execute(command: RefreshTokenCommand) {
+    if (!command.refreshToken) {
       throw new HttpException(
         {
           message:
@@ -23,7 +23,7 @@ export class RefreshTokenHandler
     try {
       const { accessToken, refreshToken: newRefreshToken } =
         await this.authService.refreshAuthenticationTokens({
-          refreshToken,
+          refreshToken: command.refreshToken,
         });
 
       return {

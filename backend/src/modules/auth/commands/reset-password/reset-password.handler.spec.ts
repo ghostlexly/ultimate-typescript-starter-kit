@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { ResetPasswordHandler } from './reset-password.handler';
 import { ResetPasswordCommand } from './reset-password.command';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
@@ -54,11 +54,9 @@ describe('ResetPasswordHandler', () => {
     // ===== Act
     const result = await handler.execute(
       new ResetPasswordCommand({
-        data: {
-          email: 'test@test.com',
-          password: 'newPassword123',
-          token: '123456',
-        },
+        email: 'test@test.com',
+        password: 'newPassword123',
+        token: '123456',
       }),
     );
 
@@ -83,11 +81,9 @@ describe('ResetPasswordHandler', () => {
     await expect(
       handler.execute(
         new ResetPasswordCommand({
-          data: {
-            email: 'test@test.com',
-            password: 'newPassword123',
-            token: 'invalid',
-          },
+          email: 'test@test.com',
+          password: 'newPassword123',
+          token: 'invalid',
         }),
       ),
     ).rejects.toThrow(
@@ -107,11 +103,9 @@ describe('ResetPasswordHandler', () => {
     await expect(
       handler.execute(
         new ResetPasswordCommand({
-          data: {
-            email: 'unknown@test.com',
-            password: 'newPassword123',
-            token: '123456',
-          },
+          email: 'unknown@test.com',
+          password: 'newPassword123',
+          token: '123456',
         }),
       ),
     ).rejects.toThrow(

@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { SignInHandler } from './sign-in.handler';
 import { SignInCommand } from './sign-in.command';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
@@ -75,10 +75,7 @@ describe('SignInHandler', () => {
 
     // ===== Act
     const result = await handler.execute(
-      new SignInCommand({
-        data: { email: 'test@test.com', password: 'password' },
-        res: mockResponse,
-      }),
+      new SignInCommand({ email: 'test@test.com', password: 'password' }),
     );
 
     // ===== Assert
@@ -87,13 +84,6 @@ describe('SignInHandler', () => {
       accessToken: 'access-token',
       refreshToken: 'refresh-token',
     });
-
-    expect(authService.setAuthCookies).toHaveBeenCalledWith(
-      expect.objectContaining({
-        accessToken: 'access-token',
-        refreshToken: 'refresh-token',
-      }),
-    );
   });
 
   it('should throw error when account does not exist', async () => {
@@ -105,8 +95,8 @@ describe('SignInHandler', () => {
     await expect(
       handler.execute(
         new SignInCommand({
-          data: { email: 'test@test.com', password: 'password' },
-          res: mockResponse,
+          email: 'test@test.com',
+          password: 'password',
         }),
       ),
     ).rejects.toThrow(
@@ -128,8 +118,8 @@ describe('SignInHandler', () => {
     await expect(
       handler.execute(
         new SignInCommand({
-          data: { email: 'test@test.com', password: 'password' },
-          res: mockResponse,
+          email: 'test@test.com',
+          password: 'password',
         }),
       ),
     ).rejects.toThrow(
@@ -155,8 +145,8 @@ describe('SignInHandler', () => {
     await expect(
       handler.execute(
         new SignInCommand({
-          data: { email: 'test@test.com', password: 'wrong-password' },
-          res: mockResponse,
+          email: 'test@test.com',
+          password: 'wrong-password',
         }),
       ),
     ).rejects.toThrow(
