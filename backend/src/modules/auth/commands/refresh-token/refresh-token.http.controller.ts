@@ -15,13 +15,17 @@ import { AllowAnonymous } from 'src/modules/core/decorators/allow-anonymous.deco
 import { ZodValidationPipe } from 'src/modules/core/pipes/zod-validation.pipe';
 import { RefreshTokenCommand } from './refresh-token.command';
 import {
-  refreshTokenRequestSchema,
   type RefreshTokenRequestDto,
+  refreshTokenRequestSchema,
 } from './refresh-token.request.dto';
+import { AuthService } from '../../auth.service';
 
 @Controller()
 export class RefreshTokenController {
-  constructor(private readonly commandBus: CommandBus) {}
+  constructor(
+    private readonly commandBus: CommandBus,
+    private readonly authService: AuthService,
+  ) {}
 
   @Post('/auth/refresh')
   @AllowAnonymous()
@@ -46,8 +50,19 @@ export class RefreshTokenController {
       );
     }
 
-    return this.commandBus.execute(
-      new RefreshTokenCommand({ refreshToken, res }),
-    );
+    const { accessToken, refreshToken: newRefreshToken } =
+      await this.commandBus.execute(new RefreshTokenCommand({ refreshToken }));
+
+    // Set authentication cookies
+    this.authService.setAuthCookies({
+      res,
+      accessToken,
+      refreshToken: newRefreshToken,
+    });
+
+    return {
+      accessToken,
+      refreshToken: newRefreshToken,
+    };
   }
 }

@@ -9,7 +9,7 @@ export class RefreshTokenHandler
 {
   constructor(private readonly authService: AuthService) {}
 
-  async execute({ refreshToken, res }: RefreshTokenCommand) {
+  async execute({ refreshToken }: RefreshTokenCommand) {
     if (!refreshToken) {
       throw new HttpException(
         {
@@ -25,13 +25,6 @@ export class RefreshTokenHandler
         await this.authService.refreshAuthenticationTokens({
           refreshToken,
         });
-
-      // Set authentication cookies
-      this.authService.setAuthCookies({
-        res,
-        accessToken,
-        refreshToken: newRefreshToken,
-      });
 
       return {
         accessToken,

@@ -1,10 +1,9 @@
 import { Test } from '@nestjs/testing';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { RefreshTokenHandler } from './refresh-token.handler';
 import { RefreshTokenCommand } from './refresh-token.command';
 import { AuthService } from '../../auth.service';
-import type { Response } from 'express';
 
 function createMockAccount(overrides = {}): any {
   return {
@@ -39,11 +38,8 @@ function createMockSession(overrides = {}): any {
 describe('RefreshTokenHandler', () => {
   let handler: RefreshTokenHandler;
   let authService: DeepMockProxy<AuthService>;
-  let mockResponse: DeepMockProxy<Response>;
 
   beforeEach(async () => {
-    mockResponse = mockDeep<Response>();
-
     const app = await Test.createTestingModule({
       providers: [RefreshTokenHandler],
     })
@@ -69,8 +65,7 @@ describe('RefreshTokenHandler', () => {
     // ===== Act
     const result = await handler.execute(
       new RefreshTokenCommand({
-        data: { refreshToken: 'valid-refresh-token' },
-        res: mockResponse,
+        refreshToken: 'valid-refresh-token',
       }),
     );
 
@@ -79,13 +74,6 @@ describe('RefreshTokenHandler', () => {
       accessToken: 'new-access-token',
       refreshToken: 'new-refresh-token',
     });
-
-    expect(authService.setAuthCookies).toHaveBeenCalledWith(
-      expect.objectContaining({
-        accessToken: 'new-access-token',
-        refreshToken: 'new-refresh-token',
-      }),
-    );
   });
 
   it('should throw error when refresh token is not provided', async () => {
@@ -93,8 +81,7 @@ describe('RefreshTokenHandler', () => {
     await expect(
       handler.execute(
         new RefreshTokenCommand({
-          data: { refreshToken: '' },
-          res: mockResponse,
+          refreshToken: '',
         }),
       ),
     ).rejects.toThrow(
@@ -118,8 +105,7 @@ describe('RefreshTokenHandler', () => {
     await expect(
       handler.execute(
         new RefreshTokenCommand({
-          data: { refreshToken: 'invalid-token' },
-          res: mockResponse,
+          refreshToken: 'invalid-token',
         }),
       ),
     ).rejects.toThrow(

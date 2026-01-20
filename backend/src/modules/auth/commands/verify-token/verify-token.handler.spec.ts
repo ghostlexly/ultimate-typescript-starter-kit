@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { VerifyTokenHandler } from './verify-token.handler';
 import { VerifyTokenCommand } from './verify-token.command';
 import { AuthService } from '../../auth.service';
@@ -31,11 +31,9 @@ describe('VerifyTokenHandler', () => {
     // ===== Act
     const result = await handler.execute(
       new VerifyTokenCommand({
-        data: {
-          type: 'PASSWORD_RESET',
-          token: '123456',
-          email: 'test@test.com',
-        },
+        type: 'PASSWORD_RESET',
+        token: '123456',
+        email: 'test@test.com',
       }),
     );
 
@@ -43,7 +41,7 @@ describe('VerifyTokenHandler', () => {
     expect(result).toEqual({
       message: 'Token is valid.',
     });
-     
+
     expect(authService.verifyVerificationToken).toHaveBeenCalledWith(
       expect.objectContaining({
         type: 'PASSWORD_RESET',
@@ -61,11 +59,9 @@ describe('VerifyTokenHandler', () => {
     await expect(
       handler.execute(
         new VerifyTokenCommand({
-          data: {
-            type: 'PASSWORD_RESET',
-            token: 'invalid',
-            email: 'test@test.com',
-          },
+          type: 'PASSWORD_RESET',
+          token: 'invalid',
+          email: 'test@test.com',
         }),
       ),
     ).rejects.toThrow(
