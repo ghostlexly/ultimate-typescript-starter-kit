@@ -1,5 +1,5 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { PrismaClient, Prisma } from '../../../generated/prisma/client';
+import { Prisma, PrismaClient } from '../../../generated/prisma/client';
 import { S3Service } from './s3.service';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
@@ -8,11 +8,14 @@ import { ConfigService } from '@nestjs/config';
 type ModelName = Uncapitalize<Prisma.ModelName>;
 
 class ExtendedPrismaClient extends PrismaClient {
-  async findManyAndCount<M extends ModelName>(
+  async findManyAndCount<
+    M extends ModelName,
+    A extends Prisma.Args<PrismaClient[M], 'findMany'>,
+  >(
     model: M,
-    args: Prisma.Args<PrismaClient[M], 'findMany'>,
+    args: A,
   ): Promise<{
-    data: Prisma.Result<PrismaClient[M], typeof args, 'findMany'>;
+    data: Prisma.Result<PrismaClient[M], A, 'findMany'>;
     count: number;
   }> {
     const delegate = this[model] as {
