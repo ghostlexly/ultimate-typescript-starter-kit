@@ -5,7 +5,11 @@ import { TestPlayerCommand } from './test-player.command';
 export class TestPlayerHandler implements ICommandHandler<TestPlayerCommand> {
   // eslint-disable-next-line @typescript-eslint/require-await
   async execute(command: TestPlayerCommand) {
-    const { name, age, person, id } = command;
-    return { name, age, person, id };
+    return {
+      name: command.name,
+      age: command.age,
+      person: command.person,
+      id: command.id,
+    };
   }
 }

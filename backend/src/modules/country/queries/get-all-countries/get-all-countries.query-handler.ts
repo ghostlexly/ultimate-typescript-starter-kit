@@ -1,4 +1,4 @@
-import { QueryHandler, IQueryHandler } from '@nestjs/cqrs';
+import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetAllCountriesQuery } from './get-all-countries.query';
 import { CountryService } from '../../country.service';
 
@@ -9,7 +9,7 @@ export class GetAllCountriesQueryHandler
   constructor(private readonly countryService: CountryService) {}
 
   // eslint-disable-next-line @typescript-eslint/require-await
-  async execute({ language }: GetAllCountriesQuery) {
-    return this.countryService.getAllCountries(language);
+  async execute(command: GetAllCountriesQuery) {
+    return this.countryService.getAllCountries(command.language);
   }
 }

@@ -4,7 +4,7 @@ import type { Request } from 'express';
 @Controller()
 export class GetCurrentUserController {
   @Get('/auth/me')
-  async getMe(@Req() req: Request) {
+  getMe(@Req() req: Request) {
     const user = req.user;
 
     if (!user) {

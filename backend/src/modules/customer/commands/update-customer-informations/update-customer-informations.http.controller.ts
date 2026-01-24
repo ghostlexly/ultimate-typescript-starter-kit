@@ -12,8 +12,8 @@ import { Roles } from 'src/modules/core/decorators/roles.decorator';
 import { ZodValidationPipe } from 'src/modules/core/pipes/zod-validation.pipe';
 import { UpdateCustomerInformationsCommand } from './update-customer-informations.command';
 import {
-  updateCustomerInformationsRequestSchema,
   type UpdateCustomerInformationsRequestDto,
+  updateCustomerInformationsRequestSchema,
 } from './update-customer-informations.request.dto';
 
 @Controller()
@@ -36,7 +36,8 @@ export class UpdateCustomerInformationsController {
     return this.commandBus.execute(
       new UpdateCustomerInformationsCommand({
         accountId: user.accountId,
-        ...body,
+        countryCode: body.countryCode,
+        cityId: body.city,
       }),
     );
   }

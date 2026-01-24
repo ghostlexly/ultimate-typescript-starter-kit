@@ -25,7 +25,9 @@ export class VerifyTokenController {
   @Throttle({ long: { limit: 10 } })
   @UsePipes(new ZodValidationPipe(verifyTokenRequestSchema))
   async verifyToken(@Body() body: VerifyTokenRequestDto['body']) {
-    const isTokenValid = this.commandBus.execute(new VerifyTokenCommand(body));
+    const isTokenValid = await this.commandBus.execute(
+      new VerifyTokenCommand(body),
+    );
 
     if (!isTokenValid) {
       throw new HttpException(
