@@ -24,6 +24,9 @@ jobs:
 
       - name: Generate prisma client
         run: cd backend && npx prisma generate
+        
+      - name: Run type-checks
+        run: cd backend && npm run type-check
 
       - name: Run unit tests
         run: cd backend && npm run test

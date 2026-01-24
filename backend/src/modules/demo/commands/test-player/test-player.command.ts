@@ -1,19 +1,18 @@
-import {
-  TestPlayerBodyInput,
-  TestPlayerQueryInput,
-} from './test-player.schema';
-
-interface TestPlayerCommandProps {
-  data: TestPlayerBodyInput;
-  query: TestPlayerQueryInput;
-}
-
 export class TestPlayerCommand {
-  public readonly data: TestPlayerBodyInput;
-  public readonly query: TestPlayerQueryInput;
+  public readonly name: string;
+  public readonly age: number;
+  public readonly person: { name: string };
+  public readonly id?: string;
 
-  constructor(props: TestPlayerCommandProps) {
-    this.data = props.data;
-    this.query = props.query;
+  constructor(props: {
+    name: string;
+    age: number;
+    person: { name: string };
+    id?: string;
+  }) {
+    this.name = props.name;
+    this.age = props.age;
+    this.person = props.person;
+    this.id = props.id;
   }
 }

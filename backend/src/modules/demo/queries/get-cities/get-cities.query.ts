@@ -1,13 +1,9 @@
-import { GetCitiesInput } from './get-cities.schema';
-
-interface GetCitiesQueryProps {
-  query: GetCitiesInput;
-}
+import { GetCitiesRequestDto } from './get-cities.request.dto';
 
 export class GetCitiesQuery {
-  public readonly query: GetCitiesInput;
+  public readonly query: GetCitiesRequestDto['query'];
 
-  constructor(props: GetCitiesQueryProps) {
+  constructor(props: { query: GetCitiesRequestDto['query'] }) {
     this.query = props.query;
   }
 }

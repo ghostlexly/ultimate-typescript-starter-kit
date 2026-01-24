@@ -1,4 +1,4 @@
-import { QueryHandler, IQueryHandler } from '@nestjs/cqrs';
+import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { GetCustomerInformationsQuery } from './get-customer-informations.query';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
@@ -9,13 +9,13 @@ export class GetCustomerInformationsQueryHandler
 {
   constructor(private readonly db: DatabaseService) {}
 
-  async execute({ accountId }: GetCustomerInformationsQuery) {
+  async execute(command: GetCustomerInformationsQuery) {
     const customerInformations = await this.db.prisma.customer.findFirst({
       include: {
         city: true,
       },
       where: {
-        accountId,
+        accountId: command.accountId,
       },
     });
 

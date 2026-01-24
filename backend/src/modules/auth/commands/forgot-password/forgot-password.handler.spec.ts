@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { ForgotPasswordHandler } from './forgot-password.handler';
 import { ForgotPasswordCommand } from './forgot-password.command';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
@@ -67,7 +67,7 @@ describe('ForgotPasswordHandler', () => {
 
     // ===== Act
     const result = await handler.execute(
-      new ForgotPasswordCommand({ data: { email: 'test@test.com' } }),
+      new ForgotPasswordCommand({ email: 'test@test.com' }),
     );
 
     // ===== Assert
@@ -93,9 +93,7 @@ describe('ForgotPasswordHandler', () => {
 
     // ===== Act & Assert
     await expect(
-      handler.execute(
-        new ForgotPasswordCommand({ data: { email: 'unknown@test.com' } }),
-      ),
+      handler.execute(new ForgotPasswordCommand({ email: 'unknown@test.com' })),
     ).rejects.toThrow(
       new HttpException(
         { message: 'Account not found.' },

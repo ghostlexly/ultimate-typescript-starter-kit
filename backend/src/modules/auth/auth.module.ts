@@ -15,7 +15,6 @@ import { VerifyTokenHandler } from './commands/verify-token/verify-token.handler
 import { ResetPasswordController } from './commands/reset-password/reset-password.http.controller';
 import { ResetPasswordHandler } from './commands/reset-password/reset-password.handler';
 import { GetCurrentUserController } from './queries/get-current-user/get-current-user.http.controller';
-import { GetCurrentUserQueryHandler } from './queries/get-current-user/get-current-user.query-handler';
 import { PasswordResetRequestedEventHandler } from './events/password-reset-requested/password-reset-requested.event-handler';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
@@ -30,7 +29,7 @@ const CommandHandlers = [
   ResetPasswordHandler,
 ];
 
-const QueryHandlers = [GetCurrentUserQueryHandler];
+const QueryHandlers = [];
 
 const EventHandlers = [PasswordResetRequestedEventHandler];
 

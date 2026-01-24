@@ -13,11 +13,11 @@ export class ResetPasswordHandler
     private readonly authService: AuthService,
   ) {}
 
-  async execute({ data }: ResetPasswordCommand) {
+  async execute(command: ResetPasswordCommand) {
     const tokenValid = await this.authService.verifyVerificationToken({
       type: 'PASSWORD_RESET',
-      token: data.token,
-      email: data.email,
+      token: command.token,
+      email: command.email,
     });
 
     if (!tokenValid) {
@@ -31,7 +31,7 @@ export class ResetPasswordHandler
 
     const account = await this.db.prisma.account.findFirst({
       where: {
-        email: data.email,
+        email: command.email,
       },
     });
 
@@ -45,7 +45,7 @@ export class ResetPasswordHandler
     }
 
     const hashedPassword = await this.authService.hashPassword({
-      password: data.password,
+      password: command.password,
     });
 
     // Update the account password

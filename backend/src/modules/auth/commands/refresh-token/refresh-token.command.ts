@@ -1,17 +1,7 @@
-import type { Response } from 'express';
-import { RefreshTokenInput } from './refresh-token.schema';
-
-interface RefreshTokenCommandProps {
-  data: RefreshTokenInput;
-  res: Response;
-}
-
 export class RefreshTokenCommand {
-  public readonly data: RefreshTokenInput;
-  public readonly res: Response;
+  public readonly refreshToken: string;
 
-  constructor(props: RefreshTokenCommandProps) {
-    this.data = props.data;
-    this.res = props.res;
+  constructor(props: { refreshToken: string }) {
+    this.refreshToken = props.refreshToken;
   }
 }

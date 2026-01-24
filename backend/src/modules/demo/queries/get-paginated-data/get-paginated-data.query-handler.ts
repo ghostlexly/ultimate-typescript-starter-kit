@@ -1,4 +1,4 @@
-import { QueryHandler, IQueryHandler } from '@nestjs/cqrs';
+import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetPaginatedDataQuery } from './get-paginated-data.query';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import {
@@ -13,7 +13,7 @@ export class GetPaginatedDataQueryHandler
 {
   constructor(private readonly db: DatabaseService) {}
 
-  async execute({ query }: GetPaginatedDataQuery) {
+  async execute(command: GetPaginatedDataQuery) {
     const filterConditions: Prisma.CityWhereInput[] = [
       {
         population: {
@@ -23,7 +23,7 @@ export class GetPaginatedDataQueryHandler
     ];
 
     const { pagination, orderBy, includes } = buildQueryParams({
-      query,
+      query: command.query,
       defaultSort: { inseeCode: 'asc' },
       allowedSortFields: [
         'inseeCode',
@@ -33,10 +33,10 @@ export class GetPaginatedDataQueryHandler
       ],
     });
 
-    if (query.id) {
+    if (command.query.id) {
       filterConditions.push({
         id: {
-          equals: query.id,
+          equals: command.query.id,
         },
       });
     }

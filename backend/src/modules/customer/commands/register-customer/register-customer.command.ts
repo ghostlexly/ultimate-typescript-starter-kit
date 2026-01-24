@@ -1,13 +1,11 @@
-import { RegisterCustomerInput } from './register-customer.schema';
-
-interface RegisterCustomerCommandProps {
-  data: RegisterCustomerInput;
-}
-
 export class RegisterCustomerCommand {
-  public readonly data: RegisterCustomerInput;
+  public readonly email: string;
+  public readonly password: string;
+  public readonly country: string;
 
-  constructor(props: RegisterCustomerCommandProps) {
-    this.data = props.data;
+  constructor(props: { email: string; password: string; country: string }) {
+    this.email = props.email;
+    this.password = props.password;
+    this.country = props.country;
   }
 }

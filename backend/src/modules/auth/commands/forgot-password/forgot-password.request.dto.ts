@@ -1,8 +1,9 @@
 import { z } from 'zod';
-import { forgotPasswordSchema } from './forgot-password.schema';
 
 export const forgotPasswordRequestSchema = z.object({
-  body: forgotPasswordSchema,
+  body: z.object({
+    email: z.email(),
+  }),
 });
 
 export type ForgotPasswordRequestDto = z.infer<

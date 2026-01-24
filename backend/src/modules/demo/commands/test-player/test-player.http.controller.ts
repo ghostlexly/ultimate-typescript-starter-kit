@@ -20,7 +20,7 @@ export class TestPlayerController {
     @Query() query: TestPlayerRequestDto['query'],
   ) {
     return this.commandBus.execute(
-      new TestPlayerCommand({ data: body, query }),
+      new TestPlayerCommand({ ...body, ...query }),
     );
   }
 }

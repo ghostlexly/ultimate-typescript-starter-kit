@@ -1,13 +1,13 @@
-import { VerifyTokenInput } from './verify-token.schema';
-
-interface VerifyTokenCommandProps {
-  data: VerifyTokenInput;
-}
+import type { VerificationType } from 'src/generated/prisma/enums';
 
 export class VerifyTokenCommand {
-  public readonly data: VerifyTokenInput;
+  public readonly type: VerificationType;
+  public readonly token: string;
+  public readonly email: string;
 
-  constructor(props: VerifyTokenCommandProps) {
-    this.data = props.data;
+  constructor(props: { type: VerificationType; token: string; email: string }) {
+    this.type = props.type;
+    this.token = props.token;
+    this.email = props.email;
   }
 }

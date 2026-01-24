@@ -1,17 +1,17 @@
-import type { Response } from 'express';
-import { SignInInput } from './sign-in.schema';
+import { Command } from '@nestjs/cqrs';
+import { Role } from '../../../../generated/prisma/enums';
 
-interface SignInCommandProps {
-  data: SignInInput;
-  res: Response;
-}
+export class SignInCommand extends Command<{
+  accessToken: string;
+  refreshToken: string;
+  role: Role;
+}> {
+  public readonly email: string;
+  public readonly password: string;
 
-export class SignInCommand {
-  public readonly data: SignInInput;
-  public readonly res: Response;
-
-  constructor(props: SignInCommandProps) {
-    this.data = props.data;
-    this.res = props.res;
+  constructor(props: { email: string; password: string }) {
+    super();
+    this.email = props.email;
+    this.password = props.password;
   }
 }

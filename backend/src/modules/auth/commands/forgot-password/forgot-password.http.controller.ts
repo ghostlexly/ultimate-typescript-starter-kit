@@ -5,8 +5,8 @@ import { AllowAnonymous } from 'src/modules/core/decorators/allow-anonymous.deco
 import { ZodValidationPipe } from 'src/modules/core/pipes/zod-validation.pipe';
 import { ForgotPasswordCommand } from './forgot-password.command';
 import {
-  forgotPasswordRequestSchema,
   type ForgotPasswordRequestDto,
+  forgotPasswordRequestSchema,
 } from './forgot-password.request.dto';
 
 @Controller()
@@ -18,6 +18,8 @@ export class ForgotPasswordController {
   @Throttle({ long: { limit: 5 } })
   @UsePipes(new ZodValidationPipe(forgotPasswordRequestSchema))
   async forgotPassword(@Body() body: ForgotPasswordRequestDto['body']) {
-    return this.commandBus.execute(new ForgotPasswordCommand({ data: body }));
+    return this.commandBus.execute(
+      new ForgotPasswordCommand({ email: body.email }),
+    );
   }
 }

@@ -12,12 +12,12 @@ export class SignInHandler implements ICommandHandler<SignInCommand> {
     private readonly authService: AuthService,
   ) {}
 
-  async execute({ data, res }: SignInCommand) {
+  async execute(command: SignInCommand) {
     // Verify if user exists
     const account: Account | null = await this.db.prisma.account.findFirst({
       where: {
         email: {
-          contains: data.email,
+          contains: command.email,
           mode: 'insensitive',
         },
       },
@@ -26,7 +26,7 @@ export class SignInHandler implements ICommandHandler<SignInCommand> {
     if (!account) {
       // When user doesn't exist, still hash a fake password to prevent timing-based account enumeration
       await this.authService.comparePassword({
-        password: data.password,
+        password: command.password,
         hashedPassword: '$2a$10$fakeHashToPreventTimingAttacks',
       });
 
@@ -50,7 +50,7 @@ export class SignInHandler implements ICommandHandler<SignInCommand> {
 
     // Hash given password and compare it to the stored hash
     const validPassword = await this.authService.comparePassword({
-      password: data.password,
+      password: command.password,
       hashedPassword: account.password,
     });
 
@@ -73,13 +73,6 @@ export class SignInHandler implements ICommandHandler<SignInCommand> {
       await this.authService.generateAuthenticationTokens({
         sessionId: session.id,
       });
-
-    // Set authentication cookies
-    this.authService.setAuthCookies({
-      res,
-      accessToken,
-      refreshToken,
-    });
 
     return {
       role: account.role,

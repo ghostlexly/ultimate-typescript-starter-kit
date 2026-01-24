@@ -15,11 +15,11 @@ export class ForgotPasswordHandler
     private readonly eventBus: EventBus,
   ) {}
 
-  async execute({ data }: ForgotPasswordCommand) {
+  async execute(command: ForgotPasswordCommand) {
     const account = await this.db.prisma.account.findFirst({
       where: {
         email: {
-          contains: data.email,
+          contains: command.email,
           mode: 'insensitive',
         },
       },
