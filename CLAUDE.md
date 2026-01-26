@@ -1,325 +1,166 @@
-# CLAUDE.md
-
-This file provides guidance to Claude Code when working with this repository.
+# Project Guidelines
 
 ## Project Overview
 
-**Ultimate-TypeScript-Starter-Kit** is a great starter for any solid, long-term projects.
+Monorepo with a **NestJS 11** backend and **Next.js 16** frontend, running in Docker via Docker Compose with Caddy as reverse proxy.
 
-### Architecture
+## Tech Stack
 
-- **Backend**: NestJS (TypeScript) - Feature-based modular architecture
-- **Frontend**: Next.js 15 (TypeScript) - App Router
-- **Database**: PostgreSQL with Prisma ORM
-- **Infrastructure**: Docker-based development and deployment
+**Backend:** NestJS 11, TypeScript 5.7, Prisma 7 (PostgreSQL 17), Zod 4 validation, Jest 30 (with @swc/jest), BullMQ (Redis 8), Passport JWT (RS256) + Google OAuth, Winston logging, Sentry, AWS S3
+**Frontend:** Next.js 16, React 19, TypeScript 5, Tailwind CSS 4, Shadcn UI + Radix UI, Zustand, TanStack React Query 5, React Hook Form + Zod, Axios
 
-## Development Setup
+## Architecture
 
-### Starting the Project
+### Backend — CQRS Pattern
+
+The backend uses `@nestjs/cqrs` with this file structure per feature:
+
+```
+modules/<domain>/commands/<action>/
+├── <action>.command.ts            # Command class
+├── <action>.handler.ts            # Business logic (implements ICommandHandler)
+├── <action>.http.controller.ts    # HTTP route
+├── <action>.request.dto.ts        # Zod validation schema
+└── <action>.handler.spec.ts       # Unit test
+
+modules/<domain>/queries/<query>/
+├── <query>.query.ts
+├── <query>.handler.ts
+└── <query>.http.controller.ts
+```
+
+Events go in `modules/<domain>/events/` with separate event handlers for side effects.
+
+### Backend — Module Organization
+
+- `modules/auth/` — Authentication (sign-in, tokens, OAuth, password reset)
+- `modules/customer/` — Customer management
+- `modules/media/` — File uploads (S3)
+- `modules/core/` — Global guards, pipes, decorators, exceptions, filters
+- `modules/shared/` — DatabaseService (Prisma), S3Service
+- `modules/demo/` — Example module
+- `modules/cli/` — CLI commands and seeders (nest-commander)
+
+### Backend — Key Services
+
+- `DatabaseService` — Extended Prisma client with `findManyAndCount()` for pagination
+- `ZodValidationPipe` — Validates request body/query/params against Zod schemas
+- `JwtAuthGuard` — Global guard; use `@AllowAnonymous()` to skip auth
+- `RolesGuard` — Role-based access via `@Roles()` decorator
+- `TrimStringsPipe` — Auto-trims whitespace on string inputs
+- `UnhandledExceptionsFilter` — Global error handler
+
+### Frontend — Structure
+
+- `src/app/` — Next.js App Router pages and layouts
+- `src/components/` — Shadcn UI and custom components
+- `src/middleware.ts` — Auth route protection (redirects to `/auth/signin`)
+- Path alias: `@/*` maps to `./src/*`
+- State: Zustand stores, TanStack React Query for server state
+- Auth: Custom `LuniAuthProvider` with SSR session support
+
+## Database
+
+- **ORM:** Prisma 7 with `@prisma/adapter-pg` connection pooling
+- **Schema:** `backend/prisma/schema.prisma`
+- **Models:** Account, Session, Customer, Admin, VerificationToken, Media, City, AppConfig
+- **IDs:** Always `String` type
+- All cascade deletes flow from Account
+
+## Commands
+
+### Development (via Makefile, runs in Docker)
 
 ```bash
-# Start all services (backend, frontend, database, redis)
-docker compose up
-
-# Access the applications:
-# - Frontend: http://localhost
-# - Backend API: http://localhost/api/
-# - Database: PostgreSQL on port 5432
-# - Redis: port 6379
+make start              # Start dev environment (docker compose up)
+make stop               # Stop dev environment
+make build              # Build Docker images
+make bb                 # Bash into backend container
+make bf                 # Bash into frontend container
 ```
 
-### Working with the Backend
+### Code Quality
 
 ```bash
-# Run linting
-docker compose exec backend npm run lint
-
-# Run tests
-make test
-
-# Generate Prisma client (after schema changes)
-make prisma-g
-
-# Create and apply database migrations
-docker compose exec backend npx prisma migrate dev --name <migration_name>
-
-# Format code
-docker compose exec backend npm run format
-
-# CLI commands
-docker compose exec backend npm run cli create-admin-account
-docker compose exec backend npm run cli generate-password
+make lint               # ESLint (frontend)
+make lint-fix           # ESLint with autofix
+make type-check         # TypeScript type checking
+make qa                 # lint-fix + type-check
 ```
 
-### Working with the Frontend
+### Testing
 
 ```bash
-# Run linting
-docker compose exec frontend npm run lint
-
-# Build for production
-cd frontend && npm run build
+make test               # Run backend unit tests (Jest)
+make test-watch         # Watch mode
+make test-e2e           # Reset test DB + run E2E tests
 ```
 
-### Database Operations
+### Prisma
 
 ```bash
-# Run migrations in Docker
-docker compose exec backend npx prisma migrate deploy
-
-# Generate Prisma client in container
-docker compose exec backend npx prisma generate
-
-# Seed database
-docker compose exec backend npm run seed
-
-# Access Prisma Studio
-docker compose exec backend npx prisma studio
+make prisma-g           # Generate Prisma client
+make prisma-m-g         # Create new migration (dev --create-only)
+make prisma-m-deploy    # Apply migrations + regenerate client
+make prisma-m-diff      # Check schema drift
 ```
 
-## Backend Architecture
+### Direct npm scripts (inside containers)
 
-### Core Structure
+```bash
+# Backend
+npm run build           # nest build
+npm test                # jest
+npm run test:e2e        # E2E tests
+npm run cli             # Run CLI commands (node dist/cli.js)
 
-```
-backend/src/
-├── app.module.ts           # Root module with global configuration
-├── core/                   # Shared infrastructure
-│   ├── decorators/         # Custom decorators (@AllowAnonymous, @Roles, etc.)
-│   ├── exceptions/         # Custom exception classes
-│   ├── filters/            # Exception filters
-│   ├── guards/             # Auth guards (JwtAuthGuard, RolesGuard, ThrottlerBehindProxyGuard)
-│   ├── pipes/              # Custom pipes (TrimStringsPipe)
-│   ├── types/              # Shared TypeScript types
-│   ├── utils/              # Utility functions (page-query.ts, etc.)
-│   └── validators/         # Shared Zod validators
-├── features/               # Feature modules (30+ modules)
-│   ├── auth/               # Authentication & authorization
-│   └── ...                 # Other feature modules
-└── generated/              # Generated code (Prisma client)
+# Frontend
+npm run dev             # next dev --turbopack
+npm run build           # next build
 ```
 
-### Key Technologies & Patterns
-
-- **CQRS Pattern**: Commands and queries separation using @nestjs/cqrs
-- **Event-Driven**: EventEmitter for domain events
-- **Queue System**: BullMQ for background jobs
-- **Validation**: Zod schemas for request validation
-- **Authentication**: JWT with Passport, role-based access control
-- **Error Tracking**: Sentry integration
-- **Caching**: Redis via cache-manager
-- **Rate Limiting**: Throttler with proxy support
-
-### Feature Module Structure
-
-Each feature module typically contains:
-
-```
-feature-name/
-├── controllers/
-│   ├── feature.admin.controller.ts      # Admin endpoints
-│   ├── feature.customer.controller.ts   # Customer endpoints
-├── validators/
-│   ├── feature.admin.validators.ts      # Zod schemas for admin
-│   ├── feature.customer.validators.ts   # Zod schemas for customer
-├── services/                             # Business logic
-├── entities/                             # Domain entities
-└── feature.module.ts                     # Module definition
-```
-
-### User Roles
-
-The application has 2 main roles:
-
-- **ADMIN**: Full system access
-- **CUSTOMER**: Clients
-
-### Global Guards & Pipes
-
-- `JwtAuthGuard`: Enforces authentication (use `@AllowAnonymous()` to bypass)
-- `RolesGuard`: Enforces role-based access (use `@Roles()` decorator)
-- `ThrottlerBehindProxyGuard`: Rate limiting behind reverse proxy
-- `TrimStringsPipe`: Automatically trims string inputs
-
-## Frontend Architecture
-
-### Core Structure
-
-```
-frontend/src/
-├── app/                    # Next.js App Router pages
-├── components/             # Reusable React components
-├── hooks/                  # Custom React hooks
-├── lib/                    # Utilities and configurations
-├── actions/                # Server actions
-└── assets/                 # Static assets
-```
-
-### Key Technologies
-
-- **UI Components**: Shadcn UI, Radix UI
-- **Styling**: Tailwind CSS 4.x
-- **Forms**: React Hook Form
-- **State Management**: Zustand
-- **Data Fetching**: TanStack Query (React Query)
-- **Animations**: Framer Motion
-- **Icons**: Lucide React, React Icons
-
-## Code Style & Conventions
+## Code Conventions
 
 ### General
 
-- Write concise, technical TypeScript code
-- Use functional and declarative programming patterns; avoid classes
-- Prefer iteration and modularization over code duplication
-- Use descriptive variable names with auxiliary verbs (e.g., `isLoading`, `hasError`, `canSubmit`)
+- Use English for all code and documentation.
+- Always declare types for variables, parameters, and return values. Avoid `any`.
+- Use kebab-case for file and directory names.
+- One export per file.
+- Use Zod schemas for all request validation (not class-validator).
+- IDs are always of type `string`.
 
-### Naming Conventions
+### Naming
 
-- Use lowercase with dashes for directories (e.g., `components/auth-wizard`)
-- Favor named exports for components
-- Use PascalCase for components, camelCase for functions and variables
+- **PascalCase:** Classes, interfaces, type aliases, decorators
+- **camelCase:** Variables, functions, methods, properties
+- **UPPERCASE:** Constants, environment variables
+- **kebab-case:** Files and directories
+- Booleans start with a verb: `isLoading`, `hasError`, `canDelete`
+- Functions start with a verb: `findUser`, `createSession`, `handleSubmit`
 
-### TypeScript Usage
+### Backend Specifics
 
-- Use TypeScript for all code; prefer interfaces over types
-- Avoid enums; use maps or const objects instead
-- Use functional components with TypeScript interfaces
+- Follow the CQRS file structure above when adding features.
+- Commands dispatch via `CommandBus`, queries via `QueryBus`.
+- Use `@UsePipes(new ZodValidationPipe(schema))` for request validation.
+- Inject dependencies via constructor (NestJS DI).
+- API routes are prefixed with `/api`.
+- Use `ConfigService.getOrThrow()` for required env vars.
 
-### Backend
+### Frontend Specifics
 
-- Use **Zod** for all request validation
-- Controllers should be thin, delegate to services
-- Use DTOs for data transfer
-- Apply appropriate decorators (`@AllowAnonymous()`, `@Roles()`)
-- Handle errors with custom exceptions
-- Write unit tests for services
+- Use functional components only. No classes.
+- Prefer React Server Components; minimize `'use client'`.
+- Use Shadcn UI + Radix UI + Tailwind CSS for all UI.
+- Use `useForm` with Zod resolver for forms.
+- Use TanStack React Query for data fetching, Zustand for client state.
+- Favor named exports.
 
-### Frontend
+### Testing
 
-- Use TypeScript strictly
-- Use the `function` keyword for pure functions
-- Structure files: exported component, subcomponents, helpers, static content, types
-- Follow Next.js App Router conventions
-- Use Tailwind CSS for styling with a mobile-first approach
-- Implement proper error boundaries
-
-### React & Next.js Patterns
-
-- Favor React Server Components (RSC) over client components
-- Minimize `'use client'`, `useEffect`, and `useState`
-- Wrap client components in `Suspense` with fallback
-- Use dynamic loading for non-critical components
-- Avoid using client components for data fetching or state management
-
-### UI & Performance
-
-- Use Shadcn UI, Radix UI, and Tailwind for components and styling
-- Implement responsive design with mobile-first approach
-- Optimize images: use WebP format, include size data, implement lazy loading
-- Optimize Web Vitals (LCP, CLS, FID)
-
-## Testing
-
-```bash
-# Backend unit tests
-cd backend
-npm test
-
-# Watch mode
-npm run test:watch
-
-# Coverage
-npm run test:cov
-
-# E2E tests
-npm run test:e2e
-```
-
-## Common Commands
-
-### Docker
-
-```bash
-# Rebuild containers
-docker compose build
-
-# View logs
-docker compose logs -f [service]
-
-# Stop all services
-docker compose down
-
-# Remove volumes (caution: deletes data)
-docker compose down -v
-
-# Execute command in container
-docker compose exec backend <command>
-docker compose exec frontend <command>
-```
-
-### Git Workflow
-
-```bash
-# Ensure code quality before committing
-cd backend && npm run lint
-cd frontend && npm run lint
-
-# Run tests
-cd backend && npm test
-```
-
-## Important Files
-
-- `backend/prisma/schema.prisma`: Database schema
-- `backend/src/app.module.ts`: Root module configuration
-- `.env`: Environment variables (not in git)
-- `.env.template`: Template for environment setup
-- `docker-compose.yml`: Docker services configuration
-
-## External Services
-
-- **MangoPay**: Payment processing
-- **Brevo**: Email notifications
-- **AWS S3**: File storage
-- **Sentry**: Error tracking and monitoring
-
-## Notes for AI Assistant
-
-### Code Quality Checks (MANDATORY)
-
-After making ANY code changes, you MUST:
-
-1. **Check for TypeScript errors** - Check IDE diagnostics or run `npm run build`
-2. **Run linting** - Execute `npm run lint` to catch code style issues
-3. **Fix all errors** - Never leave TypeScript errors or linting errors unfixed
-4. **Verify imports** - Ensure all imports are correct (e.g., `import request from 'supertest'` not `import * as request`)
-5. **Test the build** - Make sure the project compiles successfully
-
-**Example workflow:**
-
-```bash
-# After making changes
-npm run build          # Check TypeScript compilation
-npm run lint           # Check code style and catch errors
-make test              # Run tests if applicable
-```
-
-### Development Guidelines
-
-- When modifying Prisma schema, remember to generate client and create migration
-- Use existing validators and decorators before creating new ones
-- Follow the established feature module pattern
-- Respect role-based access control
-- Consider performance implications (caching, queue jobs)
-- Write tests for new features
-- Update this file if adding significant new patterns or tools
-
-### Common TypeScript Issues to Avoid
-
-- ❌ Wrong imports: `import * as request from 'supertest'`
-- ✅ Correct imports: `import request from 'supertest'`
-- ❌ Using functions that don't exist in imported modules
-- ✅ Verify function exports before using them
-- ❌ Ignoring TypeScript diagnostics
-- ✅ Fix all type errors immediately
+- Test files live alongside source: `*.spec.ts`
+- Follow Arrange-Act-Assert pattern.
+- Name test variables: `inputX`, `mockX`, `actualX`, `expectedX`.
+- Use `jest-mock-extended` for mocking.
+- Use `@nestjs/testing` Test module for backend tests.
