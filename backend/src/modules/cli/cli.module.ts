@@ -6,16 +6,11 @@ import { SharedModule } from '../shared/shared.module';
 import { AuthModule } from '../auth/auth.module';
 import { CountryModule } from '../country/country.module';
 import { CqrsModule } from '@nestjs/cqrs';
-
-// Commands
 import { BasicCommand } from './commands/basic.command';
 import { CreateAdminAccountCommand } from './commands/create-admin-account.command';
 import { GenerateJwtKeysCommand } from './commands/generate-jwt-keys.command';
 import { SeedCommand } from './commands/seed.command';
-
-// Seeders
 import { UsersSeeder } from './seeders/users.seeder';
-import { CitiesSeeder } from './seeders/cities.seeder';
 
 @Module({
   imports: [
@@ -47,7 +42,6 @@ import { CitiesSeeder } from './seeders/cities.seeder';
 
     // Seeders
     UsersSeeder,
-    CitiesSeeder,
   ],
 })
 export class CliModule {}

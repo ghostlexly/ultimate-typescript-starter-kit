@@ -57,63 +57,91 @@ Welcome to the Ultimate TypeScript Full Stack Starter! This toolkit provides a r
 
 ## 🚀 Getting Started
 
+### Prerequisites
+
+- [Docker](https://www.docker.com/) and Docker Compose
+- [Node.js](https://nodejs.org/) (for local tooling and Prisma client generation)
+- [Make](https://www.gnu.org/software/make/) (optional, for shortcut commands)
+
+### Installation
+
 1. **Clone the repository**
 
-   ```
+   ```bash
    git clone https://github.com/ghostlexly/ultimate-typescript-starter-kit.git
    cd ultimate-typescript-starter-kit
    ```
 
-2. **Create a .env file (repo root)**
-   Provide the variables used by `compose.yml`.
-
-   Copy `.env.example` file to `.env` and fill in the required values.
-
-   **Generate JWT Keys (optional but recommanded for security):**
-   To generate the `APP_JWT_PRIVATE_KEY` and `APP_JWT_PUBLIC_KEY` values, run:
+2. **Configure environment variables**
 
    ```bash
-   # First, start the services to build the backend
-   docker compose up -d
-
-   # Generate JWT keys
-   docker compose exec backend npm run cli generate:jwt-keys
+   cp .env.example .env
    ```
 
-   This will output base64-encoded RSA keys that you can copy directly into your `.env` file.
+   Open `.env` and update the values as needed (database password, S3 credentials, etc.).
 
-3. **Install dependencies (for local development)**
+3. **Install dependencies**
 
-   ```
-   cd backend && npm install
-   cd ../frontend && npm install
+   Run this in both `backend/` and `frontend/` directories:
+
+   ```bash
+   npm install
    ```
 
 4. **Start the stack**
 
+   ```bash
+   make start
    ```
+
+   Or directly with Docker Compose:
+
+   ```bash
    docker compose up
    ```
 
-5. **Initialize the database schema**
+5. **Initialize the database**
 
+   Generate the Prisma client locally (for IDE autocompletion):
+
+   ```bash
+   cd backend && npx prisma generate
    ```
-   # Generate Prisma Client for the backend
-   cd backend && npx prisma generate && cd ..
 
-   # Apply migrations
+   Apply migrations:
+
+   ```bash
    docker compose exec backend npx prisma migrate deploy
+   ```
+
+   Or use the Makefile shortcut:
+
+   ```bash
+   make prisma-m-deploy
    ```
 
 6. **Seed the database**
 
-   ```
+   ```bash
    docker compose exec backend npm run cli seed
    ```
 
-7. **Access the application**
-   - Frontend: http://localhost
-   - Backend: http://localhost/api
+7. **Generate JWT keys** *(optional but recommended)*
+
+   The `.env.example` ships with default keys for development. To generate your own RSA keys:
+
+   ```bash
+   docker compose exec backend npm run cli generate:jwt-keys
+   ```
+
+   Copy the base64-encoded output into `APP_JWT_PRIVATE_KEY` and `APP_JWT_PUBLIC_KEY` in your `.env`, then restart the backend.
+
+8. **Access the application**
+
+   | Service  | URL                    |
+   |----------|------------------------|
+   | Frontend | http://localhost       |
+   | Backend  | http://localhost/api   |
 
 ## 🛠 Development Commands
 
