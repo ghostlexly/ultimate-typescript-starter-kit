@@ -6,8 +6,8 @@ import { generateKeyPairSync } from 'crypto';
   name: 'generate:jwt-keys',
   description: 'Generate RSA key pair for JWT authentication (base64 encoded)',
 })
-export class GenerateJwtKeysCommand extends CommandRunner {
-  private logger = new Logger(GenerateJwtKeysCommand.name);
+export class GenerateJwtKeysCommandRunner extends CommandRunner {
+  private logger = new Logger(GenerateJwtKeysCommandRunner.name);
 
   // eslint-disable-next-line @typescript-eslint/require-await
   async run() {

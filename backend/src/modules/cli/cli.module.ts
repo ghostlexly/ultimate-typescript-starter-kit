@@ -6,10 +6,10 @@ import { SharedModule } from '../shared/shared.module';
 import { AuthModule } from '../auth/auth.module';
 import { CountryModule } from '../country/country.module';
 import { CqrsModule } from '@nestjs/cqrs';
-import { BasicCommand } from './commands/basic.command';
-import { CreateAdminAccountCommand } from './commands/create-admin-account.command';
-import { GenerateJwtKeysCommand } from './commands/generate-jwt-keys.command';
-import { SeedCommand } from './commands/seed.command';
+import { BasicCommandRunner } from './commands/basic.command';
+import { CreateAdminAccountCommandRunner } from './commands/create-admin-account.command';
+import { GenerateJwtKeysCommandRunner } from './commands/generate-jwt-keys.command';
+import { SeedCommandRunner } from './commands/seed.command';
 import { UsersSeeder } from './seeders/users.seeder';
 
 @Module({
@@ -35,10 +35,10 @@ import { UsersSeeder } from './seeders/users.seeder';
   ],
   providers: [
     // Commands
-    SeedCommand,
-    BasicCommand,
-    CreateAdminAccountCommand,
-    GenerateJwtKeysCommand,
+    SeedCommandRunner,
+    BasicCommandRunner,
+    CreateAdminAccountCommandRunner,
+    GenerateJwtKeysCommandRunner,
 
     // Seeders
     UsersSeeder,

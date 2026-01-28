@@ -8,8 +8,8 @@ import { AuthService } from 'src/modules/auth/auth.service';
   description: 'Create an admin account',
   arguments: '<email> <password>',
 })
-export class CreateAdminAccountCommand extends CommandRunner {
-  private logger = new Logger(CreateAdminAccountCommand.name);
+export class CreateAdminAccountCommandRunner extends CommandRunner {
+  private logger = new Logger(CreateAdminAccountCommandRunner.name);
 
   constructor(
     private db: DatabaseService,

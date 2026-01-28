@@ -7,8 +7,8 @@ import { DatabaseService } from 'src/modules/shared/services/database.service';
   description: 'A parameter parse',
   arguments: '<name>',
 })
-export class BasicCommand extends CommandRunner {
-  private logger = new Logger(BasicCommand.name);
+export class BasicCommandRunner extends CommandRunner {
+  private logger = new Logger(BasicCommandRunner.name);
 
   constructor(private db: DatabaseService) {
     super();

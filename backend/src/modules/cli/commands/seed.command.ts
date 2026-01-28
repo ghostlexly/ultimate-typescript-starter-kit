@@ -6,8 +6,8 @@ import { UsersSeeder } from '../seeders/users.seeder';
   name: 'seed',
   description: 'Seed all data',
 })
-export class SeedCommand extends CommandRunner {
-  private logger = new Logger(SeedCommand.name);
+export class SeedCommandRunner extends CommandRunner {
+  private logger = new Logger(SeedCommandRunner.name);
 
   constructor(private usersSeeder: UsersSeeder) {
     super();
