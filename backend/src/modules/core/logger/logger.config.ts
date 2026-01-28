@@ -42,19 +42,23 @@ export const createWinstonConfig = () => {
     }),
   );
 
-  // File transports with automatic rotation
+  /**
+   * File transports with automatic rotation
+   * --
+   * Winston uses log level hierarchy where each level includes all levels above it (higher priority):
+   *   - error: 0 (highest priority)
+   *   - warn: 1
+   *   - info: 2
+   *   - debug: 5
+   *
+   * When you set level: 'warn', that transport will log messages at warn level and above (i.e., warn + error).
+   */
   transports.push(
     // All logs
-    createRotateTransport('combined-%DATE%.log', 'info'),
+    createRotateTransport('combined-%DATE%.log', 'debug'),
 
-    // Only errors
-    createRotateTransport('error-%DATE%.log', 'error'),
-
-    // Only warnings
+    // Only errors & warnings
     createRotateTransport('warn-%DATE%.log', 'warn'),
-
-    // Only debug
-    createRotateTransport('debug-%DATE%.log', 'debug'),
   );
 
   return {
