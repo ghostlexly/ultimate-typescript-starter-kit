@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { CqrsModule } from '@nestjs/cqrs';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
@@ -35,7 +34,6 @@ const EventHandlers = [PasswordResetRequestedEventHandler];
 
 @Module({
   imports: [
-    CqrsModule,
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => ({
         privateKey: Buffer.from(

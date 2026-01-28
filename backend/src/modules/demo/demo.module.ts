@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { CqrsModule } from '@nestjs/cqrs';
 import { BullModule } from '@nestjs/bullmq';
 import { DemoConsumer } from './demo.consumer';
 import { FindAllAccountsController } from './queries/find-all-accounts/find-all-accounts.http.controller';
@@ -30,7 +29,6 @@ const QueryHandlers = [
 
 @Module({
   imports: [
-    CqrsModule,
     BullModule.registerQueue({
       name: 'demo',
     }),

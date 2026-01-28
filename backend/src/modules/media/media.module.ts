@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { CqrsModule } from '@nestjs/cqrs';
 import { BullModule } from '@nestjs/bullmq';
 import { MediaService } from './media.service';
 import { MediaConsumer } from './media.consumer';
@@ -13,12 +12,16 @@ const CommandHandlers = [UploadMediaHandler, UploadVideoHandler];
 
 @Module({
   imports: [
-    CqrsModule,
     BullModule.registerQueue({
       name: 'media',
     }),
   ],
   controllers: [UploadMediaController, UploadVideoController],
-  providers: [MediaService, MediaConsumer, DeleteOrphanMediasCron, ...CommandHandlers],
+  providers: [
+    MediaService,
+    MediaConsumer,
+    DeleteOrphanMediasCron,
+    ...CommandHandlers,
+  ],
 })
 export class MediaModule {}

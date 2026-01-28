@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { CqrsModule } from '@nestjs/cqrs';
 import { AuthModule } from '../auth/auth.module';
 import { CountryModule } from '../country/country.module';
 import { CustomerService } from './customer.service';
@@ -18,7 +17,7 @@ const CommandHandlers = [
 const QueryHandlers = [GetCustomerInformationsQueryHandler];
 
 @Module({
-  imports: [CqrsModule, AuthModule, CountryModule],
+  imports: [AuthModule, CountryModule],
   controllers: [
     RegisterCustomerController,
     UpdateCustomerInformationsController,
