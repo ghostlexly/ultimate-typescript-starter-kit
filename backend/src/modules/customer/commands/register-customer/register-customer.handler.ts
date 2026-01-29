@@ -6,9 +6,7 @@ import { AuthService } from 'src/modules/auth/auth.service';
 import { CustomerService } from '../../customer.service';
 
 @CommandHandler(RegisterCustomerCommand)
-export class RegisterCustomerHandler
-  implements ICommandHandler<RegisterCustomerCommand>
-{
+export class RegisterCustomerHandler implements ICommandHandler<RegisterCustomerCommand> {
   constructor(
     private readonly db: DatabaseService,
     private readonly authService: AuthService,
