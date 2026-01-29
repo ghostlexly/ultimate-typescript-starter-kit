@@ -1,16 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 
 @Injectable()
-export class ClearExpiredSessionsCron {
-  private logger = new Logger(ClearExpiredSessionsCron.name);
+export class ClearExpiredSessionsJob {
+  private logger = new Logger(ClearExpiredSessionsJob.name);
 
   constructor(private db: DatabaseService) {}
 
-  @Cron('0 0 * * * *') // Every hour
+  @Cron(CronExpression.EVERY_HOUR)
   async execute() {
-    this.logger.log('[⏰ CRON] Clear expired sessions cron started');
+    this.logger.log('[⏰ SCHEDULER]: Running: Clear expired sessions job');
 
     try {
       // Get all expired sessions
@@ -20,13 +20,13 @@ export class ClearExpiredSessionsCron {
         },
       });
 
-      this.logger.log(
-        `[CRON] ${expiredSessions.count} expired sessions cleared`,
-      );
+      this.logger.log(`${expiredSessions.count} expired sessions cleared`);
     } catch (error) {
       this.logger.error('Error during expired sessions clearing:', error);
     } finally {
-      this.logger.log('[⏰ CRON] Clear expired sessions cron finished');
+      this.logger.log(
+        '[⏰ SCHEDULER]: Scheduled clear expired sessions job completed',
+      );
     }
   }
 }

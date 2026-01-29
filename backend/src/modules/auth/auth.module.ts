@@ -17,8 +17,6 @@ import { GetCurrentUserController } from './queries/get-current-user/get-current
 import { PasswordResetRequestedEventHandler } from './events/password-reset-requested/password-reset-requested.event-handler';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
-import { ClearExpiredSessionsCron } from './crons/clear-expired-sessions.cron';
-import { ClearExpiredVerificationTokensCron } from './crons/clear-expired-verification-tokens.cron';
 
 const CommandHandlers = [
   SignInHandler,
@@ -59,14 +57,13 @@ const EventHandlers = [PasswordResetRequestedEventHandler];
     GetCurrentUserController,
   ],
   providers: [
-    AuthService,
-    JwtStrategy,
-    GoogleStrategy,
-    ClearExpiredSessionsCron,
-    ClearExpiredVerificationTokensCron,
     ...CommandHandlers,
     ...QueryHandlers,
     ...EventHandlers,
+
+    AuthService,
+    JwtStrategy,
+    GoogleStrategy,
   ],
   exports: [AuthService],
 })

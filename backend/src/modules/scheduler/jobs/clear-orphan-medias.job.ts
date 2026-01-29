@@ -1,17 +1,19 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { dateUtils } from 'src/modules/core/utils/date';
 
 @Injectable()
-export class DeleteOrphanMediasCron {
-  private logger = new Logger(DeleteOrphanMediasCron.name);
+export class ClearOrphanMediasJob {
+  private logger = new Logger(ClearOrphanMediasJob.name);
 
   constructor(private db: DatabaseService) {}
 
-  @Cron('0 0 */3 * * *') // Every 3 hours
+  @Cron(CronExpression.EVERY_3_HOURS)
   async execute() {
     try {
+      this.logger.log('[⏰ SCHEDULER]: Running: Clear orphan medias job');
+
       // Identify the orphan media records
       const orphanMedias = await this.db.prisma.media.findMany({
         where: {
@@ -60,10 +62,12 @@ export class DeleteOrphanMediasCron {
           },
         });
       }
-
-      this.logger.debug('All orphan medias are been removed successfully.');
     } catch (error) {
       this.logger.error('Error during orphan media removal:', error);
+    } finally {
+      this.logger.log(
+        '[⏰ SCHEDULER]: Scheduled clear orphan medias job completed',
+      );
     }
   }
 }

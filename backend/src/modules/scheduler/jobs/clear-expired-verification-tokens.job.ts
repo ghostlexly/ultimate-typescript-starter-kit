@@ -1,16 +1,18 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 
 @Injectable()
-export class ClearExpiredVerificationTokensCron {
-  private logger = new Logger(ClearExpiredVerificationTokensCron.name);
+export class ClearExpiredVerificationTokensJob {
+  private logger = new Logger(ClearExpiredVerificationTokensJob.name);
 
   constructor(private db: DatabaseService) {}
 
-  @Cron('0 0 * * * *') // Every hour
+  @Cron(CronExpression.EVERY_HOUR)
   async execute() {
-    this.logger.log('[⏰ CRON] Clear expired verification tokens cron started');
+    this.logger.log(
+      '[⏰ SCHEDULER]: Running: Clear expired verification tokens job',
+    );
 
     try {
       // Get all expired verification tokens
@@ -22,7 +24,7 @@ export class ClearExpiredVerificationTokensCron {
         });
 
       this.logger.log(
-        `[CRON] ${expiredVerificationTokens.count} expired verification tokens cleared`,
+        `${expiredVerificationTokens.count} expired verification tokens cleared`,
       );
     } catch (error) {
       this.logger.error(
@@ -31,7 +33,7 @@ export class ClearExpiredVerificationTokensCron {
       );
     } finally {
       this.logger.log(
-        '[⏰ CRON] Clear expired verification tokens cron finished',
+        '[⏰ SCHEDULER]: Scheduled Clear expired verification tokens job completed',
       );
     }
   }
