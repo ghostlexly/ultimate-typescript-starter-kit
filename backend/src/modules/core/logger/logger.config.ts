@@ -4,10 +4,7 @@ import DailyRotateFile from 'winston-daily-rotate-file';
 import { join } from 'path';
 
 // Function to create a transport with rotation
-const createRotateTransport = (
-  filename: string,
-  level: string,
-): DailyRotateFile => {
+const createRotateTransport = (filename: string, level: string): DailyRotateFile => {
   return new DailyRotateFile({
     filename: join(process.cwd(), 'logs', filename),
     datePattern: 'YYYY-MM-DD',

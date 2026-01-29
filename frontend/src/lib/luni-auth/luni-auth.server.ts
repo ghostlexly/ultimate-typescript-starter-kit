@@ -1,13 +1,13 @@
-"use server";
+'use server';
 
-import { cookies } from "next/headers";
-import { wolfiosServer } from "../wolfios/wolfios.server";
+import { cookies } from 'next/headers';
+import { wolfiosServer } from '../wolfios/wolfios.server';
 
-const ACCESS_TOKEN_COOKIE = "lunisoft_access_token";
-const REFRESH_TOKEN_COOKIE = "lunisoft_refresh_token";
-const ME_ROUTE = "/api/auth/me";
+const ACCESS_TOKEN_COOKIE = 'lunisoft_access_token';
+const REFRESH_TOKEN_COOKIE = 'lunisoft_refresh_token';
+const ME_ROUTE = '/api/auth/me';
 
-type SessionStatus = "loading" | "authenticated" | "unauthenticated";
+type SessionStatus = 'loading' | 'authenticated' | 'unauthenticated';
 
 type SessionData = {
   status: SessionStatus;
@@ -22,18 +22,15 @@ const clearAuthCookies = async () => {
 };
 
 // Get user session data from the API
-const getServerSession = async (
-  userDataUrl = ME_ROUTE
-): Promise<SessionData> => {
+const getServerSession = async (userDataUrl = ME_ROUTE): Promise<SessionData> => {
   const cookieStore = await cookies();
   const token =
-    cookieStore.get(ACCESS_TOKEN_COOKIE) ??
-    cookieStore.get(REFRESH_TOKEN_COOKIE);
+    cookieStore.get(ACCESS_TOKEN_COOKIE) ?? cookieStore.get(REFRESH_TOKEN_COOKIE);
 
   // If no token, return unauthenticated
   if (!token) {
     return {
-      status: "unauthenticated",
+      status: 'unauthenticated',
       data: null,
     };
   }
@@ -49,12 +46,12 @@ const getServerSession = async (
       .then((res) => res.data);
 
     return {
-      status: "authenticated",
+      status: 'authenticated',
       data,
     };
   } catch (error) {
     return {
-      status: "unauthenticated",
+      status: 'unauthenticated',
       data: null,
     };
   }

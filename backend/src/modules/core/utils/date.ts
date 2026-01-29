@@ -66,10 +66,7 @@ const eachTimeOfInterval = (
   // --------------------------------
   // add the other intervals
   // --------------------------------
-  while (
-    isBefore(start, end) ||
-    (isSameHour(start, end) && isSameMinute(start, end))
-  ) {
+  while (isBefore(start, end) || (isSameHour(start, end) && isSameMinute(start, end))) {
     // round the start time to the nearest quarter minutes
     const roundedToQuarterMinutes = roundToNearestMinutes(start, {
       nearestTo: nearestTo,

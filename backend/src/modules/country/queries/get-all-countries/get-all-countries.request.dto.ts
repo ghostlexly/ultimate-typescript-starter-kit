@@ -6,6 +6,4 @@ export const getAllCountriesRequestSchema = z.object({
   }),
 });
 
-export type GetAllCountriesRequestDto = z.infer<
-  typeof getAllCountriesRequestSchema
->;
+export type GetAllCountriesRequestDto = z.infer<typeof getAllCountriesRequestSchema>;

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 /**
  * @author GhostLexly <ghostlexly@gmail.com>
@@ -21,7 +21,7 @@
  * ```
  */
 
-import * as React from "react";
+import * as React from 'react';
 import {
   Dialog,
   DialogContent,
@@ -29,17 +29,17 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Field, FieldLabel, FieldGroup } from "@/components/ui/field";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Field, FieldLabel, FieldGroup } from '@/components/ui/field';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 
 // ============================================================================
 // TYPES
@@ -48,7 +48,7 @@ import {
 export interface FilterField {
   id: string;
   label: string;
-  type: "text" | "select" | "number" | "date";
+  type: 'text' | 'select' | 'number' | 'date';
   placeholder?: string;
   options?: Array<{ value: string; label: string }>;
   defaultValue?: any;
@@ -105,10 +105,13 @@ export function DataTableFilters({
 
   const handleReset = () => {
     // Reset to default values defined in fields
-    const resetValues = fields.reduce((acc, field) => {
-      acc[field.id] = field.defaultValue ?? "";
-      return acc;
-    }, {} as Record<string, any>);
+    const resetValues = fields.reduce(
+      (acc, field) => {
+        acc[field.id] = field.defaultValue ?? '';
+        return acc;
+      },
+      {} as Record<string, any>,
+    );
 
     setLocalValues(resetValues);
     onValuesChange(resetValues);
@@ -121,54 +124,54 @@ export function DataTableFilters({
   // ========================================
   const renderField = (field: FilterField) => {
     switch (field.type) {
-      case "text":
+      case 'text':
         return (
           <Field key={field.id}>
             <FieldLabel htmlFor={field.id}>{field.label}</FieldLabel>
             <Input
               id={field.id}
               type="text"
-              value={localValues[field.id] ?? ""}
+              value={localValues[field.id] ?? ''}
               placeholder={field.placeholder}
               onChange={(e) => handleValueChange(field.id, e.target.value)}
             />
           </Field>
         );
 
-      case "number":
+      case 'number':
         return (
           <Field key={field.id}>
             <FieldLabel htmlFor={field.id}>{field.label}</FieldLabel>
             <Input
               id={field.id}
               type="number"
-              value={localValues[field.id] ?? ""}
+              value={localValues[field.id] ?? ''}
               placeholder={field.placeholder}
               onChange={(e) => handleValueChange(field.id, e.target.value)}
             />
           </Field>
         );
 
-      case "date":
+      case 'date':
         return (
           <Field key={field.id}>
             <FieldLabel htmlFor={field.id}>{field.label}</FieldLabel>
             <Input
               id={field.id}
               type="date"
-              value={localValues[field.id] ?? ""}
+              value={localValues[field.id] ?? ''}
               placeholder={field.placeholder}
               onChange={(e) => handleValueChange(field.id, e.target.value)}
             />
           </Field>
         );
 
-      case "select":
+      case 'select':
         return (
           <Field key={field.id}>
             <FieldLabel htmlFor={field.id}>{field.label}</FieldLabel>
             <Select
-              value={localValues[field.id] ?? ""}
+              value={localValues[field.id] ?? ''}
               onValueChange={(value) => handleValueChange(field.id, value)}
             >
               <SelectTrigger id={field.id}>
@@ -195,9 +198,7 @@ export function DataTableFilters({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Filters</DialogTitle>
-          <DialogDescription>
-            Apply filters to narrow down your results
-          </DialogDescription>
+          <DialogDescription>Apply filters to narrow down your results</DialogDescription>
         </DialogHeader>
 
         {/* Filter Fields */}

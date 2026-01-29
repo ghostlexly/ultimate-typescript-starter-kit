@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
 import {
   SidebarGroup,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
-import { IconCirclePlusFilled, IconMail } from "@tabler/icons-react";
-import { Button } from "@/components/ui/button";
-import { SidebarNav, type SidebarNavItem } from "@/components/ui/sidebar-nav";
+} from '@/components/ui/sidebar';
+import { IconCirclePlusFilled, IconMail } from '@tabler/icons-react';
+import { Button } from '@/components/ui/button';
+import { SidebarNav, type SidebarNavItem } from '@/components/ui/sidebar-nav';
 
 export function NavMain({ items }: { items: SidebarNavItem[] }) {
   return (

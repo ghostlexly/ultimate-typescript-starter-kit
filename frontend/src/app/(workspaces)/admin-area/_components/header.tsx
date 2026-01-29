@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,14 +8,14 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Skeleton } from "@/components/ui/skeleton";
-import { BellIcon, ChevronLeftIcon } from "lucide-react";
-import Link from "next/link";
-import { useBreadcrumb } from "@/hooks/use-breadcrumb";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+} from '@/components/ui/breadcrumb';
+import { SidebarTrigger } from '@/components/ui/sidebar';
+import { Skeleton } from '@/components/ui/skeleton';
+import { BellIcon, ChevronLeftIcon } from 'lucide-react';
+import Link from 'next/link';
+import { useBreadcrumb } from '@/hooks/use-breadcrumb';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export function Header() {
   const { breadcrumbs } = useBreadcrumb();
@@ -32,7 +32,7 @@ export function Header() {
   return (
     <header className="bg-background/40 sticky top-0 z-50 flex h-(--header-height) shrink-0 items-center gap-2 border-b backdrop-blur-md transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
       <div className="flex w-full items-center gap-2 px-4 lg:gap-3 lg:px-6">
-        <SidebarTrigger className="sm:hidden -ml-1" />
+        <SidebarTrigger className="-ml-1 sm:hidden" />
 
         <Button
           variant="ghost"
@@ -78,9 +78,7 @@ export function Header() {
                         </BreadcrumbLink>
                       )}
                     </BreadcrumbItem>
-                    {index !== breadcrumbs.length - 1 && (
-                      <BreadcrumbSeparator />
-                    )}
+                    {index !== breadcrumbs.length - 1 && <BreadcrumbSeparator />}
                   </div>
                 ))}
               </>
@@ -94,7 +92,7 @@ export function Header() {
           <h1 className="text-base font-semibold sm:hidden">
             {breadcrumbs.length > 0
               ? breadcrumbs[breadcrumbs.length - 1].label
-              : "Dashboard"}
+              : 'Dashboard'}
           </h1>
         )}
 
@@ -102,7 +100,7 @@ export function Header() {
           <Button variant="ghost" size="icon" className="relative">
             <BellIcon className="size-5" />
             <span className="sr-only">Notifications</span>
-            <span className="absolute right-2 top-2 size-2 rounded-full bg-primary" />
+            <span className="bg-primary absolute top-2 right-2 size-2 rounded-full" />
           </Button>
         </div>
       </div>

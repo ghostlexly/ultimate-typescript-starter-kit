@@ -1,24 +1,24 @@
-import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 type StoreProps = {
   previousLink: string;
-  setPreviousLink: (newLink: StoreProps["previousLink"]) => void;
+  setPreviousLink: (newLink: StoreProps['previousLink']) => void;
 };
 
 // used to create the store
 export const useAppStore = create(
   persist<StoreProps>(
     (set, get) => ({
-      previousLink: "/",
+      previousLink: '/',
       setPreviousLink: (newLink) =>
         set({
-          previousLink: newLink ?? "/",
+          previousLink: newLink ?? '/',
         }),
     }),
     {
-      name: "app", // name of the localStorage key
+      name: 'app', // name of the localStorage key
       storage: createJSONStorage(() => localStorage),
-    }
-  )
+    },
+  ),
 );

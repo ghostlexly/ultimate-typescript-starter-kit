@@ -20,10 +20,7 @@ export class GetCustomerInformationsQueryHandler
     });
 
     if (!customerInformations) {
-      throw new HttpException(
-        "You don't have any information",
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new HttpException("You don't have any information", HttpStatus.BAD_REQUEST);
     }
 
     return {

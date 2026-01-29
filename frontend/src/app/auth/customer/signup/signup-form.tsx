@@ -1,34 +1,29 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { CenteredLoadingSpinner } from "@/components/ui/centered-loading-spinner";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { PasswordInput } from "@/components/ui/password-input";
-import { QueryErrorMessage } from "@/components/ui/query-error-message";
-import { SingleSelectCombobox } from "@/components/ui/single-select-combobox/single-select-combobox";
-import { useAppStore } from "@/hooks/use-app-store";
-import { useSession } from "@/lib/luni-auth/luni-auth.provider";
-import { handleApiErrors } from "@/lib/handle-api-errors";
-import { wolfios } from "@/lib/wolfios/wolfios";
-import { useQuery } from "@tanstack/react-query";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useTransition } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { toast } from "react-toastify";
+} from '@/components/ui/card';
+import { CenteredLoadingSpinner } from '@/components/ui/centered-loading-spinner';
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
+import { QueryErrorMessage } from '@/components/ui/query-error-message';
+import { SingleSelectCombobox } from '@/components/ui/single-select-combobox/single-select-combobox';
+import { useAppStore } from '@/hooks/use-app-store';
+import { useSession } from '@/lib/luni-auth/luni-auth.provider';
+import { handleApiErrors } from '@/lib/handle-api-errors';
+import { wolfios } from '@/lib/wolfios/wolfios';
+import { useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useTransition } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 
 type FormValues = {
   email: string;
@@ -39,7 +34,7 @@ type FormValues = {
 export function SignUpForm({
   searchParams,
   ...props
-}: React.ComponentPropsWithoutRef<"div"> & {
+}: React.ComponentPropsWithoutRef<'div'> & {
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const router = useRouter();
@@ -48,14 +43,14 @@ export function SignUpForm({
   const [isPendingTransition, startTransition] = useTransition();
 
   const countries = useQuery({
-    queryKey: ["countries"],
-    queryFn: () => wolfios.get("/api/countries").then((res) => res.data),
+    queryKey: ['countries'],
+    queryFn: () => wolfios.get('/api/countries').then((res) => res.data),
   });
 
   const form = useForm<FormValues>({
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
       country: null,
     },
   });
@@ -65,7 +60,7 @@ export function SignUpForm({
 
     if (error) {
       toast.error(
-        "Authentication failed. Please try again or use a different sign-in method."
+        'Authentication failed. Please try again or use a different sign-in method.',
       );
     }
   }, [searchParams]);
@@ -76,16 +71,16 @@ export function SignUpForm({
       await wolfios.post(`/api/customers/signup`, {
         email: values.email,
         password: values.password,
-        role: "CUSTOMER",
+        role: 'CUSTOMER',
         country: values.country?.countryCode,
       });
 
       // Sign in
       await wolfios
-        .post("/api/auth/signin", {
+        .post('/api/auth/signin', {
           email: values.email,
           password: values.password,
-          role: "CUSTOMER",
+          role: 'CUSTOMER',
         })
         .then((res) => res.data);
 
@@ -95,10 +90,10 @@ export function SignUpForm({
       // if previous link is provided, redirect to it
       // (ex: when the user is redirected to login page from booking page)
       startTransition(() => {
-        if (previousLink && previousLink !== "/") {
+        if (previousLink && previousLink !== '/') {
           router.push(previousLink);
         } else {
-          router.push("/");
+          router.push('/');
         }
       });
     } catch (error) {
@@ -108,7 +103,7 @@ export function SignUpForm({
 
   const handleGoogleSignIn = () => {
     startTransition(() => {
-      router.push("/api/auth/google/customer");
+      router.push('/api/auth/google/customer');
     });
   };
 
@@ -152,8 +147,8 @@ export function SignUpForm({
                   Sign up with Google
                 </Button>
               </div>
-              <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-                <span className="relative z-10 bg-background px-2 text-muted-foreground">
+              <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
+                <span className="bg-background text-muted-foreground relative z-10 px-2">
                   Or continue with
                 </span>
               </div>
@@ -173,9 +168,7 @@ export function SignUpForm({
                         aria-invalid={fieldState.invalid}
                         required
                       />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
                   )}
                 />
@@ -185,9 +178,7 @@ export function SignUpForm({
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor={field.name}>
-                        Where are you from?
-                      </FieldLabel>
+                      <FieldLabel htmlFor={field.name}>Where are you from?</FieldLabel>
 
                       <SingleSelectCombobox
                         id={field.name}
@@ -206,9 +197,7 @@ export function SignUpForm({
                         aria-invalid={fieldState.invalid}
                       />
 
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
                   )}
                 />
@@ -227,9 +216,7 @@ export function SignUpForm({
                         required
                       />
 
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
                   )}
                 />
@@ -246,11 +233,8 @@ export function SignUpForm({
               </FieldGroup>
 
               <div className="text-center text-sm">
-                Already have an account?{" "}
-                <Link
-                  href="/auth/signin"
-                  className="underline underline-offset-4"
-                >
+                Already have an account?{' '}
+                <Link href="/auth/signin" className="underline underline-offset-4">
                   Sign in
                 </Link>
               </div>
@@ -258,9 +242,9 @@ export function SignUpForm({
           </form>
         </CardContent>
       </Card>
-      <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary  ">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
+      <div className="text-muted-foreground [&_a]:hover:text-primary text-center text-xs text-balance [&_a]:underline [&_a]:underline-offset-4">
+        By clicking continue, you agree to our <a href="#">Terms of Service</a> and{' '}
+        <a href="#">Privacy Policy</a>.
       </div>
     </div>
   );

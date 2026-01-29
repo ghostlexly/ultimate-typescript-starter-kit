@@ -206,13 +206,7 @@ const parseIncludes = (include?: string | string[]) => {
  * @param first - Number of items per page, defaults to 50, max 100
  * @returns Object with Prisma pagination params (take, skip) and metadata
  */
-export const getPagination = ({
-  page,
-  first,
-}: {
-  page?: number;
-  first?: number;
-}) => {
+export const getPagination = ({ page, first }: { page?: number; first?: number }) => {
   // Default to page 1 if not specified
   const currentPage = page ?? 1;
 

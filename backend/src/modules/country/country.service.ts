@@ -52,10 +52,7 @@ export class CountryService {
    * @param language - ISO 639-1 language code (e.g., 'en', 'fr', 'es'). Defaults to 'en'
    * @returns Country data or null if not found
    */
-  getCountryByIso2(
-    iso2Code: string,
-    language: string = 'en',
-  ): CountryData | null {
+  getCountryByIso2(iso2Code: string, language: string = 'en'): CountryData | null {
     const countryName = countries.getName(iso2Code, language, {
       select: 'official',
     });

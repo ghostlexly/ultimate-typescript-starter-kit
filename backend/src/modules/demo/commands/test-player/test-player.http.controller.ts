@@ -19,8 +19,6 @@ export class TestPlayerController {
     @Body() body: TestPlayerRequestDto['body'],
     @Query() query: TestPlayerRequestDto['query'],
   ) {
-    return this.commandBus.execute(
-      new TestPlayerCommand({ ...body, ...query }),
-    );
+    return this.commandBus.execute(new TestPlayerCommand({ ...body, ...query }));
   }
 }

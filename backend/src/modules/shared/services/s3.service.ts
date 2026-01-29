@@ -58,8 +58,7 @@ export class S3Service {
     storageClass?: StorageClass;
   }) => {
     const buffer = await fs.readFile(filePath);
-    const normalizedFileName =
-      this.filesService.getNormalizedFileName(fileName);
+    const normalizedFileName = this.filesService.getNormalizedFileName(fileName);
 
     const key = path.join(
       dateUtils.format(new Date(), 'yyyy'),

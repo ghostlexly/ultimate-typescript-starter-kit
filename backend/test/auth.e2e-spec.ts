@@ -108,13 +108,11 @@ describe('Authentication (e2e)', () => {
   describe('POST /api/auth/refresh', () => {
     it('should refresh access token with valid refresh token', async () => {
       // Arrange: Login to get tokens
-      const signinResponse = await request(ctx.httpServer)
-        .post('/api/auth/signin')
-        .send({
-          email: TEST_USERS.customer.email,
-          password: TEST_USERS.customer.password,
-          role: 'CUSTOMER',
-        });
+      const signinResponse = await request(ctx.httpServer).post('/api/auth/signin').send({
+        email: TEST_USERS.customer.email,
+        password: TEST_USERS.customer.password,
+        role: 'CUSTOMER',
+      });
 
       const { refreshToken } = signinResponse.body;
 

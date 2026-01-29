@@ -117,16 +117,10 @@ export class AuthService {
     };
   }
 
-  async refreshAuthenticationTokens({
-    refreshToken,
-  }: {
-    refreshToken: string;
-  }) {
-    const jwt = await this.extractJwtPayload({ token: refreshToken }).catch(
-      () => {
-        throw new Error('Invalid or expired refresh token.');
-      },
-    );
+  async refreshAuthenticationTokens({ refreshToken }: { refreshToken: string }) {
+    const jwt = await this.extractJwtPayload({ token: refreshToken }).catch(() => {
+      throw new Error('Invalid or expired refresh token.');
+    });
 
     if (!jwt.payload) {
       throw new Error('This token does not provide a payload.');

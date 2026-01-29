@@ -1,32 +1,31 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   Field,
   FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { PasswordInput } from "@/components/ui/password-input";
-import { useAppStore } from "@/hooks/use-app-store";
-import { useSession } from "@/lib/luni-auth/luni-auth.provider";
-import { handleApiErrors } from "@/lib/handle-api-errors";
-import { cn } from "@/lib/utils";
-import { wolfios } from "@/lib/wolfios/wolfios";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useTransition } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { toast } from "react-toastify";
+} from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
+import { useAppStore } from '@/hooks/use-app-store';
+import { useSession } from '@/lib/luni-auth/luni-auth.provider';
+import { handleApiErrors } from '@/lib/handle-api-errors';
+import { wolfios } from '@/lib/wolfios/wolfios';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useTransition } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 
 type FormValues = {
   email: string;
@@ -36,7 +35,7 @@ type FormValues = {
 export function SigninForm({
   searchParams,
   ...props
-}: React.ComponentPropsWithoutRef<"div"> & {
+}: React.ComponentPropsWithoutRef<'div'> & {
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const router = useRouter();
@@ -46,8 +45,8 @@ export function SigninForm({
 
   const form = useForm<FormValues>({
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
   });
 
@@ -56,7 +55,7 @@ export function SigninForm({
 
     if (error) {
       toast.error(
-        "Authentication failed. Please try again or use a different sign-in method."
+        'Authentication failed. Please try again or use a different sign-in method.',
       );
     }
   }, [searchParams]);
@@ -77,18 +76,18 @@ export function SigninForm({
       // if previous link is provided, redirect to it
       // (ex: when the user is redirected to login page from booking page)
       startTransition(() => {
-        if (previousLink && previousLink !== "/") {
+        if (previousLink && previousLink !== '/') {
           router.push(previousLink);
         } else {
           switch (response.role) {
-            case "ADMIN":
-              router.push("/admin-area");
+            case 'ADMIN':
+              router.push('/admin-area');
               break;
-            case "CUSTOMER":
-              router.push("/");
+            case 'CUSTOMER':
+              router.push('/');
               break;
-            case "HOUSEKEEPER":
-              router.push("/housekeeper-area");
+            case 'HOUSEKEEPER':
+              router.push('/housekeeper-area');
               break;
           }
         }
@@ -100,7 +99,7 @@ export function SigninForm({
 
   const handleGoogleSignIn = () => {
     startTransition(() => {
-      router.push("/api/auth/google");
+      router.push('/api/auth/google');
     });
   };
 
@@ -109,9 +108,7 @@ export function SigninForm({
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome back</CardTitle>
-          <CardDescription>
-            Sign in with your Apple or Google account
-          </CardDescription>
+          <CardDescription>Sign in with your Apple or Google account</CardDescription>
         </CardHeader>
         <CardContent>
           <form
@@ -138,8 +135,8 @@ export function SigninForm({
                   Sign in with Google
                 </Button>
               </div>
-              <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-                <span className="relative z-10 bg-background px-2 text-muted-foreground">
+              <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
+                <span className="bg-background text-muted-foreground relative z-10 px-2">
                   Or continue with
                 </span>
               </div>
@@ -159,9 +156,7 @@ export function SigninForm({
                         aria-invalid={fieldState.invalid}
                         required
                       />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
                   )}
                 />
@@ -181,14 +176,10 @@ export function SigninForm({
                       />
 
                       <FieldDescription>
-                        <Link href="/auth/forgot-password">
-                          Forgot your password?
-                        </Link>
+                        <Link href="/auth/forgot-password">Forgot your password?</Link>
                       </FieldDescription>
 
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
                   )}
                 />
@@ -205,7 +196,7 @@ export function SigninForm({
               </FieldGroup>
 
               <div className="text-center text-sm">
-                Don&apos;t have an account?{" "}
+                Don&apos;t have an account?{' '}
                 <Link
                   href="/auth/customer/signup"
                   className="underline underline-offset-4"
@@ -217,9 +208,9 @@ export function SigninForm({
           </form>
         </CardContent>
       </Card>
-      <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary  ">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
+      <div className="text-muted-foreground [&_a]:hover:text-primary text-center text-xs text-balance [&_a]:underline [&_a]:underline-offset-4">
+        By clicking continue, you agree to our <a href="#">Terms of Service</a> and{' '}
+        <a href="#">Privacy Policy</a>.
       </div>
     </div>
   );

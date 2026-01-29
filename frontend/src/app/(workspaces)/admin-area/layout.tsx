@@ -1,16 +1,16 @@
-import { AppSidebar } from "@/app/(workspaces)/admin-area/_components/app-sidebar";
-import { Header } from "@/app/(workspaces)/admin-area/_components/header";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { BreadcrumbProvider } from "@/hooks/use-breadcrumb";
-import type { Metadata } from "next";
+import { AppSidebar } from '@/app/(workspaces)/admin-area/_components/app-sidebar';
+import { Header } from '@/app/(workspaces)/admin-area/_components/header';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { BreadcrumbProvider } from '@/hooks/use-breadcrumb';
+import type { Metadata } from 'next';
 
 // Force dynamic rendering for all admin pages
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: "Fodmap Facile – Administration",
+  title: 'Fodmap Facile – Administration',
   description:
-    "Suivez un régime pauvre en FODMAP en toute simplicité avec Fodmap Facile ! Grâce à notre shared, identifiez instantanément si un produit alimentaire contient des FODMAP et en quelle quantité vous pouvez le consommer.",
+    'Suivez un régime pauvre en FODMAP en toute simplicité avec Fodmap Facile ! Grâce à notre shared, identifiez instantanément si un produit alimentaire contient des FODMAP et en quelle quantité vous pouvez le consommer.',
 };
 
 export default async function AdminAreaLayout({
@@ -22,8 +22,8 @@ export default async function AdminAreaLayout({
     <SidebarProvider
       style={
         {
-          "--sidebar-width": "calc(var(--spacing) * 72)",
-          "--header-height": "calc(var(--spacing) * 12)",
+          '--sidebar-width': 'calc(var(--spacing) * 72)',
+          '--header-height': 'calc(var(--spacing) * 12)',
         } as React.CSSProperties
       }
     >

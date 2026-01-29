@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
 const LoadingSpinner = ({ className }: { className?: string }) => {
   return (
@@ -19,8 +19,8 @@ const LoadingSpinner = ({ className }: { className?: string }) => {
         role="status"
         aria-label="Loading"
         className={cn(
-          "loader aspect-square size-4 animate-[spin_0.5s_linear_infinite] rounded-full p-[5px] bg-black",
-          className
+          'loader aspect-square size-4 animate-[spin_0.5s_linear_infinite] rounded-full bg-black p-[5px]',
+          className,
         )}
       />
     </>

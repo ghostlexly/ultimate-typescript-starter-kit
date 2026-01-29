@@ -14,8 +14,7 @@ export class ValidationException extends HttpException {
       {
         message,
         violations,
-        cause:
-          process.env.NODE_ENV === 'development' ? cause?.stack : undefined,
+        cause: process.env.NODE_ENV === 'development' ? cause?.stack : undefined,
       },
       HttpStatus.BAD_REQUEST,
       {

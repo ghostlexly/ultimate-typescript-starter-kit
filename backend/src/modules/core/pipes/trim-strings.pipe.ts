@@ -12,9 +12,7 @@ export class TrimStringsPipe implements PipeTransform<unknown, unknown> {
     }
 
     if (Array.isArray(input)) {
-      const trimmedArray = (input as unknown[]).map((item) =>
-        this.trimDeep(item),
-      );
+      const trimmedArray = (input as unknown[]).map((item) => this.trimDeep(item));
       return trimmedArray as unknown as T;
     }
 

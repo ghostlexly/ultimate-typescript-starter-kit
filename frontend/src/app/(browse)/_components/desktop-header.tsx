@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { UserAvatar } from "@/components/project/user-avatar";
-import { Button } from "@/components/ui/button";
-import { Container } from "@/components/ui/container";
+import { UserAvatar } from '@/components/project/user-avatar';
+import { Button } from '@/components/ui/button';
+import { Container } from '@/components/ui/container';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +16,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -24,19 +24,19 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
-import { useSession } from "@/lib/luni-auth/luni-auth.provider";
+} from '@/components/ui/navigation-menu';
+import { useSession } from '@/lib/luni-auth/luni-auth.provider';
 import {
   CircleCheckIcon,
   CircleHelpIcon,
   CircleIcon,
   MenuIcon,
   UserIcon,
-} from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import LogoImg from "@/assets/images/logo.png";
+} from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import LogoImg from '@/assets/images/logo.png';
 
 const DesktopHeader = () => {
   return (
@@ -90,7 +90,7 @@ const DesktopNavigation = () => {
     children,
     href,
     ...props
-  }: React.ComponentPropsWithoutRef<"li"> & { href: string }) => {
+  }: React.ComponentPropsWithoutRef<'li'> & { href: string }) => {
     return (
       <li {...props}>
         <NavigationMenuLink asChild>
@@ -116,9 +116,7 @@ const DesktopNavigation = () => {
               <li className="row-span-3">
                 <NavigationMenuLink asChild>
                   <div className="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b p-4 no-underline outline-hidden transition-all duration-200 select-none focus:shadow-md md:p-6">
-                    <div className="mb-2 text-lg font-medium sm:mt-4">
-                      shadcn/ui
-                    </div>
+                    <div className="mb-2 text-lg font-medium sm:mt-4">shadcn/ui</div>
                     <p className="text-muted-foreground text-sm leading-tight">
                       Beautifully designed components built with Tailwind CSS.
                     </p>
@@ -141,31 +139,31 @@ const DesktopNavigation = () => {
           <NavigationMenuTrigger>Components</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid gap-2 sm:w-[400px] md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-              <ListItem title={"Alert Dialog"} href={"/"}>
-                A modal dialog that interrupts the user with important content
-                and expects a response.
+              <ListItem title="Alert Dialog" href="/">
+                A modal dialog that interrupts the user with important content and expects
+                a response.
               </ListItem>
 
-              <ListItem title={"Hover Card"} href={"/"}>
+              <ListItem title="Hover Card" href="/">
                 For sighted users to preview content available behind a link.
               </ListItem>
 
-              <ListItem title={"Progress"} href={"/"}>
+              <ListItem title="Progress" href="/">
                 Display the length of a task with a progress indicator.
               </ListItem>
 
-              <ListItem title={"Scroll Area"} href={"/"}>
+              <ListItem title="Scroll Area" href="/">
                 Visually or semantically separates content.
               </ListItem>
 
-              <ListItem title={"Tabs"} href={"/"}>
-                A set of layered sections of content—known as tab panels—that
-                are displayed one at a time.
+              <ListItem title="Tabs" href="/">
+                A set of layered sections of content—known as tab panels—that are
+                displayed one at a time.
               </ListItem>
 
-              <ListItem title={"Tooltip"} href={"/"}>
-                A popup that displays information related to an element when the
-                element receives keyboard focus or the mouse hovers over it.
+              <ListItem title="Tooltip" href="/">
+                A popup that displays information related to an element when the element
+                receives keyboard focus or the mouse hovers over it.
               </ListItem>
             </ul>
           </NavigationMenuContent>
@@ -260,13 +258,13 @@ const DesktopNavigation = () => {
 
 function DropdownMenuByRole() {
   const session = useSession();
-  const isAuthenticated = session.status === "authenticated";
+  const isAuthenticated = session.status === 'authenticated';
 
-  if (isAuthenticated && session.data?.role === "CUSTOMER") {
+  if (isAuthenticated && session.data?.role === 'CUSTOMER') {
     return (
       <CustomerDropdownMenu>
         <Button
-          variant={"outline"}
+          variant="outline"
           className="flex items-center gap-1 rounded-full border border-gray-300 px-3 py-1.5 text-black shadow-sm"
         >
           <MenuIcon className="size-4" />
@@ -286,7 +284,7 @@ function DropdownMenuByRole() {
   return (
     <NotAuthenticatedDropdownMenu>
       <Button
-        variant={"outline"}
+        variant="outline"
         className="flex items-center gap-1 rounded-full border border-gray-300 px-3 py-1.5 text-black shadow-sm"
       >
         <MenuIcon className="size-4" />
@@ -299,11 +297,7 @@ function DropdownMenuByRole() {
   );
 }
 
-const NotAuthenticatedDropdownMenu = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+const NotAuthenticatedDropdownMenu = ({ children }: { children: React.ReactNode }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
@@ -377,7 +371,7 @@ const CustomerDropdownMenu = ({ children }: { children: React.ReactNode }) => {
         <DropdownMenuItem
           onClick={() => {
             session.destroy();
-            router.push("/");
+            router.push('/');
           }}
         >
           Log out

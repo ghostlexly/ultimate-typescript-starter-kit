@@ -6,6 +6,4 @@ export const forgotPasswordRequestSchema = z.object({
   }),
 });
 
-export type ForgotPasswordRequestDto = z.infer<
-  typeof forgotPasswordRequestSchema
->;
+export type ForgotPasswordRequestDto = z.infer<typeof forgotPasswordRequestSchema>;

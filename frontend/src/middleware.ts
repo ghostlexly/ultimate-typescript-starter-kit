@@ -1,13 +1,13 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { getServerSession } from "./lib/luni-auth/luni-auth.server";
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { getServerSession } from './lib/luni-auth/luni-auth.server';
 
 // =============================================================================
 // Types
 // =============================================================================
 
 type MiddlewareFactory = (
-  request: NextRequest
+  request: NextRequest,
 ) => Promise<NextResponse | null> | NextResponse | null;
 
 // =============================================================================
@@ -38,47 +38,42 @@ function chain(middlewares: MiddlewareFactory[]) {
  * Protects admin and customer areas, handles authentication redirects
  */
 async function authenticationMiddleware(
-  request: NextRequest
+  request: NextRequest,
 ): Promise<NextResponse | null> {
   const { pathname } = request.nextUrl;
 
-  const isSigninPage = pathname.startsWith("/auth/signin");
-  const isAdminArea = pathname.startsWith("/admin-area");
-  const isCustomerArea = pathname.startsWith("/customer-area");
-  const isCustomerSignupPage = pathname.startsWith("/auth/customer/signup");
+  const isSigninPage = pathname.startsWith('/auth/signin');
+  const isAdminArea = pathname.startsWith('/admin-area');
+  const isCustomerArea = pathname.startsWith('/customer-area');
+  const isCustomerSignupPage = pathname.startsWith('/auth/customer/signup');
 
   // Skip session check if not in a protected area or auth page
-  if (
-    !isSigninPage &&
-    !isAdminArea &&
-    !isCustomerArea &&
-    !isCustomerSignupPage
-  ) {
+  if (!isSigninPage && !isAdminArea && !isCustomerArea && !isCustomerSignupPage) {
     return null;
   }
 
   const session = await getServerSession();
-  const isAuthenticated = session.status === "authenticated";
-  const isAdmin = session.data?.role.includes("ADMIN");
-  const isCustomer = session.data?.role.includes("CUSTOMER");
+  const isAuthenticated = session.status === 'authenticated';
+  const isAdmin = session.data?.role.includes('ADMIN');
+  const isCustomer = session.data?.role.includes('CUSTOMER');
 
   // Admin area: redirect if not admin
   if (isAdminArea && (!isAuthenticated || !isAdmin)) {
-    return NextResponse.redirect(new URL("/auth/signin", request.url));
+    return NextResponse.redirect(new URL('/auth/signin', request.url));
   }
 
   // Customer area: redirect if not customer
   if (isCustomerArea && (!isAuthenticated || !isCustomer)) {
-    return NextResponse.redirect(new URL("/auth/signin", request.url));
+    return NextResponse.redirect(new URL('/auth/signin', request.url));
   }
 
   // Auth pages: redirect if already authenticated
   if (isSigninPage || isCustomerSignupPage) {
     if (isAuthenticated && isAdmin) {
-      return NextResponse.redirect(new URL("/admin-area", request.url));
+      return NextResponse.redirect(new URL('/admin-area', request.url));
     }
     if (isAuthenticated && isCustomer) {
-      return NextResponse.redirect(new URL("/", request.url));
+      return NextResponse.redirect(new URL('/', request.url));
     }
   }
 
@@ -92,5 +87,5 @@ async function authenticationMiddleware(
 export const middleware = chain([authenticationMiddleware]);
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };

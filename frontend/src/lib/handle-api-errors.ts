@@ -1,5 +1,5 @@
-import { UseFormReturn, FieldValues, Path } from "react-hook-form";
-import { toast } from "react-toastify";
+import { UseFormReturn, FieldValues, Path } from 'react-hook-form';
+import { toast } from 'react-toastify';
 
 interface Violation {
   path: string;
@@ -26,18 +26,18 @@ type HandleApiErrorsProps<T extends FieldValues = FieldValues> = {
 };
 
 const DEFAULT_ERROR_MESSAGE =
-  "Une erreur est survenue, veuillez réessayer dans quelques minutes.";
+  'Une erreur est survenue, veuillez réessayer dans quelques minutes.';
 
 // Utilities to extract data from the error
 const getErrorData = (error: unknown) => {
-  if (typeof error !== "object" || !error) return null;
+  if (typeof error !== 'object' || !error) return null;
 
   const apiError = error as ApiError;
   return apiError.response?.data || null;
 };
 
 const getErrorMessage = (error: unknown) => {
-  if (typeof error !== "object" || !error) return null;
+  if (typeof error !== 'object' || !error) return null;
 
   const apiError = error as ApiError;
   return apiError.response?.data?.message || apiError.message || null;
@@ -52,7 +52,7 @@ const getViolations = (error: unknown): Violation[] => {
 const handleFormViolations = <T extends FieldValues>(
   violations: Violation[],
   form: UseFormReturn<T>,
-  prefix?: string
+  prefix?: string,
 ) => {
   violations.forEach((violation) => {
     let fieldPath = violation.path;
@@ -66,7 +66,7 @@ const handleFormViolations = <T extends FieldValues>(
       form.setError(
         fieldPath as Path<T>,
         { message: violation.message },
-        { shouldFocus: true }
+        { shouldFocus: true },
       );
     }
   });
@@ -84,14 +84,12 @@ const handleApiErrors = <T extends FieldValues = FieldValues>({
   if (violations.length > 0) {
     if (form) {
       // Display the main message and set errors on the fields
-      toast.error(errorMessage || "Validation error");
+      toast.error(errorMessage || 'Validation error');
       handleFormViolations(violations, form, prefix);
     } else {
       // Display all violations in a single message
-      const violationMessages = violations.map(
-        (v) => `${v.path}: ${v.message}`
-      );
-      toast.error(violationMessages.join("\n"));
+      const violationMessages = violations.map((v) => `${v.path}: ${v.message}`);
+      toast.error(violationMessages.join('\n'));
     }
     return;
   }

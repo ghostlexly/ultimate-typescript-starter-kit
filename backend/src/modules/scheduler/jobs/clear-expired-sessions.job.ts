@@ -24,9 +24,7 @@ export class ClearExpiredSessionsJob {
     } catch (error) {
       this.logger.error('Error during expired sessions clearing:', error);
     } finally {
-      this.logger.log(
-        '[⏰ SCHEDULER]: Scheduled clear expired sessions job completed',
-      );
+      this.logger.log('[⏰ SCHEDULER]: Scheduled clear expired sessions job completed');
     }
   }
 }

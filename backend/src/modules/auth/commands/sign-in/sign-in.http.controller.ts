@@ -15,10 +15,7 @@ import type { Request, Response } from 'express';
 import { AllowAnonymous } from 'src/modules/core/decorators/allow-anonymous.decorator';
 import { ZodValidationPipe } from 'src/modules/core/pipes/zod-validation.pipe';
 import { SignInCommand } from './sign-in.command';
-import {
-  type SignInRequestDto,
-  signInRequestSchema,
-} from './sign-in.request.dto';
+import { type SignInRequestDto, signInRequestSchema } from './sign-in.request.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { OAuthRedirectExceptionFilter } from 'src/modules/core/filters/oauth-redirect.filter';
 import { AuthService } from '../../auth.service';

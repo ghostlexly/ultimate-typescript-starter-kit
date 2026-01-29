@@ -1,7 +1,5 @@
-import { Container } from "@/components/ui/container";
+import { Container } from '@/components/ui/container';
 
 export default function Home() {
-  return (
-    <Container variant={"centered"}>This is your home page content.</Container>
-  );
+  return <Container variant="centered">This is your home page content.</Container>;
 }

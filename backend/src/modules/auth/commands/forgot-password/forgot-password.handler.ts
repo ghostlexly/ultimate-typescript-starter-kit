@@ -7,9 +7,7 @@ import { dateUtils } from 'src/modules/core/utils/date';
 import { PasswordResetRequestedEvent } from '../../events/password-reset-requested/password-reset-requested.event';
 
 @CommandHandler(ForgotPasswordCommand)
-export class ForgotPasswordHandler
-  implements ICommandHandler<ForgotPasswordCommand>
-{
+export class ForgotPasswordHandler implements ICommandHandler<ForgotPasswordCommand> {
   constructor(
     private readonly db: DatabaseService,
     private readonly eventBus: EventBus,

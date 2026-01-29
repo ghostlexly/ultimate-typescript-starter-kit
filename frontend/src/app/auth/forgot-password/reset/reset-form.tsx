@@ -1,26 +1,21 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { PasswordInput } from "@/components/ui/password-input";
-import { handleApiErrors } from "@/lib/handle-api-errors";
-import { wolfios } from "@/lib/wolfios/wolfios";
-import { useRouter } from "next/navigation";
-import { useTransition } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { toast } from "react-toastify";
+} from '@/components/ui/card';
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
+import { PasswordInput } from '@/components/ui/password-input';
+import { handleApiErrors } from '@/lib/handle-api-errors';
+import { wolfios } from '@/lib/wolfios/wolfios';
+import { useRouter } from 'next/navigation';
+import { useTransition } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 
 type FormValues = {
   password: string;
@@ -32,39 +27,36 @@ export type ForgotPasswordResetFormProps = {
   token: string | null;
 };
 
-export function ForgotPasswordResetForm({
-  email,
-  token,
-}: ForgotPasswordResetFormProps) {
+export function ForgotPasswordResetForm({ email, token }: ForgotPasswordResetFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<FormValues>({
     defaultValues: {
-      password: "",
-      confirmPassword: "",
+      password: '',
+      confirmPassword: '',
     },
   });
 
   const handleSubmit = async (values: FormValues) => {
     try {
       if (values.password !== values.confirmPassword) {
-        form.setError("confirmPassword", {
-          type: "manual",
-          message: "Passwords do not match",
+        form.setError('confirmPassword', {
+          type: 'manual',
+          message: 'Passwords do not match',
         });
         return;
       }
 
-      await wolfios.post("/api/auth/reset-password", {
+      await wolfios.post('/api/auth/reset-password', {
         email,
         token,
         password: values.password,
       });
 
       startTransition(() => {
-        toast.success("Password reset successfully");
-        router.push("/auth/signin");
+        toast.success('Password reset successfully');
+        router.push('/auth/signin');
       });
     } catch (error) {
       handleApiErrors({ form, error });
@@ -85,7 +77,7 @@ export function ForgotPasswordResetForm({
                 <Controller
                   name="password"
                   control={form.control}
-                  rules={{ required: "Password is required" }}
+                  rules={{ required: 'Password is required' }}
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
                       <FieldLabel htmlFor={field.name}>New Password</FieldLabel>
@@ -95,9 +87,7 @@ export function ForgotPasswordResetForm({
                         aria-invalid={fieldState.invalid}
                         required
                       />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
                   )}
                 />
@@ -105,21 +95,17 @@ export function ForgotPasswordResetForm({
                 <Controller
                   name="confirmPassword"
                   control={form.control}
-                  rules={{ required: "Please confirm your password" }}
+                  rules={{ required: 'Please confirm your password' }}
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor={field.name}>
-                        Confirm Password
-                      </FieldLabel>
+                      <FieldLabel htmlFor={field.name}>Confirm Password</FieldLabel>
                       <PasswordInput
                         {...field}
                         id={field.name}
                         aria-invalid={fieldState.invalid}
                         required
                       />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
                   )}
                 />

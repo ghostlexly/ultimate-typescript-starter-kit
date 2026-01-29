@@ -149,8 +149,7 @@ export class DemoMiscController {
       {
         helpers: {
           formatCurrency: (value: unknown) => {
-            const numericValue =
-              typeof value === 'number' ? value : Number(value);
+            const numericValue = typeof value === 'number' ? value : Number(value);
 
             return new Intl.NumberFormat('fr-FR', {
               style: 'currency',

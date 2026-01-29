@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { forwardRef, useState } from "react";
+import { forwardRef, useState } from 'react';
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from "@/components/ui/input-group";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
-import type React from "react";
+} from '@/components/ui/input-group';
+import { EyeIcon, EyeOffIcon } from 'lucide-react';
+import type React from 'react';
 
-type PasswordInputProps = Omit<React.ComponentProps<"input">, "type">;
+type PasswordInputProps = Omit<React.ComponentProps<'input'>, 'type'>;
 
 export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
   (props, ref) => {
@@ -20,7 +20,7 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
         <InputGroupInput
           {...props}
           ref={ref}
-          type={showPassword ? "text" : "password"}
+          type={showPassword ? 'text' : 'password'}
           autoComplete="current-password"
         />
         <InputGroupAddon align="inline-end">
@@ -44,6 +44,6 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
         </InputGroupAddon>
       </InputGroup>
     );
-  }
+  },
 );
-PasswordInput.displayName = "PasswordInput";
+PasswordInput.displayName = 'PasswordInput';

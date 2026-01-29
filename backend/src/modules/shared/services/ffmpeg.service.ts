@@ -30,11 +30,7 @@ export class FfmpegService {
         if (code === 0) {
           resolve({ stdout, stderr });
         } else {
-          reject(
-            new Error(
-              `FFmpeg process exited with code ${code}\nStderr: ${stderr}`,
-            ),
-          );
+          reject(new Error(`FFmpeg process exited with code ${code}\nStderr: ${stderr}`));
         }
       });
 

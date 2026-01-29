@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const UserAvatar = ({
   imageUrl,
@@ -10,7 +10,7 @@ const UserAvatar = ({
   email?: string;
 }) => (
   <Avatar className="size-full">
-    <AvatarImage src={imageUrl || undefined} alt={name || "User"} />
+    <AvatarImage src={imageUrl || undefined} alt={name || 'User'} />
     <AvatarFallback className="bg-primary text-primary-foreground">
       {name?.charAt(0).toUpperCase() || email?.charAt(0).toUpperCase()}
     </AvatarFallback>

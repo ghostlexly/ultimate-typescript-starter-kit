@@ -21,19 +21,13 @@ export class UpdateCustomerInformationsHandler
     });
 
     if (!customerInformations) {
-      throw new HttpException(
-        "You don't have any information",
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new HttpException("You don't have any information", HttpStatus.BAD_REQUEST);
     }
 
     const country = this.countryService.getCountryByIso2(command.countryCode);
 
     if (!country) {
-      throw new HttpException(
-        "This country doesn't exist",
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new HttpException("This country doesn't exist", HttpStatus.BAD_REQUEST);
     }
 
     const cityRecord = await this.db.prisma.city.findUnique({
@@ -43,10 +37,7 @@ export class UpdateCustomerInformationsHandler
     });
 
     if (!cityRecord) {
-      throw new HttpException(
-        "This city doesn't exist",
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new HttpException("This city doesn't exist", HttpStatus.BAD_REQUEST);
     }
 
     await this.db.prisma.customer.update({

@@ -4,9 +4,7 @@ import { RefreshTokenCommand } from './refresh-token.command';
 import { AuthService } from '../../auth.service';
 
 @CommandHandler(RefreshTokenCommand)
-export class RefreshTokenHandler
-  implements ICommandHandler<RefreshTokenCommand>
-{
+export class RefreshTokenHandler implements ICommandHandler<RefreshTokenCommand> {
   constructor(private readonly authService: AuthService) {}
 
   async execute(command: RefreshTokenCommand) {

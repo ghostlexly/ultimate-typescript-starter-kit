@@ -67,9 +67,7 @@ export class ClearOrphanMediasJob {
     } catch (error) {
       this.logger.error('Error during orphan media removal:', error);
     } finally {
-      this.logger.log(
-        '[⏰ SCHEDULER]: Scheduled clear orphan medias job completed',
-      );
+      this.logger.log('[⏰ SCHEDULER]: Scheduled clear orphan medias job completed');
     }
   }
 }

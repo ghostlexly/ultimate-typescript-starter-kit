@@ -109,10 +109,7 @@ describe('ResetPasswordHandler', () => {
         }),
       ),
     ).rejects.toThrow(
-      new HttpException(
-        { message: 'Account not found.' },
-        HttpStatus.BAD_REQUEST,
-      ),
+      new HttpException({ message: 'Account not found.' }, HttpStatus.BAD_REQUEST),
     );
   });
 });

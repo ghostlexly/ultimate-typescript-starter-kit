@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { DesktopHeader } from "./_components/desktop-header";
-import { MobileHeader } from "./_components/mobile-header";
+import { DesktopHeader } from './_components/desktop-header';
+import { MobileHeader } from './_components/mobile-header';
 
 const Header = () => {
   return (

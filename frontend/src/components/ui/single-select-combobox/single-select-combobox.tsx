@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Command,
   CommandEmpty,
@@ -8,29 +8,24 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useCallback, useState } from "react";
+} from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useCallback, useState } from 'react';
 
 /**
  * Access nested properties using dot notation (e.g., "account.email")
  */
 const getNestedValue = (obj: Record<string, any>, path: string): any => {
-  return path.split(".").reduce((current, key) => current?.[key], obj);
+  return path.split('.').reduce((current, key) => current?.[key], obj);
 };
 
-export interface SingleSelectComboboxProps<T extends Record<string, any>>
-  extends Omit<
-    React.ComponentPropsWithoutRef<"button">,
-    "value" | "onChange" | "children"
-  > {
+export interface SingleSelectComboboxProps<T extends Record<string, any>> extends Omit<
+  React.ComponentPropsWithoutRef<'button'>,
+  'value' | 'onChange' | 'children'
+> {
   items: T[];
   value: T | null;
   onChange: (value: T | null) => void;
@@ -63,11 +58,11 @@ export function SingleSelectCombobox<T extends Record<string, any>>({
   items,
   value,
   onChange,
-  valueKey = "value",
+  valueKey = 'value',
   renderLabel = defaultRenderLabel,
-  placeholder = "Select item...",
-  emptyMessage = "No items found.",
-  searchPlaceholder = "Search...",
+  placeholder = 'Select item...',
+  emptyMessage = 'No items found.',
+  searchPlaceholder = 'Search...',
   className,
   disabled = false,
   loading = false,
@@ -79,27 +74,22 @@ export function SingleSelectCombobox<T extends Record<string, any>>({
 }: SingleSelectComboboxProps<T>) {
   const [open, setOpen] = useState(false);
 
-  const getValue = useCallback(
-    (item: T) => getNestedValue(item, valueKey),
-    [valueKey]
-  );
+  const getValue = useCallback((item: T) => getNestedValue(item, valueKey), [valueKey]);
 
   const handleOpenChange = useCallback(
     (newOpen: boolean) => {
       setOpen(newOpen);
 
       if (!newOpen) {
-        onSearchChange?.("");
+        onSearchChange?.('');
       }
     },
-    [onSearchChange]
+    [onSearchChange],
   );
 
   const handleSelect = useCallback(
     (selectedValue: string) => {
-      const selectedItem = items.find(
-        (item) => String(getValue(item)) === selectedValue
-      );
+      const selectedItem = items.find((item) => String(getValue(item)) === selectedValue);
 
       if (!selectedItem) {
         return;
@@ -111,10 +101,10 @@ export function SingleSelectCombobox<T extends Record<string, any>>({
         onChange(selectedItem);
       }
 
-      onSearchChange?.("");
+      onSearchChange?.('');
       setOpen(false);
     },
-    [items, onChange, value, onSearchChange, getValue]
+    [items, onChange, value, onSearchChange, getValue],
   );
 
   const itemRenderer = renderItem || renderLabel;
@@ -126,7 +116,7 @@ export function SingleSelectCombobox<T extends Record<string, any>>({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={cn("justify-between", className)}
+          className={cn('justify-between', className)}
           disabled={disabled}
           {...buttonProps}
         >
@@ -144,10 +134,7 @@ export function SingleSelectCombobox<T extends Record<string, any>>({
         className="w-[--radix-popover-trigger-width] p-0"
       >
         <Command shouldFilter={shouldFilter} className="overflow-hidden">
-          <CommandInput
-            placeholder={searchPlaceholder}
-            onValueChange={onSearchChange}
-          />
+          <CommandInput placeholder={searchPlaceholder} onValueChange={onSearchChange} />
           <CommandList>
             {loading ? (
               <CommandEmpty>
@@ -173,10 +160,10 @@ export function SingleSelectCombobox<T extends Record<string, any>>({
                       >
                         <div
                           className={cn(
-                            "flex items-center justify-center",
+                            'flex items-center justify-center',
                             value && String(getValue(value)) === itemValue
-                              ? "opacity-100"
-                              : "opacity-0"
+                              ? 'opacity-100'
+                              : 'opacity-0',
                           )}
                         >
                           <Check className="h-4 w-4" />

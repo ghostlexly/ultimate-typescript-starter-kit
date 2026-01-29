@@ -1,5 +1,5 @@
-import { format, parse, isValid, setDefaultOptions } from "date-fns";
-import { fr } from "date-fns/locale/fr";
+import { format, parse, isValid, setDefaultOptions } from 'date-fns';
+import { fr } from 'date-fns/locale/fr';
 setDefaultOptions({ locale: fr });
 
 type ParseDateOnlyProps = {
@@ -24,7 +24,7 @@ function minutesToHoursHr(minutes: number) {
   // get remaining time
   const minRemaining = minutes % 60;
 
-  return `${hours}h${minRemaining ? minRemaining : ""}`;
+  return `${hours}h${minRemaining ? minRemaining : ''}`;
 }
 
 /**
@@ -35,7 +35,7 @@ function minutesToHoursHr(minutes: number) {
  * @param param0
  * @returns
  */
-function parseDateOnly({ date, format = "dd/MM/yyyy" }: ParseDateOnlyProps) {
+function parseDateOnly({ date, format = 'dd/MM/yyyy' }: ParseDateOnlyProps) {
   const transformed = parse(date, format, new Date());
 
   if (isValid(transformed)) {
@@ -58,7 +58,7 @@ function parseDateOnly({ date, format = "dd/MM/yyyy" }: ParseDateOnlyProps) {
  * @param param0
  * @returns
  */
-function parseTimeOnly({ time, format = "HH:mm" }: ParseTimeOnlyProps) {
+function parseTimeOnly({ time, format = 'HH:mm' }: ParseTimeOnlyProps) {
   const transformed = parse(time, format, new Date(1970, 0, 1));
 
   if (isValid(transformed)) {

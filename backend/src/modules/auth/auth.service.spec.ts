@@ -115,10 +115,7 @@ describe('AuthService', () => {
 
       // ===== Assert
       expect(result).toBe(true);
-      expect(bcryptCompareSpy).toHaveBeenCalledWith(
-        'test-password',
-        hashedPassword,
-      );
+      expect(bcryptCompareSpy).toHaveBeenCalledWith('test-password', hashedPassword);
     });
 
     it('should return false when password does not match', async () => {

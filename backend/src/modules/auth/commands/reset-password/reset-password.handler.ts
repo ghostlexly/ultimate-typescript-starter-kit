@@ -5,9 +5,7 @@ import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { AuthService } from '../../auth.service';
 
 @CommandHandler(ResetPasswordCommand)
-export class ResetPasswordHandler
-  implements ICommandHandler<ResetPasswordCommand>
-{
+export class ResetPasswordHandler implements ICommandHandler<ResetPasswordCommand> {
   constructor(
     private readonly db: DatabaseService,
     private readonly authService: AuthService,

@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import LogoImg from "@/assets/images/logo.png";
-import { UserAvatar } from "@/components/project/user-avatar";
-import { Button } from "@/components/ui/button";
-import { Container } from "@/components/ui/container";
-import { Separator } from "@/components/ui/separator";
+import LogoImg from '@/assets/images/logo.png';
+import { UserAvatar } from '@/components/project/user-avatar';
+import { Button } from '@/components/ui/button';
+import { Container } from '@/components/ui/container';
+import { Separator } from '@/components/ui/separator';
 import {
   Sheet,
   SheetClose,
@@ -12,8 +12,8 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import { useSession } from "@/lib/luni-auth/luni-auth.provider";
+} from '@/components/ui/sheet';
+import { useSession } from '@/lib/luni-auth/luni-auth.provider';
 import {
   ChevronRightIcon,
   LogOutIcon,
@@ -22,14 +22,11 @@ import {
   UserIcon,
   UserPlusIcon,
   UsersIcon,
-} from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+} from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
 
 const MobileHeader = () => {
-  const pathname = usePathname();
-
   return (
     <header className="bg-background sticky top-0 z-50 flex w-full justify-center backdrop-blur xl:hidden">
       <Container variant="centered" className="py-0 md:py-0">
@@ -77,7 +74,7 @@ const SheetMenuItem = ({
 }) => {
   return (
     <Link href={href} className="block" onClick={onClick}>
-      <SheetClose className="flex items-center justify-between w-full">
+      <SheetClose className="flex w-full items-center justify-between">
         <div className="flex items-center gap-4">
           <Icon className="size-6" />
           {label}
@@ -91,9 +88,9 @@ const SheetMenuItem = ({
 
 function SheetMenuByRole() {
   const session = useSession();
-  const isAuthenticated = session.status === "authenticated";
+  const isAuthenticated = session.status === 'authenticated';
 
-  if (isAuthenticated && session.data?.role === "CUSTOMER") {
+  if (isAuthenticated && session.data?.role === 'CUSTOMER') {
     return (
       <CustomerSheetMenu>
         <Button
@@ -139,7 +136,7 @@ const NotLoggedSheetMenu = ({ children }: { children: React.ReactNode }) => {
           <SheetTitle className="sr-only">Menu</SheetTitle>
         </SheetHeader>
 
-        <div className="px-4 my-2">
+        <div className="my-2 px-4">
           <Link href="/">
             <Button size="lg" className="mb-4 w-full">
               Devenir aide ménagère
@@ -163,11 +160,7 @@ const NotLoggedSheetMenu = ({ children }: { children: React.ReactNode }) => {
               href="/who-are-we"
             />
 
-            <SheetMenuItem
-              icon={MailIcon}
-              label="Nous contacter"
-              href="/contact"
-            />
+            <SheetMenuItem icon={MailIcon} label="Nous contacter" href="/contact" />
           </div>
 
           <Separator className="my-6" />
@@ -175,11 +168,7 @@ const NotLoggedSheetMenu = ({ children }: { children: React.ReactNode }) => {
           <div className="space-y-6 py-2">
             <p className="mb-6 px-2 text-xl font-medium">Authentification</p>
 
-            <SheetMenuItem
-              icon={UserIcon}
-              label="Se connecter"
-              href="/auth/signin"
-            />
+            <SheetMenuItem icon={UserIcon} label="Se connecter" href="/auth/signin" />
 
             <SheetMenuItem
               icon={UserPlusIcon}
@@ -204,7 +193,7 @@ const CustomerSheetMenu = ({ children }: { children: React.ReactNode }) => {
           <SheetTitle className="sr-only">Menu</SheetTitle>
         </SheetHeader>
 
-        <div className="px-4 my-2">
+        <div className="my-2 px-4">
           <Link href="/">
             <Button size="lg" className="mb-4 w-full">
               Devenir aide ménagère
@@ -228,11 +217,7 @@ const CustomerSheetMenu = ({ children }: { children: React.ReactNode }) => {
               href="/who-are-we"
             />
 
-            <SheetMenuItem
-              icon={MailIcon}
-              label="Nous contacter"
-              href="/contact"
-            />
+            <SheetMenuItem icon={MailIcon} label="Nous contacter" href="/contact" />
           </div>
 
           <Separator className="my-6" />

@@ -47,9 +47,7 @@ export class TestUsersFixture {
   }
 
   private async seedCustomers(): Promise<void> {
-    const hashedPassword = await getHashedPassword(
-      TEST_USERS.customer.password,
-    );
+    const hashedPassword = await getHashedPassword(TEST_USERS.customer.password);
 
     await this.db.prisma.account.create({
       data: {
@@ -62,9 +60,7 @@ export class TestUsersFixture {
       },
     });
 
-    const hashedPassword2 = await getHashedPassword(
-      TEST_USERS.customer2.password,
-    );
+    const hashedPassword2 = await getHashedPassword(TEST_USERS.customer2.password);
 
     await this.db.prisma.account.create({
       data: {

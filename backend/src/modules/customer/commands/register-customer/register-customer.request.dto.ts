@@ -8,6 +8,4 @@ export const registerCustomerRequestSchema = z.object({
   }),
 });
 
-export type RegisterCustomerRequestDto = z.infer<
-  typeof registerCustomerRequestSchema
->;
+export type RegisterCustomerRequestDto = z.infer<typeof registerCustomerRequestSchema>;

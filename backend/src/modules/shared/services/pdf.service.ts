@@ -47,13 +47,7 @@ export class PdfService implements OnModuleDestroy {
    * @param html - The HTML string to generate a PDF from
    * @param footerHtml - Optional HTML string for the footer
    */
-  htmlToPdf = async ({
-    html,
-    footerHtml,
-  }: {
-    html: string;
-    footerHtml?: string;
-  }) => {
+  htmlToPdf = async ({ html, footerHtml }: { html: string; footerHtml?: string }) => {
     // Launch browser
     const context = await this.getContext();
     const page = await context.newPage();

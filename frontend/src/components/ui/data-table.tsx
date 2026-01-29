@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 /**
  * @author GhostLexly <ghostlexly@gmail.com>
@@ -33,7 +33,7 @@ import {
   useReactTable,
   PaginationState,
   OnChangeFn,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table';
 import {
   IconChevronDown,
   IconChevronLeft,
@@ -44,14 +44,14 @@ import {
   IconSelector,
   IconFilter,
   IconLayoutColumns,
-} from "@tabler/icons-react";
-import { Button } from "@/components/ui/button";
+} from '@tabler/icons-react';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 import {
   Table,
   TableBody,
@@ -59,20 +59,20 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
-import { Ban, X } from "lucide-react";
-import { Badge } from "./badge";
-import { Skeleton } from "./skeleton";
-import { useState, useMemo, useRef, useEffect } from "react";
+} from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
+import { Ban, X } from 'lucide-react';
+import { Badge } from './badge';
+import { Skeleton } from './skeleton';
+import { useState, useMemo, useRef, useEffect } from 'react';
 
 // ============================================================================
 // TYPES & INTERFACES
@@ -109,13 +109,13 @@ export interface DataTableProps<TData, TValue> {
  */
 export function transformSortingToApi(
   sorting: SortingState,
-  format: "field:direction" | "field,direction" = "field:direction"
+  format: 'field:direction' | 'field,direction' = 'field:direction',
 ): string | undefined {
   if (sorting.length === 0) return undefined;
 
   const { id, desc } = sorting[0];
-  const direction = desc ? "desc" : "asc";
-  const separator = format === "field:direction" ? ":" : ",";
+  const direction = desc ? 'desc' : 'asc';
+  const separator = format === 'field:direction' ? ':' : ',';
 
   return `${id}${separator}${direction}`;
 }
@@ -126,10 +126,10 @@ export function transformSortingToApi(
  */
 export function transformFiltersToApi(
   filters: Record<string, any>,
-  emptyValues: any[] = ["", null, undefined]
+  emptyValues: any[] = ['', null, undefined],
 ): Record<string, any> {
   return Object.fromEntries(
-    Object.entries(filters).filter(([, value]) => !emptyValues.includes(value))
+    Object.entries(filters).filter(([, value]) => !emptyValues.includes(value)),
   );
 }
 
@@ -147,7 +147,7 @@ export function buildApiQueryParams(options: {
   pagination: { pageIndex: number; pageSize: number };
   sorting?: SortingState;
   filters?: Record<string, any>;
-  sortFormat?: "field:direction" | "field,direction";
+  sortFormat?: 'field:direction' | 'field,direction';
   pageKey?: string;
   pageSizeKey?: string;
   sortKey?: string;
@@ -156,10 +156,10 @@ export function buildApiQueryParams(options: {
     pagination,
     sorting = [],
     filters = {},
-    sortFormat = "field:direction",
-    pageKey = "page",
-    pageSizeKey = "first",
-    sortKey = "sort",
+    sortFormat = 'field:direction',
+    pageKey = 'page',
+    pageSizeKey = 'first',
+    sortKey = 'sort',
   } = options;
 
   const sortParam = transformSortingToApi(sorting, sortFormat);
@@ -200,15 +200,14 @@ export function DataTable<TData, TValue>({
   // --------------------------------------------------------------------------
   // State Management - Internal state for uncontrolled usage
   // --------------------------------------------------------------------------
-  const [internalPagination, setInternalPagination] = useState<PaginationState>(
-    {
-      pageIndex: 0,
-      pageSize: 10,
-    }
-  );
+  const [internalPagination, setInternalPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
   const [internalSorting, setInternalSorting] = useState<SortingState>([]);
-  const [internalColumnFilters, setInternalColumnFilters] =
-    useState<ColumnFiltersState>([]);
+  const [internalColumnFilters, setInternalColumnFilters] = useState<ColumnFiltersState>(
+    [],
+  );
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
   // Update display data only when not loading
@@ -245,7 +244,7 @@ export function DataTable<TData, TValue>({
     return Object.entries(filters)
       .filter(([key, value]) => {
         // Filter out empty values
-        if (value === "" || value === null || value === undefined) return false;
+        if (value === '' || value === null || value === undefined) return false;
         return true;
       })
       .map(([key, value]) => ({
@@ -259,17 +258,20 @@ export function DataTable<TData, TValue>({
     if (onFiltersChange && filters) {
       onFiltersChange({
         ...filters,
-        [filterKey]: "",
+        [filterKey]: '',
       });
     }
   };
 
   const handleClearAllFilters = () => {
     if (onFiltersChange && filters) {
-      const clearedFilters = Object.keys(filters).reduce((acc, key) => {
-        acc[key] = "";
-        return acc;
-      }, {} as Record<string, any>);
+      const clearedFilters = Object.keys(filters).reduce(
+        (acc, key) => {
+          acc[key] = '';
+          return acc;
+        },
+        {} as Record<string, any>,
+      );
       onFiltersChange(clearedFilters);
     }
   };
@@ -296,8 +298,8 @@ export function DataTable<TData, TValue>({
         // Only scroll if the table top is not visible
         if (!isVisible) {
           tableElement.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
+            behavior: 'smooth',
+            block: 'start',
           });
         }
       }
@@ -336,10 +338,7 @@ export function DataTable<TData, TValue>({
   // Render
   // --------------------------------------------------------------------------
   return (
-    <div
-      ref={tableContainerRef}
-      className={cn("flex flex-col gap-4", className)}
-    >
+    <div ref={tableContainerRef} className={cn('flex flex-col gap-4', className)}>
       {/* Toolbar - Filters & Column Visibility */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
@@ -365,8 +364,7 @@ export function DataTable<TData, TValue>({
                 .getAllColumns()
                 .filter(
                   (column) =>
-                    typeof column.accessorFn !== "undefined" &&
-                    column.getCanHide()
+                    typeof column.accessorFn !== 'undefined' && column.getCanHide(),
                 )
                 .map((column) => {
                   return (
@@ -374,9 +372,7 @@ export function DataTable<TData, TValue>({
                       key={column.id}
                       className="capitalize"
                       checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
+                      onCheckedChange={(value) => column.toggleVisibility(value)}
                     >
                       {column.id}
                     </DropdownMenuCheckboxItem>
@@ -390,7 +386,7 @@ export function DataTable<TData, TValue>({
       {/* Active Filters Display */}
       {getActiveFilters.length > 0 && (
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-sm font-medium text-muted-foreground">
+          <span className="text-muted-foreground text-sm font-medium">
             Filtres actifs:
           </span>
           {getActiveFilters.map((filter) => (
@@ -400,13 +396,11 @@ export function DataTable<TData, TValue>({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-4 w-4 rounded-full p-0 hover:bg-muted"
+                className="hover:bg-muted h-4 w-4 rounded-full p-0"
                 onClick={() => handleRemoveFilter(filter.key)}
               >
                 <X className="h-3 w-3" />
-                <span className="sr-only">
-                  Supprimer le filtre {filter.label}
-                </span>
+                <span className="sr-only">Supprimer le filtre {filter.label}</span>
               </Button>
             </Badge>
           ))}
@@ -437,29 +431,25 @@ export function DataTable<TData, TValue>({
                       {header.isPlaceholder ? null : canSort ? (
                         <div
                           className={cn(
-                            "flex cursor-pointer select-none items-center gap-2",
-                            header.column.getCanSort() &&
-                              "hover:text-foreground"
+                            'flex cursor-pointer items-center gap-2 select-none',
+                            header.column.getCanSort() && 'hover:text-foreground',
                           )}
                           onClick={header.column.getToggleSortingHandler()}
                         >
                           {flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
-                          {isSorted === "desc" ? (
+                          {isSorted === 'desc' ? (
                             <IconChevronDown className="size-4" />
-                          ) : isSorted === "asc" ? (
+                          ) : isSorted === 'asc' ? (
                             <IconChevronUp className="size-4" />
                           ) : (
                             <IconSelector className="size-4 opacity-50" />
                           )}
                         </div>
                       ) : (
-                        flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )
+                        flexRender(header.column.columnDef.header, header.getContext())
                       )}
                     </TableHead>
                   );
@@ -485,12 +475,12 @@ export function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
+                  data-state={row.getIsSelected() && 'selected'}
                   onClick={(e) => {
                     // Don't trigger row click if clicking on interactive elements
                     const target = e.target as HTMLElement;
                     const isInteractiveElement = target.closest(
-                      'a, button, [role="button"], [role="menuitem"], [role="menu"]'
+                      'a, button, [role="button"], [role="menuitem"], [role="menu"]',
                     );
 
                     if (onRowClick && !isInteractiveElement) {
@@ -499,27 +489,21 @@ export function DataTable<TData, TValue>({
                     }
                   }}
                   className={cn(
-                    "transition-colors hover:bg-muted/50",
-                    onRowClick && "cursor-pointer",
-                    isLoading && "opacity-50"
+                    'hover:bg-muted/50 transition-colors',
+                    onRowClick && 'cursor-pointer',
+                    isLoading && 'opacity-50',
                   )}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={columns.length} className="h-24 text-center">
                   <div className="flex items-center justify-center">
                     <Ban size={36} className="text-muted-foreground" />
                   </div>
@@ -535,7 +519,7 @@ export function DataTable<TData, TValue>({
         <div className="flex items-center justify-between px-4">
           {/* Page info - Desktop only */}
           <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
-            Affichage de la page {table.getState().pagination.pageIndex + 1} de{" "}
+            Affichage de la page {table.getState().pagination.pageIndex + 1} de{' '}
             {pageCount || 1}
           </div>
 
@@ -553,9 +537,7 @@ export function DataTable<TData, TValue>({
                 }}
               >
                 <SelectTrigger size="sm" className="w-20" id="rows-per-page">
-                  <SelectValue
-                    placeholder={table.getState().pagination.pageSize}
-                  />
+                  <SelectValue placeholder={table.getState().pagination.pageSize} />
                 </SelectTrigger>
                 <SelectContent side="top">
                   {[10, 20, 30, 40, 50].map((pageSize) => (
@@ -569,8 +551,7 @@ export function DataTable<TData, TValue>({
 
             {/* Page info - Mobile */}
             <div className="flex w-fit items-center justify-center text-sm font-medium">
-              Page {table.getState().pagination.pageIndex + 1} sur{" "}
-              {pageCount || 1}
+              Page {table.getState().pagination.pageIndex + 1} sur {pageCount || 1}
             </div>
 
             {/* Navigation buttons */}

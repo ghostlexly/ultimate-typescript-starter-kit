@@ -15,11 +15,7 @@ import { KillDragonController } from './commands/kill-dragon/kill-dragon.http.co
 import { KillDragonHandler } from './commands/kill-dragon/kill-dragon.handler';
 import { DemoMiscController } from './commands/misc/misc.http.controller';
 
-const CommandHandlers = [
-  TestPlayerHandler,
-  LaunchQueueHandler,
-  KillDragonHandler,
-];
+const CommandHandlers = [TestPlayerHandler, LaunchQueueHandler, KillDragonHandler];
 
 const QueryHandlers = [
   FindAllAccountsQueryHandler,

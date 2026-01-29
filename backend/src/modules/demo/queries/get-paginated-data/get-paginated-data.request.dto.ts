@@ -11,6 +11,4 @@ export const demoGetPaginatedDataSchema = z.object({
   ),
 });
 
-export type DemoGetPaginatedDataDto = z.infer<
-  typeof demoGetPaginatedDataSchema
->;
+export type DemoGetPaginatedDataDto = z.infer<typeof demoGetPaginatedDataSchema>;

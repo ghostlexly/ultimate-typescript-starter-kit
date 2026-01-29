@@ -1,9 +1,5 @@
-import axios, {
-  AxiosError,
-  AxiosResponse,
-  InternalAxiosRequestConfig,
-} from "axios";
-import { clearAuthCookies } from "../luni-auth/luni-auth.server";
+import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import { clearAuthCookies } from '../luni-auth/luni-auth.server';
 
 /**
  * Wolfios - Axios instance for Client Components
@@ -26,18 +22,16 @@ import { clearAuthCookies } from "../luni-auth/luni-auth.server";
  * ```
  */
 const wolfios = axios.create({
-  adapter: ["fetch", "xhr", "http"],
+  adapter: ['fetch', 'xhr', 'http'],
   timeout: 30000,
 });
 
-wolfios.interceptors.request.use(
-  async (request: InternalAxiosRequestConfig) => {
-    // disable subsequent setting the default header by Axios
-    request.headers.set("User-Agent", false);
+wolfios.interceptors.request.use(async (request: InternalAxiosRequestConfig) => {
+  // disable subsequent setting the default header by Axios
+  request.headers.set('User-Agent', false);
 
-    return request;
-  }
-);
+  return request;
+});
 
 wolfios.interceptors.response.use(
   async (response: AxiosResponse) => {
@@ -48,11 +42,11 @@ wolfios.interceptors.response.use(
       error.response &&
       error.response.status === 401 &&
       error.config &&
-      !error.config.url?.includes("/auth/refresh")
+      !error.config.url?.includes('/auth/refresh')
     ) {
       try {
         // Refresh the JWT tokens
-        await wolfios.post("/api/auth/refresh");
+        await wolfios.post('/api/auth/refresh');
 
         // Retry the original request and return the response
         // (error.config contains the original request config (url, method, data, headers, etc.))
@@ -68,7 +62,7 @@ wolfios.interceptors.response.use(
     }
 
     return Promise.reject(error); // important to propagate the error
-  }
+  },
 );
 
 export { wolfios };

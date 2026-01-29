@@ -23,8 +23,6 @@ export default tseslint.config(
     plugins: {
       prettier: prettierPlugin,
     },
-  },
-  {
     rules: {
       'prettier/prettier': 'error',
       '@typescript-eslint/no-explicit-any': 'off',

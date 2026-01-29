@@ -5,7 +5,6 @@ import { SignInHandler } from './sign-in.handler';
 import { SignInCommand } from './sign-in.command';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { AuthService } from '../../auth.service';
-import type { Response } from 'express';
 
 function createMockAccount(overrides = {}): any {
   return {
@@ -41,11 +40,8 @@ describe('SignInHandler', () => {
   let handler: SignInHandler;
   let db: DeepMockProxy<DatabaseService>;
   let authService: DeepMockProxy<AuthService>;
-  let mockResponse: DeepMockProxy<Response>;
 
   beforeEach(async () => {
-    mockResponse = mockDeep<Response>();
-
     const app = await Test.createTestingModule({
       providers: [SignInHandler],
     })

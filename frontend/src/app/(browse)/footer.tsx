@@ -1,16 +1,15 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { Container } from "@/components/ui/container";
-import { dateUtils } from "@/lib/date";
-import { NoSsr } from "@/components/ui/no-ssr";
+import { Container } from '@/components/ui/container';
+import { dateUtils } from '@/lib/date';
+import { NoSsr } from '@/components/ui/no-ssr';
 
 const Footer = () => {
   return (
     <>
       {/* Similaire au header en terme d'espacement / width */}
       <Container variant="centered" className="my-14 px-0 sm:px-4 lg:px-6">
-        <footer className="px-20 py-10 rounded-lg bg-[#f6f6f6]">
+        <footer className="rounded-lg bg-[#f6f6f6] px-20 py-10">
           <div className="grid grid-cols-1 gap-20 md:grid-cols-3">
             {/* NAVIGATION */}
             <div className="flex flex-col gap-6">
@@ -73,10 +72,10 @@ const Footer = () => {
 
           <div>
             <p className="text-center">
-              © LUNISOFT{" "}
+              © LUNISOFT{' '}
               <NoSsr>
-                <time>{dateUtils.format(new Date(), "yyyy")}</time>
-              </NoSsr>{" "}
+                <time>{dateUtils.format(new Date(), 'yyyy')}</time>
+              </NoSsr>{' '}
               - Tous droits réservés
             </p>
           </div>
@@ -88,12 +87,7 @@ const Footer = () => {
 
 const FacebookSvg = () => {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
       <path
         fill="none"
         stroke="currentColor"
@@ -108,12 +102,7 @@ const FacebookSvg = () => {
 
 const TwitterSvg = () => {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
       <path
         fill="none"
         stroke="currentColor"
@@ -128,12 +117,7 @@ const TwitterSvg = () => {
 
 const YoutubeSvg = () => {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         <path
           fill="currentColor"
@@ -149,18 +133,9 @@ const YoutubeSvg = () => {
 
 const MailSvg = () => {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="m7 9l5 3.5L17 9"
-        />
+        <path strokeLinecap="round" strokeLinejoin="round" d="m7 9l5 3.5L17 9" />
         <path d="M2 17V7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2Z" />
       </g>
     </svg>

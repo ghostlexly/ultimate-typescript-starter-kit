@@ -1,26 +1,21 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { useRouter } from "next/navigation";
-import { useTransition } from "react";
-import { Controller, useForm } from "react-hook-form";
-import Link from "next/link";
-import { wolfios } from "@/lib/wolfios/wolfios";
-import { handleApiErrors } from "@/lib/handle-api-errors";
+} from '@/components/ui/card';
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { useRouter } from 'next/navigation';
+import { useTransition } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import Link from 'next/link';
+import { wolfios } from '@/lib/wolfios/wolfios';
+import { handleApiErrors } from '@/lib/handle-api-errors';
 
 type FormValues = {
   email: string;
@@ -32,18 +27,18 @@ export function ForgotPasswordEmailForm() {
 
   const form = useForm<FormValues>({
     defaultValues: {
-      email: "",
+      email: '',
     },
   });
 
   const handleSubmit = async (values: FormValues) => {
     try {
-      await wolfios.post("/api/auth/forgot-password", values);
+      await wolfios.post('/api/auth/forgot-password', values);
 
       startTransition(() => {
         // Pass email to next step via query param
         router.push(
-          `/auth/forgot-password/verify?email=${encodeURIComponent(values.email)}`
+          `/auth/forgot-password/verify?email=${encodeURIComponent(values.email)}`,
         );
       });
     } catch (error) {
@@ -72,7 +67,7 @@ export function ForgotPasswordEmailForm() {
                 <Controller
                   name="email"
                   control={form.control}
-                  rules={{ required: "Email is required" }}
+                  rules={{ required: 'Email is required' }}
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
                       <FieldLabel htmlFor={field.name}>Email</FieldLabel>
@@ -84,9 +79,7 @@ export function ForgotPasswordEmailForm() {
                         aria-invalid={fieldState.invalid}
                         required
                       />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
                   )}
                 />
@@ -103,11 +96,8 @@ export function ForgotPasswordEmailForm() {
               </FieldGroup>
 
               <div className="text-center text-sm">
-                Remember your password?{" "}
-                <Link
-                  href="/auth/signin"
-                  className="underline underline-offset-4"
-                >
+                Remember your password?{' '}
+                <Link href="/auth/signin" className="underline underline-offset-4">
                   Sign in
                 </Link>
               </div>

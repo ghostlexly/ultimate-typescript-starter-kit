@@ -10,27 +10,23 @@ export class ClearExpiredVerificationTokensJob {
 
   @Cron(CronExpression.EVERY_HOUR)
   async execute() {
-    this.logger.log(
-      '[⏰ SCHEDULER]: Running: Clear expired verification tokens job',
-    );
+    this.logger.log('[⏰ SCHEDULER]: Running: Clear expired verification tokens job');
 
     try {
       // Get all expired verification tokens
-      const expiredVerificationTokens =
-        await this.db.prisma.verificationToken.deleteMany({
+      const expiredVerificationTokens = await this.db.prisma.verificationToken.deleteMany(
+        {
           where: {
             expiresAt: { lt: new Date() },
           },
-        });
+        },
+      );
 
       this.logger.log(
         `${expiredVerificationTokens.count} expired verification tokens cleared`,
       );
     } catch (error) {
-      this.logger.error(
-        'Error during expired verification tokens clearing:',
-        error,
-      );
+      this.logger.error('Error during expired verification tokens clearing:', error);
     } finally {
       this.logger.log(
         '[⏰ SCHEDULER]: Scheduled Clear expired verification tokens job completed',

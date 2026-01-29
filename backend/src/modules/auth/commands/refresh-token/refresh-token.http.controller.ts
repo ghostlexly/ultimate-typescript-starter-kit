@@ -37,8 +37,7 @@ export class RefreshTokenController {
     @Body() body: RefreshTokenRequestDto['body'],
   ) {
     const refreshToken =
-      body?.refreshToken ??
-      (req.cookies?.lunisoft_refresh_token as string | undefined);
+      body?.refreshToken ?? (req.cookies?.lunisoft_refresh_token as string | undefined);
 
     if (!refreshToken) {
       throw new HttpException(
@@ -50,8 +49,9 @@ export class RefreshTokenController {
       );
     }
 
-    const { accessToken, refreshToken: newRefreshToken } =
-      await this.commandBus.execute(new RefreshTokenCommand({ refreshToken }));
+    const { accessToken, refreshToken: newRefreshToken } = await this.commandBus.execute(
+      new RefreshTokenCommand({ refreshToken }),
+    );
 
     // Set authentication cookies
     this.authService.setAuthCookies({

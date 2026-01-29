@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import { wolfios } from "@/lib/wolfios/wolfios";
+import { cn } from '@/lib/utils';
+import { wolfios } from '@/lib/wolfios/wolfios';
 import {
   AlertCircleIcon,
   CheckCircle2Icon,
@@ -10,15 +10,15 @@ import {
   FileIcon,
   Loader2Icon,
   TrashIcon,
-} from "lucide-react";
-import { JSX, useCallback, useEffect, useRef, useState } from "react";
-import { Accept, DropEvent, FileRejection, useDropzone } from "react-dropzone";
-import { toast } from "react-toastify";
-import { v4 as uuidv4 } from "uuid";
+} from 'lucide-react';
+import { JSX, useCallback, useEffect, useRef, useState } from 'react';
+import { Accept, DropEvent, FileRejection, useDropzone } from 'react-dropzone';
+import { toast } from 'react-toastify';
+import { v4 as uuidv4 } from 'uuid';
 
 // Constants
 const ERROR_MESSAGES = {
-  FILE_TOO_LARGE: "Ce fichier est trop volumineux.",
+  FILE_TOO_LARGE: 'Ce fichier est trop volumineux.',
   UPLOAD_FAILED: "Un problème est survenu lors de l'envoi de ce fichier.",
   MAX_FILES_EXCEEDED: (maxFiles: number) =>
     `Vous ne pouvez pas envoyer plus de ${maxFiles} fichiers.`,
@@ -26,8 +26,7 @@ const ERROR_MESSAGES = {
     `Le type de fichier n'est pas accepté. \n ${message}`,
   FILE_TOO_LARGE_DETAIL: (message: string) =>
     `Le fichier est trop volumineux. \n ${message}`,
-  DEFAULT_REJECTION: (message: string) =>
-    `Le fichier n'est pas accepté. \n ${message}`,
+  DEFAULT_REJECTION: (message: string) => `Le fichier n'est pas accepté. \n ${message}`,
 };
 
 // Types
@@ -69,11 +68,7 @@ interface GhostDropzoneProps {
 /**
  * Component to display a single file item in the dropzone
  */
-const FileItem = ({
-  file,
-  onDelete,
-  className,
-}: FileItemProps): JSX.Element => {
+const FileItem = ({ file, onDelete, className }: FileItemProps): JSX.Element => {
   const handleDelete = (e: React.MouseEvent<HTMLDivElement>): void => {
     e.stopPropagation();
     e.preventDefault();
@@ -82,16 +77,16 @@ const FileItem = ({
 
   const handlePreview = (): void => {
     if (file.previewUrl) {
-      window.open(file.previewUrl, "_blank");
+      window.open(file.previewUrl, '_blank');
     }
   };
 
   return (
     <div
       className={cn(
-        "bg-background/50 my-2 flex items-center justify-between rounded-md border p-2 transition-all",
-        file.isUploading ? "border-primary/30" : "border-border",
-        className
+        'bg-background/50 my-2 flex items-center justify-between rounded-md border p-2 transition-all',
+        file.isUploading ? 'border-primary/30' : 'border-border',
+        className,
       )}
     >
       <div className="flex items-center gap-2 overflow-hidden">
@@ -153,27 +148,21 @@ const Placeholder = ({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center gap-3 py-6 text-center transition-all",
-        isDragActive ? "scale-110" : "scale-100"
+        'flex flex-col items-center justify-center gap-3 py-6 text-center transition-all',
+        isDragActive ? 'scale-110' : 'scale-100',
       )}
     >
       <div
         className={cn(
-          "rounded-full p-3 transition-colors",
-          isDragActive
-            ? "bg-primary/20 text-primary"
-            : "bg-muted text-muted-foreground"
+          'rounded-full p-3 transition-colors',
+          isDragActive ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground',
         )}
       >
-        <CloudUploadIcon
-          className={cn("size-6", isDragActive && "animate-bounce")}
-        />
+        <CloudUploadIcon className={cn('size-6', isDragActive && 'animate-bounce')} />
       </div>
       <div className="space-y-1">
         <p className="text-sm font-medium">
-          {isDragActive
-            ? "Déposez les fichiers ici"
-            : "Glissez et déposez des fichiers"}
+          {isDragActive ? 'Déposez les fichiers ici' : 'Glissez et déposez des fichiers'}
         </p>
         <p className="text-muted-foreground text-xs">
           ou <span className="text-primary underline">parcourir</span>
@@ -187,6 +176,12 @@ const Placeholder = ({
  * GhostDropzone component for file uploads
  * @param accept - Accepted file types that can be selected in the file dialog
  * @param uploadUrl - The endpoint's url to upload the file to the server
+ * @param maxFiles - Maximum number of files that can be uploaded at same time
+ * @param errorMessage - The error message to display in case of an error
+ * @param onChange
+ * @param value
+ * @param classNames
+ * @param components
  */
 const GhostDropzone = ({
   uploadUrl,
@@ -226,14 +221,9 @@ const GhostDropzone = ({
   // ----------------
 
   // Handle file deletion
-  const handleFileDelete = useCallback(
-    (fileToDelete: GhostDropzoneFile): void => {
-      setCurrentFiles((prevFiles) =>
-        prevFiles.filter((f) => f !== fileToDelete)
-      );
-    },
-    []
-  );
+  const handleFileDelete = useCallback((fileToDelete: GhostDropzoneFile): void => {
+    setCurrentFiles((prevFiles) => prevFiles.filter((f) => f !== fileToDelete));
+  }, []);
 
   // Handle new file drop
   const handleFileDrop = useCallback(
@@ -271,7 +261,7 @@ const GhostDropzone = ({
                 }
 
                 return prevFile;
-              })
+              }),
             );
           })
           .catch((err) => {
@@ -286,13 +276,11 @@ const GhostDropzone = ({
             }
 
             // Remove the file that has problem from the list
-            setCurrentFiles((prevFiles) =>
-              prevFiles.filter((f) => f.id !== tempId)
-            );
+            setCurrentFiles((prevFiles) => prevFiles.filter((f) => f.id !== tempId));
           });
       });
     },
-    [uploadUrl]
+    [uploadUrl],
   );
 
   // Handle file rejected errors (client side)
@@ -310,10 +298,10 @@ const GhostDropzone = ({
         const errorMessage = rejection.errors[0].message;
 
         switch (errorCode) {
-          case "file-invalid-type":
+          case 'file-invalid-type':
             toast.error(ERROR_MESSAGES.INVALID_TYPE(errorMessage));
             break;
-          case "file-too-large":
+          case 'file-too-large':
             toast.error(ERROR_MESSAGES.FILE_TOO_LARGE_DETAIL(errorMessage));
             break;
           default:
@@ -322,7 +310,7 @@ const GhostDropzone = ({
         }
       });
     },
-    [maxFiles]
+    [maxFiles],
   );
 
   // ----------------
@@ -344,15 +332,13 @@ const GhostDropzone = ({
     <div className="space-y-2">
       <div
         className={cn(
-          "bg-background relative h-full w-full overflow-hidden rounded-lg border-2 border-dashed transition-all duration-200",
+          'bg-background relative h-full w-full overflow-hidden rounded-lg border-2 border-dashed transition-all duration-200',
           classNames?.container,
-          errorMessage && "border-destructive bg-destructive/5",
+          errorMessage && 'border-destructive bg-destructive/5',
           canAddMoreFiles
-            ? "hover:border-primary/50 hover:bg-muted/50 cursor-pointer"
-            : "cursor-default",
-          canAddMoreFiles &&
-            isDragActive &&
-            "border-primary bg-primary/10 shadow-sm"
+            ? 'hover:border-primary/50 hover:bg-muted/50 cursor-pointer'
+            : 'cursor-default',
+          canAddMoreFiles && isDragActive && 'border-primary bg-primary/10 shadow-sm',
         )}
         {...getRootProps()}
       >
@@ -367,7 +353,7 @@ const GhostDropzone = ({
         />
 
         {/* File list */}
-        <div className={cn("px-4 py-2", currentFiles.length > 0 && "border-t")}>
+        <div className={cn('px-4 py-2', currentFiles.length > 0 && 'border-t')}>
           {currentFiles.map((file) => (
             <FileItem
               key={file.id}
@@ -390,6 +376,6 @@ const GhostDropzone = ({
   );
 };
 
-GhostDropzone.displayName = "GhostDropzone";
+GhostDropzone.displayName = 'GhostDropzone';
 
 export { GhostDropzone };

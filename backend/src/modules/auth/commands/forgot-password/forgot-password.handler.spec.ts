@@ -61,9 +61,7 @@ describe('ForgotPasswordHandler', () => {
     // ===== Arrange
     const fakeAccount = createMockAccount();
     db.prisma.account.findFirst.mockResolvedValue(fakeAccount);
-    db.prisma.verificationToken.create.mockResolvedValue(
-      createMockVerificationToken(),
-    );
+    db.prisma.verificationToken.create.mockResolvedValue(createMockVerificationToken());
 
     // ===== Act
     const result = await handler.execute(
@@ -95,10 +93,7 @@ describe('ForgotPasswordHandler', () => {
     await expect(
       handler.execute(new ForgotPasswordCommand({ email: 'unknown@test.com' })),
     ).rejects.toThrow(
-      new HttpException(
-        { message: 'Account not found.' },
-        HttpStatus.BAD_REQUEST,
-      ),
+      new HttpException({ message: 'Account not found.' }, HttpStatus.BAD_REQUEST),
     );
   });
 });

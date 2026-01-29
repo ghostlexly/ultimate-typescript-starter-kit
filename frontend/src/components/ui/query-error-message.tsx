@@ -1,5 +1,5 @@
-import { IoAlertCircle } from "react-icons/io5";
-import { Button } from "./button";
+import { IoAlertCircle } from 'react-icons/io5';
+import { Button } from './button';
 
 const QueryErrorMessage = ({ message }: { message?: string }) => {
   const onRetry = () => {
@@ -17,10 +17,10 @@ const QueryErrorMessage = ({ message }: { message?: string }) => {
       </div>
 
       <div className="mb-6 text-center text-gray-600">
-        {message ?? "Une erreur inconnue est survenue"}
+        {message ?? 'Une erreur inconnue est survenue'}
       </div>
 
-      <Button onClick={onRetry} variant={"destructive"}>
+      <Button onClick={onRetry} variant="destructive">
         <div className="px-6 py-3 font-medium text-white">Réessayer</div>
       </Button>
     </div>

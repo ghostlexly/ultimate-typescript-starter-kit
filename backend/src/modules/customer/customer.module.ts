@@ -9,10 +9,7 @@ import { UpdateCustomerInformationsHandler } from './commands/update-customer-in
 import { GetCustomerInformationsController } from './queries/get-customer-informations/get-customer-informations.http.controller';
 import { GetCustomerInformationsQueryHandler } from './queries/get-customer-informations/get-customer-informations.query-handler';
 
-const CommandHandlers = [
-  RegisterCustomerHandler,
-  UpdateCustomerInformationsHandler,
-];
+const CommandHandlers = [RegisterCustomerHandler, UpdateCustomerInformationsHandler];
 
 const QueryHandlers = [GetCustomerInformationsQueryHandler];
 

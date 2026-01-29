@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Command,
   CommandEmpty,
@@ -9,29 +9,24 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Check, ChevronsUpDown, X } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useCallback, useState } from "react";
+} from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { Check, ChevronsUpDown, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useCallback, useState } from 'react';
 
 /**
  * Access nested properties using dot notation (e.g., "account.email")
  */
 const getNestedValue = (obj: Record<string, any>, path: string): any => {
-  return path.split(".").reduce((current, key) => current?.[key], obj);
+  return path.split('.').reduce((current, key) => current?.[key], obj);
 };
 
-export interface MultiSelectComboboxProps<T extends Record<string, any>>
-  extends Omit<
-    React.ComponentPropsWithoutRef<"button">,
-    "value" | "onChange" | "children"
-  > {
+export interface MultiSelectComboboxProps<T extends Record<string, any>> extends Omit<
+  React.ComponentPropsWithoutRef<'button'>,
+  'value' | 'onChange' | 'children'
+> {
   items: T[];
   value: T[];
   onChange: (value: T[]) => void;
@@ -66,11 +61,11 @@ export function MultiSelectCombobox<T extends Record<string, any>>({
   items,
   value,
   onChange,
-  valueKey = "value",
+  valueKey = 'value',
   renderLabel = defaultRenderLabel,
-  placeholder = "Select items...",
-  emptyMessage = "No items found.",
-  searchPlaceholder = "Search...",
+  placeholder = 'Select items...',
+  emptyMessage = 'No items found.',
+  searchPlaceholder = 'Search...',
   className,
   disabled = false,
   loading = false,
@@ -83,16 +78,13 @@ export function MultiSelectCombobox<T extends Record<string, any>>({
 }: MultiSelectComboboxProps<T>) {
   const [open, setOpen] = useState(false);
 
-  const getValue = useCallback(
-    (item: T) => getNestedValue(item, valueKey),
-    [valueKey]
-  );
+  const getValue = useCallback((item: T) => getNestedValue(item, valueKey), [valueKey]);
 
   const isItemSelected = useCallback(
     (itemValue: string) => {
       return value.some((item) => String(getValue(item)) === itemValue);
     },
-    [value, getValue]
+    [value, getValue],
   );
 
   const handleOpenChange = useCallback(
@@ -100,10 +92,10 @@ export function MultiSelectCombobox<T extends Record<string, any>>({
       setOpen(newOpen);
 
       if (!newOpen) {
-        onSearchChange?.("");
+        onSearchChange?.('');
       }
     },
-    [onSearchChange]
+    [onSearchChange],
   );
 
   const toggleItem = useCallback(
@@ -115,14 +107,14 @@ export function MultiSelectCombobox<T extends Record<string, any>>({
         onChange([...value, item]);
       }
     },
-    [isItemSelected, onChange, value, getValue]
+    [isItemSelected, onChange, value, getValue],
   );
 
   const removeItem = useCallback(
     (itemValue: string) => {
       onChange(value.filter((v) => String(getValue(v)) !== itemValue));
     },
-    [onChange, value, getValue]
+    [onChange, value, getValue],
   );
 
   const itemRenderer = renderItem || renderLabel;
@@ -136,14 +128,13 @@ export function MultiSelectCombobox<T extends Record<string, any>>({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className={cn("justify-between", className)}
+            className={cn('justify-between', className)}
             disabled={disabled}
             {...buttonProps}
           >
             {value.length > 0 ? (
               <span>
-                {value.length === 1 ? "1 item" : `${value.length} items`}{" "}
-                selected
+                {value.length === 1 ? '1 item' : `${value.length} items`} selected
               </span>
             ) : (
               <span className="text-muted-foreground">{placeholder}</span>
@@ -186,10 +177,8 @@ export function MultiSelectCombobox<T extends Record<string, any>>({
                         >
                           <div
                             className={cn(
-                              "flex items-center justify-center",
-                              isItemSelected(itemValue)
-                                ? "opacity-100"
-                                : "opacity-0"
+                              'flex items-center justify-center',
+                              isItemSelected(itemValue) ? 'opacity-100' : 'opacity-0',
                             )}
                           >
                             <Check className="h-4 w-4" />
