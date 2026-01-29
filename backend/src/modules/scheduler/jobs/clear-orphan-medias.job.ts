@@ -2,12 +2,16 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { dateUtils } from 'src/modules/core/utils/date';
+import { MediaService } from '../../media/media.service';
 
 @Injectable()
 export class ClearOrphanMediasJob {
   private logger = new Logger(ClearOrphanMediasJob.name);
 
-  constructor(private db: DatabaseService) {}
+  constructor(
+    private db: DatabaseService,
+    private readonly mediaService: MediaService,
+  ) {}
 
   @Cron(CronExpression.EVERY_3_HOURS)
   async execute() {
@@ -56,10 +60,8 @@ export class ClearOrphanMediasJob {
         }
 
         // Delete the record from the database
-        await this.db.prisma.media.delete({
-          where: {
-            id: media.id,
-          },
+        await this.mediaService.deleteMedia({
+          id: media.id,
         });
       }
     } catch (error) {

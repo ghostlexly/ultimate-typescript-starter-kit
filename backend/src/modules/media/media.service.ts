@@ -37,7 +37,7 @@ export class MediaService {
       mimeType: fileInfos.mimeType,
     });
 
-    return await this.db.prisma.media.create({
+    return this.db.prisma.media.create({
       data: {
         key: key,
         fileName: originalFileName,
@@ -88,8 +88,8 @@ export class MediaService {
   };
 
   /**
-   * Verify that the media has the correct size and type.
-   * Throws an exception if the media does not meet the requirements.
+   * Verify that the media in the database entry has the correct size and type.
+   * Throws an exception if the media in the database entry does not meet the requirements.
    *
    * @param mediaId The media ID
    * @param allowedMimeTypes The allowed MIME types
@@ -135,4 +135,20 @@ export class MediaService {
 
     return true;
   };
+
+  async deleteMedia({ id }: { id: string }) {
+    const media = await this.db.prisma.media.findUnique({
+      where: { id },
+    });
+
+    const result = await this.db.prisma.media.delete({
+      where: { id },
+    });
+
+    if (media) {
+      await this.s3Service.deleteFile({ key: media.key });
+    }
+
+    return result;
+  }
 }

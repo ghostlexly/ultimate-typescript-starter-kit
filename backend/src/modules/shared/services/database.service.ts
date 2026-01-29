@@ -1,6 +1,5 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { Prisma, PrismaClient } from '../../../generated/prisma/client';
-import { S3Service } from './s3.service';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 import { ConfigService } from '@nestjs/config';
@@ -46,10 +45,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   private readonly pool: Pool;
   private readonly adapter: PrismaPg;
 
-  constructor(
-    private configService: ConfigService,
-    private s3Service: S3Service,
-  ) {
+  constructor(private configService: ConfigService) {
     const connectionString = this.configService.get<string>(
       'APP_DATABASE_CONNECTION_URL',
     );
@@ -66,21 +62,5 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   async onModuleDestroy() {
     await this.prisma.$disconnect();
     await this.pool.end();
-  }
-
-  async deleteMedia(id: string) {
-    const media = await this.prisma.media.findUnique({
-      where: { id },
-    });
-
-    const result = await this.prisma.media.delete({
-      where: { id },
-    });
-
-    if (media) {
-      await this.s3Service.deleteFile({ key: media.key });
-    }
-
-    return result;
   }
 }
