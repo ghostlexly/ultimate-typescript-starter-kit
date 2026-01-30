@@ -1,7 +1,6 @@
 *.Dockerfile
 *.docker
 .idea/
-.php_cs.cache
 logs/
 .DS_Store
 .env
