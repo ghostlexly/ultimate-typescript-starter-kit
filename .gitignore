@@ -1,7 +1,6 @@
 *.Dockerfile
 *.docker
 .idea/
-.claude/
 .php_cs.cache
 logs/
 .DS_Store
@@ -9,3 +8,4 @@ logs/
 .env.local
 .env.prod
 node_modules
+.claude/settings.local.json
