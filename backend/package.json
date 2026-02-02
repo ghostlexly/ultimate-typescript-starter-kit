@@ -88,8 +88,6 @@
     "@types/pg": "^8.15.6",
     "@types/supertest": "^6.0.2",
     "eslint": "^9.18.0",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-prettier": "^5.5.5",
     "globals": "^16.0.0",
     "jest": "^30.0.0",
     "prettier": "^3.4.2",
