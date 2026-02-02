@@ -141,14 +141,16 @@ export class MediaService {
       where: { id },
     });
 
-    const result = await this.db.prisma.media.delete({
-      where: { id },
+    return this.db.prisma.$transaction(async (tx) => {
+      const result = await tx.media.delete({
+        where: { id },
+      });
+
+      if (media) {
+        await this.s3Service.deleteFile({ key: media.key });
+      }
+
+      return result;
     });
-
-    if (media) {
-      await this.s3Service.deleteFile({ key: media.key });
-    }
-
-    return result;
   }
 }
