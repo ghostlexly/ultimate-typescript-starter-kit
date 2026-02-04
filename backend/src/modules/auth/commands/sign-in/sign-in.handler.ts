@@ -1,23 +1,21 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { HttpException, HttpStatus } from '@nestjs/common';
-import { SignInCommand } from './sign-in.command';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { AuthService } from '../../auth.service';
 import type { Account } from 'src/generated/prisma/client';
 
-@CommandHandler(SignInCommand)
-export class SignInHandler implements ICommandHandler<SignInCommand> {
+@Injectable()
+export class SignInHandler {
   constructor(
     private readonly db: DatabaseService,
     private readonly authService: AuthService,
   ) {}
 
-  async execute(command: SignInCommand) {
+  async execute({ email, password }: { email: string; password: string }) {
     // Verify if user exists
     const account: Account | null = await this.db.prisma.account.findFirst({
       where: {
         email: {
-          contains: command.email,
+          contains: email,
           mode: 'insensitive',
         },
       },
@@ -26,7 +24,7 @@ export class SignInHandler implements ICommandHandler<SignInCommand> {
     if (!account) {
       // When user doesn't exist, still hash a fake password to prevent timing-based account enumeration
       await this.authService.comparePassword({
-        password: command.password,
+        password: password,
         hashedPassword: '$2a$10$fakeHashToPreventTimingAttacks',
       });
 
@@ -50,7 +48,7 @@ export class SignInHandler implements ICommandHandler<SignInCommand> {
 
     // Hash given password and compare it to the stored hash
     const validPassword = await this.authService.comparePassword({
-      password: command.password,
+      password: password,
       hashedPassword: account.password,
     });
 

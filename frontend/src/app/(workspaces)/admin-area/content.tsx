@@ -7,8 +7,16 @@ import { Container } from '@/components/ui/container';
 import data from './data.json';
 import { wolfios } from '@/lib/wolfios/wolfios';
 import { Button } from '@/components/ui/button';
+import { useSetBreadcrumbs } from '@/hooks/use-breadcrumb';
 
 export function Content() {
+  useSetBreadcrumbs([
+    {
+      href: '#',
+      label: 'Dashboard',
+    },
+  ]);
+
   const handleProtectedRoute = async () => {
     await wolfios.get('/api/demos/protected-route').then((res) => {
       console.log(res.data);

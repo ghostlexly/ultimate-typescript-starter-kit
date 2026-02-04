@@ -1,21 +1,27 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { HttpException, HttpStatus } from '@nestjs/common';
-import { ResetPasswordCommand } from './reset-password.command';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { AuthService } from '../../auth.service';
 
-@CommandHandler(ResetPasswordCommand)
-export class ResetPasswordHandler implements ICommandHandler<ResetPasswordCommand> {
+@Injectable()
+export class ResetPasswordHandler {
   constructor(
     private readonly db: DatabaseService,
     private readonly authService: AuthService,
   ) {}
 
-  async execute(command: ResetPasswordCommand) {
+  async execute({
+    email,
+    password,
+    token,
+  }: {
+    email: string;
+    password: string;
+    token: string;
+  }) {
     const tokenValid = await this.authService.verifyVerificationToken({
       type: 'PASSWORD_RESET',
-      token: command.token,
-      email: command.email,
+      token: token,
+      email: email,
     });
 
     if (!tokenValid) {
@@ -29,7 +35,7 @@ export class ResetPasswordHandler implements ICommandHandler<ResetPasswordComman
 
     const account = await this.db.prisma.account.findFirst({
       where: {
-        email: command.email,
+        email: email,
       },
     });
 
@@ -43,7 +49,7 @@ export class ResetPasswordHandler implements ICommandHandler<ResetPasswordComman
     }
 
     const hashedPassword = await this.authService.hashPassword({
-      password: command.password,
+      password: password,
     });
 
     // Update the account password

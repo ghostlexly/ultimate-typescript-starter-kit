@@ -11,25 +11,24 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { AlertCircleIcon, CheckCircleIcon, InfoIcon, XCircleIcon } from 'lucide-react';
-import { useBreadcrumb } from '@/hooks/use-breadcrumb';
-import { useEffect } from 'react';
+import { useSetBreadcrumbs } from '@/hooks/use-breadcrumb';
 
 export default function TestPage() {
-  const { setBreadcrumbs } = useBreadcrumb();
-
-  useEffect(() => {
-    setBreadcrumbs([
-      {
-        href: '/admin-area/example-breadcrumb-1',
-        label: 'breadcrumb example 1',
-      },
-      {
-        href: '/admin-area/example-breadcrumb-2',
-        label: 'breadcrumb example 2',
-      },
-      { href: '#', label: 'Example' },
-    ]);
-  }, [setBreadcrumbs]);
+  useSetBreadcrumbs([
+    {
+      href: '/admin-area',
+      label: 'Dashboard',
+    },
+    {
+      href: '/admin-area/example-breadcrumb-1',
+      label: 'breadcrumb example 1',
+    },
+    {
+      href: '/admin-area/example-breadcrumb-2',
+      label: 'breadcrumb example 2',
+    },
+    { href: '#', label: 'Example' },
+  ]);
 
   return (
     <Container>

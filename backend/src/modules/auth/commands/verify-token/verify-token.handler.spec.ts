@@ -1,7 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { VerifyTokenHandler } from './verify-token.handler';
-import { VerifyTokenCommand } from './verify-token.command';
 import { AuthService } from '../../auth.service';
 
 describe('VerifyTokenHandler', () => {
@@ -28,13 +27,11 @@ describe('VerifyTokenHandler', () => {
     authService.verifyVerificationToken.mockResolvedValue(true);
 
     // ===== Act
-    const result = await handler.execute(
-      new VerifyTokenCommand({
-        type: 'PASSWORD_RESET',
-        token: '123456',
-        email: 'test@test.com',
-      }),
-    );
+    const result = await handler.execute({
+      type: 'PASSWORD_RESET',
+      token: '123456',
+      email: 'test@test.com',
+    });
 
     // ===== Assert
     expect(result).toEqual(true);
@@ -53,13 +50,11 @@ describe('VerifyTokenHandler', () => {
     authService.verifyVerificationToken.mockResolvedValue(false);
 
     // ===== Act
-    const result = await handler.execute(
-      new VerifyTokenCommand({
-        type: 'PASSWORD_RESET',
-        token: '123456',
-        email: 'test@test.com',
-      }),
-    );
+    const result = await handler.execute({
+      type: 'PASSWORD_RESET',
+      token: '123456',
+      email: 'test@test.com',
+    });
 
     // ===== Assert
     expect(result).toEqual(false);

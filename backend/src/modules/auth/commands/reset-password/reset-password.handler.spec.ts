@@ -2,7 +2,6 @@ import { Test } from '@nestjs/testing';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { ResetPasswordHandler } from './reset-password.handler';
-import { ResetPasswordCommand } from './reset-password.command';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { AuthService } from '../../auth.service';
 
@@ -52,13 +51,11 @@ describe('ResetPasswordHandler', () => {
     db.prisma.verificationToken.deleteMany.mockResolvedValue({ count: 1 });
 
     // ===== Act
-    const result = await handler.execute(
-      new ResetPasswordCommand({
-        email: 'test@test.com',
-        password: 'newPassword123',
-        token: '123456',
-      }),
-    );
+    const result = await handler.execute({
+      email: 'test@test.com',
+      password: 'newPassword123',
+      token: '123456',
+    });
 
     // ===== Assert
     expect(result).toEqual({
@@ -79,13 +76,11 @@ describe('ResetPasswordHandler', () => {
 
     // ===== Act & Assert
     await expect(
-      handler.execute(
-        new ResetPasswordCommand({
-          email: 'test@test.com',
-          password: 'newPassword123',
-          token: 'invalid',
-        }),
-      ),
+      handler.execute({
+        email: 'test@test.com',
+        password: 'newPassword123',
+        token: 'invalid',
+      }),
     ).rejects.toThrow(
       new HttpException(
         { message: 'This token is not valid or expired.' },
@@ -101,13 +96,11 @@ describe('ResetPasswordHandler', () => {
 
     // ===== Act & Assert
     await expect(
-      handler.execute(
-        new ResetPasswordCommand({
-          email: 'unknown@test.com',
-          password: 'newPassword123',
-          token: '123456',
-        }),
-      ),
+      handler.execute({
+        email: 'unknown@test.com',
+        password: 'newPassword123',
+        token: '123456',
+      }),
     ).rejects.toThrow(
       new HttpException({ message: 'Account not found.' }, HttpStatus.BAD_REQUEST),
     );

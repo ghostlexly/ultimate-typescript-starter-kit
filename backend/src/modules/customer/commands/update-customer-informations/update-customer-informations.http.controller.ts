@@ -6,19 +6,18 @@ import {
   UnauthorizedException,
   UsePipes,
 } from '@nestjs/common';
-import { CommandBus } from '@nestjs/cqrs';
 import type { Request } from 'express';
 import { Roles } from 'src/modules/core/decorators/roles.decorator';
 import { ZodValidationPipe } from 'src/modules/core/pipes/zod-validation.pipe';
-import { UpdateCustomerInformationsCommand } from './update-customer-informations.command';
 import {
   type UpdateCustomerInformationsRequestDto,
   updateCustomerInformationsRequestSchema,
 } from './update-customer-informations.request.dto';
+import { UpdateCustomerInformationsHandler } from './update-customer-informations.handler';
 
 @Controller()
 export class UpdateCustomerInformationsController {
-  constructor(private readonly commandBus: CommandBus) {}
+  constructor(private readonly handler: UpdateCustomerInformationsHandler) {}
 
   @Patch('/customer/informations')
   @Roles(['CUSTOMER'])
@@ -33,12 +32,9 @@ export class UpdateCustomerInformationsController {
       throw new UnauthorizedException();
     }
 
-    return this.commandBus.execute(
-      new UpdateCustomerInformationsCommand({
-        accountId: user.accountId,
-        countryCode: body.countryCode,
-        cityId: body.city,
-      }),
-    );
+    return this.handler.execute({
+      accountId: user.accountId,
+      countryCode: body.countryCode,
+    });
   }
 }

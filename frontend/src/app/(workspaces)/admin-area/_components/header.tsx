@@ -27,7 +27,7 @@ export function Header() {
   // Until then, we show a skeleton
   useEffect(() => {
     setIsLoading(false);
-  }, [breadcrumbs]);
+  }, []);
 
   return (
     <header className="bg-background/40 sticky top-0 z-50 flex h-(--header-height) shrink-0 items-center gap-2 border-b backdrop-blur-md transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
@@ -54,20 +54,12 @@ export function Header() {
                 <BreadcrumbItem>
                   <Skeleton className="h-4 w-16" />
                 </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <Skeleton className="h-4 w-16" />
-                </BreadcrumbItem>
               </>
             ) : (
-              <>
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link href="/admin-area">Dashboard</Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                {breadcrumbs.length > 0 && <BreadcrumbSeparator />}
-                {breadcrumbs.map((crumb, index) => (
+              breadcrumbs.map((crumb, index) => {
+                const isLast = index === breadcrumbs.length - 1;
+
+                return (
                   <div key={crumb.href || index} className="contents">
                     <BreadcrumbItem>
                       {index === breadcrumbs.length - 1 ? (
@@ -78,10 +70,10 @@ export function Header() {
                         </BreadcrumbLink>
                       )}
                     </BreadcrumbItem>
-                    {index !== breadcrumbs.length - 1 && <BreadcrumbSeparator />}
+                    {!isLast && <BreadcrumbSeparator />}
                   </div>
-                ))}
-              </>
+                );
+              })
             )}
           </BreadcrumbList>
         </Breadcrumb>

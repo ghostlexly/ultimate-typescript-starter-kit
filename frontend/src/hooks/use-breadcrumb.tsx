@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, useEffect, useRef } from 'react';
 
 export interface BreadcrumbItem {
   label: string;
@@ -32,4 +32,22 @@ export function useBreadcrumb() {
   }
 
   return context;
+}
+
+/**
+ * Sets breadcrumbs for the current page.
+ * Automatically clears them on unmount.
+ */
+export function useSetBreadcrumbs(items: BreadcrumbItem[]) {
+  const { setBreadcrumbs } = useBreadcrumb();
+  const prevItemsRef = useRef<string>('');
+
+  useEffect(() => {
+    const serialized = JSON.stringify(items);
+
+    if (prevItemsRef.current !== serialized) {
+      prevItemsRef.current = serialized;
+      setBreadcrumbs(items);
+    }
+  }, [setBreadcrumbs, items]);
 }

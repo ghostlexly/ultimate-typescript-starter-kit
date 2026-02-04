@@ -1,22 +1,18 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { HttpException, HttpStatus } from '@nestjs/common';
-import { UpdateCustomerInformationsCommand } from './update-customer-informations.command';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { CountryService } from 'src/modules/country/country.service';
 
-@CommandHandler(UpdateCustomerInformationsCommand)
-export class UpdateCustomerInformationsHandler
-  implements ICommandHandler<UpdateCustomerInformationsCommand>
-{
+@Injectable()
+export class UpdateCustomerInformationsHandler {
   constructor(
     private readonly db: DatabaseService,
     private readonly countryService: CountryService,
   ) {}
 
-  async execute(command: UpdateCustomerInformationsCommand) {
+  async execute({ accountId, countryCode }: { accountId: string; countryCode: string }) {
     const customerInformations = await this.db.prisma.customer.findFirst({
       where: {
-        accountId: command.accountId,
+        accountId: accountId,
       },
     });
 
@@ -24,20 +20,10 @@ export class UpdateCustomerInformationsHandler
       throw new HttpException("You don't have any information", HttpStatus.BAD_REQUEST);
     }
 
-    const country = this.countryService.getCountryByIso2(command.countryCode);
+    const country = this.countryService.getCountryByIso2(countryCode);
 
     if (!country) {
       throw new HttpException("This country doesn't exist", HttpStatus.BAD_REQUEST);
-    }
-
-    const cityRecord = await this.db.prisma.city.findUnique({
-      where: {
-        id: command.cityId,
-      },
-    });
-
-    if (!cityRecord) {
-      throw new HttpException("This city doesn't exist", HttpStatus.BAD_REQUEST);
     }
 
     await this.db.prisma.customer.update({
@@ -45,14 +31,12 @@ export class UpdateCustomerInformationsHandler
         id: customerInformations.id,
       },
       data: {
-        countryCode: command.countryCode,
-        cityId: command.cityId,
+        countryCode: countryCode,
       },
     });
 
     return {
-      countryCode: command.countryCode,
-      cityId: command.cityId,
+      countryCode: countryCode,
     };
   }
 }

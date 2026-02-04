@@ -1,10 +1,9 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
-import { LaunchQueueCommand } from './launch-queue.command';
+import { Injectable } from '@nestjs/common';
 
-@CommandHandler(LaunchQueueCommand)
-export class LaunchQueueHandler implements ICommandHandler<LaunchQueueCommand> {
+Injectable();
+export class LaunchQueueHandler {
   constructor(@InjectQueue('demo') private readonly demoQueue: Queue) {}
 
   async execute() {

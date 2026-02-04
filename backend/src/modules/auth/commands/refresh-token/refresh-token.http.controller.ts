@@ -8,22 +8,21 @@ import {
   Res,
   UsePipes,
 } from '@nestjs/common';
-import { CommandBus } from '@nestjs/cqrs';
 import { Throttle } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
 import { AllowAnonymous } from 'src/modules/core/decorators/allow-anonymous.decorator';
 import { ZodValidationPipe } from 'src/modules/core/pipes/zod-validation.pipe';
-import { RefreshTokenCommand } from './refresh-token.command';
 import {
   type RefreshTokenRequestDto,
   refreshTokenRequestSchema,
 } from './refresh-token.request.dto';
 import { AuthService } from '../../auth.service';
+import { RefreshTokenHandler } from './refresh-token.handler';
 
 @Controller()
 export class RefreshTokenController {
   constructor(
-    private readonly commandBus: CommandBus,
+    private readonly handler: RefreshTokenHandler,
     private readonly authService: AuthService,
   ) {}
 
@@ -49,9 +48,9 @@ export class RefreshTokenController {
       );
     }
 
-    const { accessToken, refreshToken: newRefreshToken } = await this.commandBus.execute(
-      new RefreshTokenCommand({ refreshToken }),
-    );
+    const { accessToken, refreshToken: newRefreshToken } = await this.handler.execute({
+      refreshToken,
+    });
 
     // Set authentication cookies
     this.authService.setAuthCookies({

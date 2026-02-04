@@ -1,15 +1,14 @@
 import { Controller, Get } from '@nestjs/common';
-import { CommandBus } from '@nestjs/cqrs';
 import { AllowAnonymous } from 'src/modules/core/decorators/allow-anonymous.decorator';
-import { LaunchQueueCommand } from './launch-queue.command';
+import { LaunchQueueHandler } from './launch-queue.handler';
 
 @Controller()
 export class LaunchQueueController {
-  constructor(private readonly commandBus: CommandBus) {}
+  constructor(private readonly handler: LaunchQueueHandler) {}
 
   @Get('/demos/queue-launch')
   @AllowAnonymous()
   async testQueueLaunch() {
-    return this.commandBus.execute(new LaunchQueueCommand());
+    return this.handler.execute();
   }
 }

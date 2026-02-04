@@ -16,7 +16,6 @@ import { TEST_USERS, TestUsersFixture } from '../fixtures/test-users.fixture';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { JwtService } from '@nestjs/jwt';
 import { authConstants } from 'src/modules/auth/auth.constants';
-import { TestCitiesFixture } from '../fixtures/test-cities.fixture';
 
 export type TestUserKey = keyof typeof TEST_USERS;
 
@@ -101,7 +100,7 @@ async function buildTestingModule(
 ): Promise<TestingModule> {
   let builder: TestingModuleBuilder = Test.createTestingModule({
     imports: [AppModule],
-    providers: [TestUsersFixture, TestCitiesFixture, TestDatabaseHelper],
+    providers: [TestUsersFixture, TestDatabaseHelper],
   });
 
   if (customize) {

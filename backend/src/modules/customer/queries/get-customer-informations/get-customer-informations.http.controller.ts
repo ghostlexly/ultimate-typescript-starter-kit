@@ -1,12 +1,11 @@
 import { Controller, Get, Req, UnauthorizedException } from '@nestjs/common';
-import { QueryBus } from '@nestjs/cqrs';
 import type { Request } from 'express';
 import { Roles } from 'src/modules/core/decorators/roles.decorator';
-import { GetCustomerInformationsQuery } from './get-customer-informations.query';
+import { GetCustomerInformationsHandler } from './get-customer-informations.handler';
 
 @Controller()
 export class GetCustomerInformationsController {
-  constructor(private readonly queryBus: QueryBus) {}
+  constructor(private readonly handler: GetCustomerInformationsHandler) {}
 
   @Get('/customer/informations')
   @Roles(['CUSTOMER'])
@@ -17,8 +16,6 @@ export class GetCustomerInformationsController {
       throw new UnauthorizedException();
     }
 
-    return this.queryBus.execute(
-      new GetCustomerInformationsQuery({ accountId: user.accountId }),
-    );
+    return this.handler.execute({ accountId: user.accountId });
   }
 }

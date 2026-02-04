@@ -1,14 +1,12 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { HttpException, HttpStatus } from '@nestjs/common';
-import { RefreshTokenCommand } from './refresh-token.command';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { AuthService } from '../../auth.service';
 
-@CommandHandler(RefreshTokenCommand)
-export class RefreshTokenHandler implements ICommandHandler<RefreshTokenCommand> {
+@Injectable()
+export class RefreshTokenHandler {
   constructor(private readonly authService: AuthService) {}
 
-  async execute(command: RefreshTokenCommand) {
-    if (!command.refreshToken) {
+  async execute({ refreshToken }: { refreshToken: string }) {
+    if (!refreshToken) {
       throw new HttpException(
         {
           message:
@@ -21,7 +19,7 @@ export class RefreshTokenHandler implements ICommandHandler<RefreshTokenCommand>
     try {
       const { accessToken, refreshToken: newRefreshToken } =
         await this.authService.refreshAuthenticationTokens({
-          refreshToken: command.refreshToken,
+          refreshToken: refreshToken,
         });
 
       return {

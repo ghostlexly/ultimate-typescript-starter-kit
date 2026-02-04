@@ -1,21 +1,19 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { HttpException, HttpStatus } from '@nestjs/common';
-import { RegisterCustomerCommand } from './register-customer.command';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { AuthService } from 'src/modules/auth/auth.service';
 import { CustomerService } from '../../customer.service';
 
-@CommandHandler(RegisterCustomerCommand)
-export class RegisterCustomerHandler implements ICommandHandler<RegisterCustomerCommand> {
+@Injectable()
+export class RegisterCustomerHandler {
   constructor(
     private readonly db: DatabaseService,
     private readonly authService: AuthService,
     private readonly customerService: CustomerService,
   ) {}
 
-  async execute(command: RegisterCustomerCommand) {
+  async execute({ email, password }: { email: string; password: string }) {
     const existingCustomer = await this.customerService.verifyExistingEmail({
-      email: command.email,
+      email: email,
     });
 
     if (existingCustomer) {
@@ -28,12 +26,12 @@ export class RegisterCustomerHandler implements ICommandHandler<RegisterCustomer
     }
 
     const hashedPassword = await this.authService.hashPassword({
-      password: command.password,
+      password: password,
     });
 
     return this.db.prisma.account.create({
       data: {
-        email: command.email,
+        email: email,
         password: hashedPassword,
         role: 'CUSTOMER',
         customer: {

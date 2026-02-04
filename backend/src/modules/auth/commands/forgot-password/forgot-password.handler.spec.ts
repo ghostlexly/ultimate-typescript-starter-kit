@@ -3,7 +3,6 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { ForgotPasswordHandler } from './forgot-password.handler';
-import { ForgotPasswordCommand } from './forgot-password.command';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { PasswordResetRequestedEvent } from '../../events/password-reset-requested/password-reset-requested.event';
 
@@ -64,9 +63,7 @@ describe('ForgotPasswordHandler', () => {
     db.prisma.verificationToken.create.mockResolvedValue(createMockVerificationToken());
 
     // ===== Act
-    const result = await handler.execute(
-      new ForgotPasswordCommand({ email: 'test@test.com' }),
-    );
+    const result = await handler.execute({ email: 'test@test.com' });
 
     // ===== Assert
     expect(result).toEqual({
@@ -90,9 +87,7 @@ describe('ForgotPasswordHandler', () => {
     db.prisma.account.findFirst.mockResolvedValue(null);
 
     // ===== Act & Assert
-    await expect(
-      handler.execute(new ForgotPasswordCommand({ email: 'unknown@test.com' })),
-    ).rejects.toThrow(
+    await expect(handler.execute({ email: 'unknown@test.com' })).rejects.toThrow(
       new HttpException({ message: 'Account not found.' }, HttpStatus.BAD_REQUEST),
     );
   });

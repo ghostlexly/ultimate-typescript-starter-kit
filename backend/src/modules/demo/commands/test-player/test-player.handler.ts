@@ -1,15 +1,23 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { TestPlayerCommand } from './test-player.command';
+import { Injectable } from '@nestjs/common';
 
-@CommandHandler(TestPlayerCommand)
-export class TestPlayerHandler implements ICommandHandler<TestPlayerCommand> {
-  // eslint-disable-next-line @typescript-eslint/require-await
-  async execute(command: TestPlayerCommand) {
+@Injectable()
+export class TestPlayerHandler {
+  execute({
+    name,
+    age,
+    person,
+    id,
+  }: {
+    name: string;
+    age: number;
+    person: { name: string };
+    id?: string;
+  }) {
     return {
-      name: command.name,
-      age: command.age,
-      person: command.person,
-      id: command.id,
+      name: name,
+      age: age,
+      person: person,
+      id: id,
     };
   }
 }

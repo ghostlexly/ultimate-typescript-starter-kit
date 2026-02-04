@@ -23,9 +23,10 @@ import { handleApiErrors } from '@/lib/handle-api-errors';
 import { wolfios } from '@/lib/wolfios/wolfios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useTransition } from 'react';
+import React, { useTransition } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
+import { useFirstMount } from '@/hooks/use-first-mount';
 
 type FormValues = {
   email: string;
@@ -50,15 +51,15 @@ export function SigninForm({
     },
   });
 
-  useEffect(() => {
-    const error = searchParams.error;
+  useFirstMount(async () => {
+    const errorParam = searchParams?.error;
 
-    if (error) {
+    if (errorParam) {
       toast.error(
         'Authentication failed. Please try again or use a different sign-in method.',
       );
     }
-  }, [searchParams]);
+  });
 
   const handleSubmit = async (values: FormValues) => {
     try {

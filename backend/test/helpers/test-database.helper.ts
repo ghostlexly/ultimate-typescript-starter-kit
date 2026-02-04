@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../src/modules/shared/services/database.service';
-import { TestCitiesFixture } from '../fixtures/test-cities.fixture';
 import { TestUsersFixture } from '../fixtures/test-users.fixture';
 
 /**
@@ -12,7 +11,6 @@ export class TestDatabaseHelper {
   constructor(
     private readonly db: DatabaseService,
     private readonly testUsersFixture: TestUsersFixture,
-    private readonly testCitiesFixture: TestCitiesFixture,
   ) {}
 
   /**
@@ -23,14 +21,12 @@ export class TestDatabaseHelper {
     // Delete in order to respect foreign key constraints
     await this.db.prisma.account.deleteMany();
     await this.db.prisma.appConfig.deleteMany();
-    await this.db.prisma.city.deleteMany();
   }
 
   /**
    * Seed minimal test data (countries only)
    */
   async seedMinimalData(): Promise<void> {
-    await this.testCitiesFixture.seed();
     await this.testUsersFixture.seed();
   }
 

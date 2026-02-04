@@ -1,15 +1,14 @@
 import { Controller, Get } from '@nestjs/common';
-import { QueryBus } from '@nestjs/cqrs';
 import { AllowAnonymous } from 'src/modules/core/decorators/allow-anonymous.decorator';
-import { FindAllAccountsQuery } from './find-all-accounts.query';
+import { FindAllAccountsHandler } from './find-all-accounts.handler';
 
 @Controller()
 export class FindAllAccountsController {
-  constructor(private readonly queryBus: QueryBus) {}
+  constructor(private readonly handler: FindAllAccountsHandler) {}
 
   @Get('/demos')
   @AllowAnonymous()
   async findAll() {
-    return this.queryBus.execute(new FindAllAccountsQuery());
+    return this.handler.execute();
   }
 }

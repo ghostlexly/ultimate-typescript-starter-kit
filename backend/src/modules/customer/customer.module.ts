@@ -7,11 +7,11 @@ import { RegisterCustomerHandler } from './commands/register-customer/register-c
 import { UpdateCustomerInformationsController } from './commands/update-customer-informations/update-customer-informations.http.controller';
 import { UpdateCustomerInformationsHandler } from './commands/update-customer-informations/update-customer-informations.handler';
 import { GetCustomerInformationsController } from './queries/get-customer-informations/get-customer-informations.http.controller';
-import { GetCustomerInformationsQueryHandler } from './queries/get-customer-informations/get-customer-informations.query-handler';
+import { GetCustomerInformationsHandler } from './queries/get-customer-informations/get-customer-informations.handler';
 
 const CommandHandlers = [RegisterCustomerHandler, UpdateCustomerInformationsHandler];
 
-const QueryHandlers = [GetCustomerInformationsQueryHandler];
+const QueryHandlers = [GetCustomerInformationsHandler];
 
 @Module({
   imports: [AuthModule, CountryModule],

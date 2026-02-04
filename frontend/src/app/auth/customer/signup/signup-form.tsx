@@ -21,9 +21,10 @@ import { wolfios } from '@/lib/wolfios/wolfios';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useTransition } from 'react';
+import React, { useTransition } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
+import { useFirstMount } from '@/hooks/use-first-mount';
 
 type FormValues = {
   email: string;
@@ -55,15 +56,15 @@ export function SignUpForm({
     },
   });
 
-  useEffect(() => {
-    const error = searchParams.error;
+  useFirstMount(async () => {
+    const errorParam = searchParams?.error;
 
-    if (error) {
+    if (errorParam) {
       toast.error(
         'Authentication failed. Please try again or use a different sign-in method.',
       );
     }
-  }, [searchParams]);
+  });
 
   const handleSubmit = async (values: FormValues) => {
     try {
@@ -72,7 +73,7 @@ export function SignUpForm({
         email: values.email,
         password: values.password,
         role: 'CUSTOMER',
-        country: values.country?.countryCode,
+        country: values.country?.iso2Code,
       });
 
       // Sign in
@@ -183,17 +184,14 @@ export function SignUpForm({
                       <SingleSelectCombobox
                         id={field.name}
                         items={countries.data || []}
-                        valueKey="countryCode"
+                        valueKey="iso2Code"
                         renderLabel={(item) => item.countryName}
                         value={field.value}
                         onChange={field.onChange}
                         placeholder="Select your country..."
                         emptyMessage="No country found. Please try again."
                         searchPlaceholder="Search..."
-                        getItemKeywords={(item: any) => [
-                          item.countryName,
-                          item.countryCode,
-                        ]}
+                        getItemKeywords={(item: any) => [item.countryName, item.iso2Code]}
                         aria-invalid={fieldState.invalid}
                       />
 

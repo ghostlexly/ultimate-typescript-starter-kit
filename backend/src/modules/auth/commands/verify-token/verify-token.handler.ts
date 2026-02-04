@@ -1,16 +1,24 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { VerifyTokenCommand } from './verify-token.command';
 import { AuthService } from '../../auth.service';
+import { VerificationType } from '../../../../generated/prisma/enums';
+import { Injectable } from '@nestjs/common';
 
-@CommandHandler(VerifyTokenCommand)
-export class VerifyTokenHandler implements ICommandHandler<VerifyTokenCommand> {
+@Injectable()
+export class VerifyTokenHandler {
   constructor(private readonly authService: AuthService) {}
 
-  async execute(command: VerifyTokenCommand) {
+  async execute({
+    type,
+    token,
+    email,
+  }: {
+    type: VerificationType;
+    token: string;
+    email: string;
+  }) {
     return await this.authService.verifyVerificationToken({
-      type: command.type,
-      token: command.token,
-      email: command.email,
+      type: type,
+      token: token,
+      email: email,
     });
   }
 }
