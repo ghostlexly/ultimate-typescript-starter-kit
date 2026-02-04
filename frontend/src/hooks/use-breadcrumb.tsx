@@ -49,5 +49,9 @@ export function useSetBreadcrumbs(items: BreadcrumbItem[]) {
       prevItemsRef.current = serialized;
       setBreadcrumbs(items);
     }
+
+    return () => {
+      setBreadcrumbs([]);
+    };
   }, [setBreadcrumbs, items]);
 }
