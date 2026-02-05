@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { AuthService } from '../../auth.service';
 
@@ -25,12 +25,7 @@ export class ResetPasswordHandler {
     });
 
     if (!tokenValid) {
-      throw new HttpException(
-        {
-          message: 'This token is not valid or expired.',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new BadRequestException('This token is not valid or expired.');
     }
 
     const account = await this.db.prisma.account.findFirst({
@@ -40,12 +35,7 @@ export class ResetPasswordHandler {
     });
 
     if (!account) {
-      throw new HttpException(
-        {
-          message: 'Account not found.',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new BadRequestException('Account not found.');
     }
 
     const hashedPassword = await this.authService.hashPassword({

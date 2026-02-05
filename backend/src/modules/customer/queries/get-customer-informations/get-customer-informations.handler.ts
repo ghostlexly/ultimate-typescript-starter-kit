@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 
 @Injectable()
@@ -13,7 +13,7 @@ export class GetCustomerInformationsHandler {
     });
 
     if (!customerInformations) {
-      throw new HttpException("You don't have any information", HttpStatus.BAD_REQUEST);
+      throw new BadRequestException("You don't have any information.");
     }
 
     return {

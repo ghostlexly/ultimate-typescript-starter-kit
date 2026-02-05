@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  PayloadTooLargeException,
+  UnsupportedMediaTypeException,
+} from '@nestjs/common';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { FilesService } from 'src/modules/shared/services/files.service';
 import { S3Service } from '../shared/services/s3.service';
@@ -71,16 +76,12 @@ export class MediaService {
     });
 
     if (!allowedMimeTypes.includes(fileInfos.mimeType)) {
-      throw new HttpException(
-        { message: 'This file type is not supported.' },
-        HttpStatus.UNSUPPORTED_MEDIA_TYPE,
-      );
+      throw new UnsupportedMediaTypeException('This file type is not supported.');
     }
 
     if (file.size > maxFileSizeInBytes) {
-      throw new HttpException(
-        { message: `The file size must not exceed ${maxFileSize} Mb.` },
-        HttpStatus.PAYLOAD_TOO_LARGE,
+      throw new PayloadTooLargeException(
+        `The file size must not exceed ${maxFileSize} Mb.`,
       );
     }
 
@@ -113,23 +114,16 @@ export class MediaService {
     });
 
     if (!media) {
-      throw new HttpException(
-        { message: 'Media to verify cannot be found.' },
-        HttpStatus.NOT_FOUND,
-      );
+      throw new NotFoundException('Media to verify cannot be found.');
     }
 
     if (!allowedMimeTypes.includes(media.mimeType)) {
-      throw new HttpException(
-        { message: 'This file type is not allowed.' },
-        HttpStatus.UNSUPPORTED_MEDIA_TYPE,
-      );
+      throw new UnsupportedMediaTypeException('This file type is not allowed.');
     }
 
     if (media.size > maxFileSizeInBytes) {
-      throw new HttpException(
-        { message: `The file size must not exceed ${maxFileSize} Mb.` },
-        HttpStatus.PAYLOAD_TOO_LARGE,
+      throw new PayloadTooLargeException(
+        `The file size must not exceed ${maxFileSize} Mb.`,
       );
     }
 

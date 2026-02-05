@@ -3,6 +3,17 @@ import * as winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 import { join } from 'path';
 
+// Custom format to reorder JSON properties (timestamp and message first)
+const orderedJson = winston.format((info) => {
+  const { timestamp, message, level, ...rest } = info;
+
+  // Clear and rebuild the object with desired order
+  Object.keys(info).forEach((key) => delete info[key]);
+  Object.assign(info, { timestamp, message, level, ...rest });
+
+  return info;
+});
+
 // Function to create a transport with rotation
 const createRotateTransport = (filename: string, level: string): DailyRotateFile => {
   return new DailyRotateFile({
@@ -15,7 +26,9 @@ const createRotateTransport = (filename: string, level: string): DailyRotateFile
     format: winston.format.combine(
       winston.format.timestamp(),
       winston.format.errors({ stack: true }),
+      orderedJson(),
       winston.format.json(),
+      winston.format.prettyPrint(),
     ),
   });
 };
@@ -32,7 +45,7 @@ export const createWinstonConfig = () => {
         nestWinstonModuleUtilities.format.nestLike('FodmapFacile', {
           colors: true,
           prettyPrint: true,
-          processId: true,
+          processId: false,
           appName: true,
         }),
       ),

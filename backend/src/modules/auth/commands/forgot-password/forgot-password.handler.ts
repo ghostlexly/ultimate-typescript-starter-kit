@@ -1,5 +1,5 @@
 import { EventBus } from '@nestjs/cqrs';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import crypto from 'node:crypto';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { dateUtils } from 'src/modules/core/utils/date';
@@ -23,12 +23,7 @@ export class ForgotPasswordHandler {
     });
 
     if (!account) {
-      throw new HttpException(
-        {
-          message: 'Account not found.',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new BadRequestException('Account not found.');
     }
 
     const passwordResetToken = crypto.randomInt(100000, 999999).toString();

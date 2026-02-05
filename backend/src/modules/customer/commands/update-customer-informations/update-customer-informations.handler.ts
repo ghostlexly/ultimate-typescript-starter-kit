@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { CountryService } from 'src/modules/country/country.service';
 
@@ -17,13 +17,13 @@ export class UpdateCustomerInformationsHandler {
     });
 
     if (!customerInformations) {
-      throw new HttpException("You don't have any information", HttpStatus.BAD_REQUEST);
+      throw new BadRequestException("You don't have any information");
     }
 
     const country = this.countryService.getCountryByIso2(countryCode);
 
     if (!country) {
-      throw new HttpException("This country doesn't exist", HttpStatus.BAD_REQUEST);
+      throw new BadRequestException("This country doesn't exist");
     }
 
     await this.db.prisma.customer.update({

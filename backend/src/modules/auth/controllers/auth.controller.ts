@@ -1,9 +1,8 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
-  HttpException,
-  HttpStatus,
   Post,
   Req,
   Res,
@@ -138,12 +137,8 @@ export class AuthController {
       body?.refreshToken ?? (req.cookies?.lunisoft_refresh_token as string | undefined);
 
     if (!refreshToken) {
-      throw new HttpException(
-        {
-          message:
-            'Refresh token not found. Please set it in the body parameter or in your cookies.',
-        },
-        HttpStatus.BAD_REQUEST,
+      throw new BadRequestException(
+        'Refresh token not found. Please set it in the body parameter or in your cookies.',
       );
     }
 
@@ -178,12 +173,7 @@ export class AuthController {
     const isTokenValid = await this.verifyTokenHandler.execute(body);
 
     if (!isTokenValid) {
-      throw new HttpException(
-        {
-          message: 'This token is not valid or has expired.',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new BadRequestException('This token is not valid or has expired.');
     }
 
     return {

@@ -1,13 +1,14 @@
-import { Catch, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import { Catch, HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
 import { SentryExceptionCaptured } from '@sentry/nestjs';
 import type { ArgumentsHost } from '@nestjs/common';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import type { Logger } from 'winston';
+import { BusinessRuleException } from '../exceptions/business-rule.exception';
 
 @Catch()
 export class UnhandledExceptionsFilter extends BaseExceptionFilter {
-  private logger = new Logger(UnhandledExceptionsFilter.name);
-
-  constructor() {
+  constructor(@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger) {
     super();
   }
 
@@ -18,6 +19,18 @@ export class UnhandledExceptionsFilter extends BaseExceptionFilter {
 
     /** If the httpAdapter is not available, let the BaseExceptionFilter handle it */
     if (!httpAdapter) {
+      return super.catch(exception, host);
+    }
+
+    if (exception instanceof BusinessRuleException) {
+      this.logger.warn('BusinessRuleException caught', {
+        context: {
+          errorMessage: exception.message,
+          code: exception.code,
+          stack: exception.stack,
+        },
+      });
+
       return super.catch(exception, host);
     }
 

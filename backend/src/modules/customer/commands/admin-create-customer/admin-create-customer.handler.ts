@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { AuthService } from 'src/modules/auth/auth.service';
 import { CustomerService } from '../../customer.service';
@@ -17,12 +17,7 @@ export class AdminCreateCustomerHandler {
     });
 
     if (existingCustomer) {
-      throw new HttpException(
-        {
-          message: 'Cette adresse e-mail est déjà utilisée.',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new BadRequestException('Cette adresse e-mail est déjà utilisée.');
     }
 
     const hashedPassword = await this.authService.hashPassword({

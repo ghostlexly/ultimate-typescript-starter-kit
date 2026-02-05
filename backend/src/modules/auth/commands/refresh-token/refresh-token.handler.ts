@@ -1,5 +1,6 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { AuthService } from '../../auth.service';
+import { BusinessRuleException } from '../../../core/exceptions/business-rule.exception';
 
 @Injectable()
 export class RefreshTokenHandler {
@@ -7,13 +8,11 @@ export class RefreshTokenHandler {
 
   async execute({ refreshToken }: { refreshToken: string }) {
     if (!refreshToken) {
-      throw new HttpException(
-        {
-          message:
-            'Refresh token not found. Please set it in the body parameter or in your cookies.',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new BusinessRuleException({
+        message:
+          'Refresh token not found. Please set it in the body parameter or in your cookies.',
+        code: 'REFRESH_TOKEN_NOT_FOUND',
+      });
     }
 
     try {
@@ -27,12 +26,7 @@ export class RefreshTokenHandler {
         refreshToken: newRefreshToken,
       };
     } catch (error) {
-      throw new HttpException(
-        {
-          message: error.message,
-        },
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new BadRequestException(error.message);
     }
   }
 }

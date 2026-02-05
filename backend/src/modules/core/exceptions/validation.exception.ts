@@ -1,25 +1,15 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
 export class ValidationException extends HttpException {
-  constructor({
-    message,
-    violations,
-    cause,
-  }: {
-    message: string;
-    violations: any[];
-    cause?: Error;
-  }) {
+  constructor({ message, violations }: { message: string; violations: any[] }) {
     super(
       {
+        type: 'ValidationException',
         message,
+        code: 'VALIDATION_ERROR',
         violations,
-        cause: process.env.NODE_ENV === 'development' ? cause?.stack : undefined,
       },
       HttpStatus.BAD_REQUEST,
-      {
-        cause,
-      },
     );
   }
 }

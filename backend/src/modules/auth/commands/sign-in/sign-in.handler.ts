@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { AuthService } from '../../auth.service';
 import type { Account } from 'src/generated/prisma/client';
@@ -28,21 +28,12 @@ export class SignInHandler {
         hashedPassword: '$2a$10$fakeHashToPreventTimingAttacks',
       });
 
-      throw new HttpException(
-        {
-          message: 'Mot de passe ou e-mail incorrect.',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new BadRequestException('Mot de passe ou e-mail incorrect.');
     }
 
     if (!account.password) {
-      throw new HttpException(
-        {
-          message:
-            'You have previously signed up with another service like Google, please use the appropriate login method for this account.',
-        },
-        HttpStatus.BAD_REQUEST,
+      throw new BadRequestException(
+        'You have previously signed up with another service like Google, please use the appropriate login method for this account.',
       );
     }
 
@@ -53,12 +44,7 @@ export class SignInHandler {
     });
 
     if (!validPassword) {
-      throw new HttpException(
-        {
-          message: 'Mot de passe ou e-mail incorrect.',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new BadRequestException('Mot de passe ou e-mail incorrect.');
     }
 
     // Create a new session

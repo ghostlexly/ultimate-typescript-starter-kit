@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   DeleteObjectCommand,
   GetObjectCommand,
@@ -106,12 +106,7 @@ export class S3Service {
     );
 
     if (!data.Body) {
-      throw new HttpException(
-        {
-          message: 'File not found.',
-        },
-        HttpStatus.NOT_FOUND,
-      );
+      throw new NotFoundException('File not found.');
     }
 
     const fileWriteStream = createWriteStream(destinationPath);
@@ -153,12 +148,7 @@ export class S3Service {
     );
 
     if (!data.Body) {
-      throw new HttpException(
-        {
-          message: 'File not found.',
-        },
-        HttpStatus.NOT_FOUND,
-      );
+      throw new NotFoundException('File not found.');
     }
 
     const contentType = data.ContentType;
