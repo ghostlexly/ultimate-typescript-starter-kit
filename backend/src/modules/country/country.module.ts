@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { CountryService } from './country.service';
-import { GetAllCountriesController } from './queries/get-all-countries/get-all-countries.http.controller';
+import { CountryController } from './controllers/country.controller';
 
 @Module({
   imports: [],
-  controllers: [GetAllCountriesController],
+  controllers: [CountryController],
   providers: [CountryService],
   exports: [CountryService],
 })

@@ -1,3 +1,10 @@
+export interface RequestUser {
+  sessionId: string;
+  role: string;
+  accountId: string;
+  email: string;
+}
+
 declare global {
   namespace Express {
     interface Request {
@@ -5,13 +12,7 @@ declare global {
       clientIp?: string;
     }
 
-    interface User {
-      sessionId: string;
-      role: string;
-      accountId: string;
-      email: string;
-    }
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    interface User extends RequestUser {}
   }
 }
-
-export {};

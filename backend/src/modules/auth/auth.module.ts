@@ -3,17 +3,12 @@ import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-import { SignInController } from './commands/sign-in/sign-in.http.controller';
+import { AuthController } from './controllers/auth.controller';
 import { SignInHandler } from './commands/sign-in/sign-in.handler';
-import { RefreshTokenController } from './commands/refresh-token/refresh-token.http.controller';
 import { RefreshTokenHandler } from './commands/refresh-token/refresh-token.handler';
-import { ForgotPasswordController } from './commands/forgot-password/forgot-password.http.controller';
 import { ForgotPasswordHandler } from './commands/forgot-password/forgot-password.handler';
-import { VerifyTokenController } from './commands/verify-token/verify-token.http.controller';
 import { VerifyTokenHandler } from './commands/verify-token/verify-token.handler';
-import { ResetPasswordController } from './commands/reset-password/reset-password.http.controller';
 import { ResetPasswordHandler } from './commands/reset-password/reset-password.handler';
-import { GetCurrentUserController } from './queries/get-current-user/get-current-user.http.controller';
 import { PasswordResetRequestedEventHandler } from './events/password-reset-requested/password-reset-requested.event-handler';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
@@ -48,14 +43,7 @@ const EventHandlers = [PasswordResetRequestedEventHandler];
     }),
     PassportModule,
   ],
-  controllers: [
-    SignInController,
-    RefreshTokenController,
-    ForgotPasswordController,
-    VerifyTokenController,
-    ResetPasswordController,
-    GetCurrentUserController,
-  ],
+  controllers: [AuthController],
   providers: [
     ...CommandHandlers,
     ...QueryHandlers,

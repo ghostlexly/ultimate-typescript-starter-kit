@@ -1,17 +1,16 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { Injectable } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
-import { UploadVideoCommand } from './upload-video.command';
 import { MediaService } from '../../media.service';
 
-@CommandHandler(UploadVideoCommand)
-export class UploadVideoHandler implements ICommandHandler<UploadVideoCommand> {
+@Injectable()
+export class UploadVideoHandler {
   constructor(
     private readonly mediaService: MediaService,
     @InjectQueue('media') private readonly mediaQueue: Queue,
   ) {}
 
-  async execute({ file }: UploadVideoCommand) {
+  async execute({ file }: { file: Express.Multer.File }) {
     await this.mediaService.verifyMulterMaxSizeAndMimeType({
       file,
       allowedMimeTypes: ['video/mp4', 'video/quicktime'],

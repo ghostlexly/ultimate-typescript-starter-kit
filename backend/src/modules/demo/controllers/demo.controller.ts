@@ -6,34 +6,99 @@ import {
   CacheTTL,
 } from '@nestjs/cache-manager';
 import {
+  Body,
   ClassSerializerInterceptor,
   Controller,
   Get,
   Inject,
-  Req,
+  Post,
+  Query,
   Res,
   SerializeOptions,
-  UnauthorizedException,
   UseInterceptors,
+  UsePipes,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
-import type { Response, Request } from 'express';
+import type { Response } from 'express';
 import fs from 'node:fs/promises';
 import handlebars from 'handlebars';
 import path from 'node:path';
-import { AllowAnonymous } from 'src/modules/core/decorators/allow-anonymous.decorator';
-import { Roles } from 'src/modules/core/decorators/roles.decorator';
-import { DatabaseService } from 'src/modules/shared/services/database.service';
-import { PdfService } from 'src/modules/shared/services/pdf.service';
-import { DemoSerializeTestDto } from './misc.response.dto';
+import { AllowAnonymous } from '../../core/decorators/allow-anonymous.decorator';
+import { ZodValidationPipe } from '../../core/pipes/zod-validation.pipe';
+import { PdfService } from '../../shared/services/pdf.service';
+import { DemoSerializeTestDto } from '../commands/misc/misc.response.dto';
+import { TestPlayerHandler } from '../commands/test-player/test-player.handler';
+import { LaunchQueueHandler } from '../commands/launch-queue/launch-queue.handler';
+import { FindAllAccountsHandler } from '../queries/find-all-accounts/find-all-accounts.handler';
+import { GetPaginatedDataHandler } from '../queries/get-paginated-data/get-paginated-data.handler';
+import {
+  testPlayerRequestSchema,
+  type TestPlayerRequestDto,
+} from '../commands/test-player/test-player.request.dto';
+import {
+  demoGetPaginatedDataSchema,
+  type DemoGetPaginatedDataDto,
+} from '../queries/get-paginated-data/get-paginated-data.request.dto';
+import { CommandBus } from '@nestjs/cqrs';
+import { KillDragonCommand } from '../commands/kill-dragon/kill-dragon.command';
+import { CurrentUser } from '../../core/decorators/current-user.decorator';
+import type { RequestUser } from '../../core/types/request';
 
 @Controller()
-export class DemoMiscController {
+export class DemoController {
   constructor(
-    private readonly db: DatabaseService,
+    private readonly commandBus: CommandBus,
     private readonly pdfService: PdfService,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+    private readonly testPlayerHandler: TestPlayerHandler,
+    private readonly launchQueueHandler: LaunchQueueHandler,
+    private readonly findAllAccountsHandler: FindAllAccountsHandler,
+    private readonly getPaginatedDataHandler: GetPaginatedDataHandler,
   ) {}
+
+  @Get('/demos')
+  @AllowAnonymous()
+  async findAllAccounts() {
+    return this.findAllAccountsHandler.execute();
+  }
+
+  @Post('/demos')
+  @AllowAnonymous()
+  @UsePipes(new ZodValidationPipe(testPlayerRequestSchema))
+  testPlayer(
+    @Body() body: TestPlayerRequestDto['body'],
+    @Query() query: TestPlayerRequestDto['query'],
+  ) {
+    return this.testPlayerHandler.execute({ ...body, ...query });
+  }
+
+  @Get('/demos/paginated-data')
+  @AllowAnonymous()
+  @UsePipes(new ZodValidationPipe(demoGetPaginatedDataSchema))
+  async getPaginatedData(@Query() query: DemoGetPaginatedDataDto['query']) {
+    return this.getPaginatedDataHandler.execute({ query });
+  }
+
+  @Get('/demos/queue-launch')
+  @AllowAnonymous()
+  async queueLaunch() {
+    return this.launchQueueHandler.execute();
+  }
+
+  @Post('/demos/cqrs-kill-dragon')
+  @AllowAnonymous()
+  async killDragon() {
+    const response = await this.commandBus.execute(
+      new KillDragonCommand({
+        dragonId: '17',
+        heroId: '20',
+      }),
+    );
+
+    return {
+      message: `The dragon #${response.dragonId} has been killed by #${response.heroId}, confirmation: ${response.killed}.`,
+    };
+  }
 
   @Get('/demos/serialize-with-class')
   @AllowAnonymous()
@@ -71,50 +136,6 @@ export class DemoMiscController {
   publicRoute() {
     return {
       message: 'Public route.',
-    };
-  }
-
-  @Get('/demos/protected-route')
-  protectedRoute(@Req() req: Request) {
-    const { user } = req;
-
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-
-    return {
-      message: 'Protected route.',
-      sessionId: user.sessionId,
-      role: user.role,
-      accountId: user.accountId,
-      email: user.email,
-    };
-  }
-
-  @Get('/demos/protected-route-customer')
-  @Roles(['CUSTOMER'])
-  async protectedRouteCustomer(@Req() req: Request) {
-    const { user } = req;
-
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-
-    const customer = await this.db.prisma.customer.findFirst({
-      where: { accountId: user.accountId },
-    });
-
-    if (!customer) {
-      throw new UnauthorizedException();
-    }
-
-    return {
-      message: 'Protected route for customer.',
-      sessionId: user.sessionId,
-      role: user.role,
-      accountId: user.accountId,
-      email: user.email,
-      customerId: customer.id,
     };
   }
 
@@ -207,5 +228,16 @@ export class DemoMiscController {
     await this.cacheManager.set(cacheKey, data, 5000);
 
     return data;
+  }
+
+  @Get('/demos/protected-route')
+  protectedRoute(@CurrentUser() user: RequestUser) {
+    return {
+      message: 'Protected route.',
+      sessionId: user.sessionId,
+      role: user.role,
+      accountId: user.accountId,
+      email: user.email,
+    };
   }
 }

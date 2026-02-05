@@ -2,9 +2,8 @@ import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
 import { MediaService } from './media.service';
 import { MediaConsumer } from './media.consumer';
-import { UploadMediaController } from './commands/upload-media/upload-media.http.controller';
+import { MediaController } from './controllers/media.controller';
 import { UploadMediaHandler } from './commands/upload-media/upload-media.handler';
-import { UploadVideoController } from './commands/upload-video/upload-video.http.controller';
 import { UploadVideoHandler } from './commands/upload-video/upload-video.handler';
 
 const CommandHandlers = [UploadMediaHandler, UploadVideoHandler];
@@ -15,7 +14,7 @@ const CommandHandlers = [UploadMediaHandler, UploadVideoHandler];
       name: 'media',
     }),
   ],
-  controllers: [UploadMediaController, UploadVideoController],
+  controllers: [MediaController],
   providers: [...CommandHandlers, MediaService, MediaConsumer],
 })
 export class MediaModule {}

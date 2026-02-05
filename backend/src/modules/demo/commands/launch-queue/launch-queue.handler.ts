@@ -2,7 +2,7 @@ import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { Injectable } from '@nestjs/common';
 
-Injectable();
+@Injectable()
 export class LaunchQueueHandler {
   constructor(@InjectQueue('demo') private readonly demoQueue: Queue) {}
 
