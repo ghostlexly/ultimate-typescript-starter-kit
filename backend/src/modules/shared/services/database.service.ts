@@ -36,7 +36,13 @@ class ExtendedPrismaClient extends PrismaClient {
 
 export type PrismaTransactionClient = Omit<
   ExtendedPrismaClient,
-  '$extends' | '$transaction' | '$disconnect' | '$connect' | '$on' | '$use'
+  | '$extends'
+  | '$transaction'
+  | '$disconnect'
+  | '$connect'
+  | '$on'
+  | '$use'
+  | 'findManyAndCount'
 >;
 
 @Injectable()
