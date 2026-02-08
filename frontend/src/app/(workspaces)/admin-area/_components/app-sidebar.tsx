@@ -30,138 +30,138 @@ import {
 } from '@/components/ui/sidebar';
 import { BookOpenIcon, BotIcon, Settings2Icon, SquareTerminalIcon } from 'lucide-react';
 
-const data: {
-  navMain: SidebarNavItem[];
-  navSecondary: SidebarNavItem[];
-  documents: { title: string; url: string; icon: Icon }[];
-} = {
-  navMain: [
-    {
-      title: 'Playground',
-      url: '#',
-      icon: SquareTerminalIcon,
-      isActive: true,
-      items: [
-        {
-          title: 'History',
-          url: '#',
-          badge: <Badge variant="default">3</Badge>,
-        },
-        {
-          title: 'Starred',
-          url: '#',
-        },
-        {
-          title: 'Settings',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'Models',
-      url: '#',
-      icon: BotIcon,
-      items: [
-        {
-          title: 'Genesis',
-          url: '#',
-        },
-        {
-          title: 'Explorer',
-          url: '#',
-        },
-        {
-          title: 'Quantum',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'Documentation',
-      url: '#',
-      icon: BookOpenIcon,
-      items: [
-        {
-          title: 'Introduction',
-          url: '#',
-        },
-        {
-          title: 'Get Started',
-          url: '#',
-        },
-        {
-          title: 'Tutorials',
-          url: '#',
-        },
-        {
-          title: 'Changelog',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'Settings',
-      url: '#',
-      icon: Settings2Icon,
-      items: [
-        {
-          title: 'General',
-          url: '#',
-        },
-        {
-          title: 'Team',
-          url: '#',
-        },
-        {
-          title: 'Billing',
-          url: '#',
-        },
-        {
-          title: 'Limits',
-          url: '#',
-        },
-      ],
-    },
-  ],
-  navSecondary: [
-    {
-      title: 'Settings',
-      url: '#',
-      icon: IconSettings,
-    },
-    {
-      title: 'Get Help',
-      url: '#',
-      icon: IconHelp,
-    },
-    {
-      title: 'Search',
-      url: '#',
-      icon: IconSearch,
-      badge: <Badge variant="default">6</Badge>,
-    },
-  ],
-  documents: [
-    {
-      title: 'Data Library',
-      url: '#',
-      icon: IconDatabase,
-    },
-    {
-      title: 'Reports',
-      url: '#',
-      icon: IconReport,
-    },
-    {
-      title: 'Word Assistant',
-      url: '#',
-      icon: IconFileWord,
-    },
-  ],
-};
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { setOpenMobile, isMobile } = useSidebar();
+
+  const data: {
+    navMain: SidebarNavItem[];
+    navSecondary: SidebarNavItem[];
+    documents: { title: string; url: string; icon: Icon }[];
+  } = {
+    navMain: [
+      {
+        title: 'Playground',
+        url: '#',
+        icon: SquareTerminalIcon,
+        isActive: true,
+        items: [
+          {
+            title: 'Example page',
+            url: '/admin-area/example',
+            badge: <Badge variant="default">3</Badge>,
+          },
+          {
+            title: 'Starred',
+            url: '#',
+          },
+          {
+            title: 'Settings',
+            url: '#',
+          },
+        ],
+      },
+      {
+        title: 'Models',
+        url: '#',
+        icon: BotIcon,
+        items: [
+          {
+            title: 'Genesis',
+            url: '#',
+          },
+          {
+            title: 'Explorer',
+            url: '#',
+          },
+          {
+            title: 'Quantum',
+            url: '#',
+          },
+        ],
+      },
+      {
+        title: 'Documentation',
+        url: '#',
+        icon: BookOpenIcon,
+        items: [
+          {
+            title: 'Introduction',
+            url: '#',
+          },
+          {
+            title: 'Get Started',
+            url: '#',
+          },
+          {
+            title: 'Tutorials',
+            url: '#',
+          },
+          {
+            title: 'Changelog',
+            url: '#',
+          },
+        ],
+      },
+      {
+        title: 'Settings',
+        url: '#',
+        icon: Settings2Icon,
+        items: [
+          {
+            title: 'General',
+            url: '#',
+          },
+          {
+            title: 'Team',
+            url: '#',
+          },
+          {
+            title: 'Billing',
+            url: '#',
+          },
+          {
+            title: 'Limits',
+            url: '#',
+          },
+        ],
+      },
+    ],
+    navSecondary: [
+      {
+        title: 'Settings',
+        url: '#',
+        icon: IconSettings,
+      },
+      {
+        title: 'Get Help',
+        url: '#',
+        icon: IconHelp,
+      },
+      {
+        title: 'Search',
+        url: '#',
+        icon: IconSearch,
+        badge: <Badge variant="default">6</Badge>,
+      },
+    ],
+    documents: [
+      {
+        title: 'Data Library',
+        url: '#',
+        icon: IconDatabase,
+      },
+      {
+        title: 'Reports',
+        url: '#',
+        icon: IconReport,
+      },
+      {
+        title: 'Word Assistant',
+        url: '#',
+        icon: IconFileWord,
+      },
+    ],
+  };
 
   const handleLogoClick = () => {
     if (isMobile) {
