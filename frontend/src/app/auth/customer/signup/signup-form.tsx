@@ -12,7 +12,7 @@ import { CenteredLoadingSpinner } from '@/components/ui/centered-loading-spinner
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
-import { QueryErrorMessage } from '@/components/ui/query-error-message';
+import { QueryErrorBoundary } from '@/components/ui/query-error-boundary';
 import { SingleSelectCombobox } from '@/components/ui/single-select-combobox/single-select-combobox';
 import { useAppStore } from '@/hooks/use-app-store';
 import { useSession } from '@/lib/luni-auth/luni-auth.provider';
@@ -111,7 +111,7 @@ export function SignUpForm({
   if (countries.isLoading) {
     return <CenteredLoadingSpinner />;
   } else if (countries.isError) {
-    return <QueryErrorMessage message={countries.error.message} />;
+    return <QueryErrorBoundary message={countries.error.message} />;
   }
 
   return (
