@@ -7,7 +7,6 @@ import {
   ReactNode,
   useLayoutEffect,
   useRef,
-  useEffect,
 } from 'react';
 import { usePathname } from 'next/navigation';
 import { useOnUpdateProp } from '@/hooks/use-on-update-prop';
