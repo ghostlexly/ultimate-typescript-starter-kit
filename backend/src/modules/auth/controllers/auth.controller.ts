@@ -58,7 +58,7 @@ export class AuthController {
 
   @Post('/auth/signin')
   @AllowAnonymous()
-  @Throttle({ long: { limit: 10 } })
+  @Throttle({ default: { limit: 10 } })
   @UsePipes(new ZodValidationPipe(signInRequestSchema))
   async signIn(
     @Res({ passthrough: true }) res: Response,
@@ -126,7 +126,7 @@ export class AuthController {
 
   @Post('/auth/refresh')
   @AllowAnonymous()
-  @Throttle({ long: { limit: 50 } })
+  @Throttle({ default: { limit: 50 } })
   @UsePipes(new ZodValidationPipe(refreshTokenRequestSchema))
   async refreshToken(
     @Req() req: Request,
@@ -159,7 +159,7 @@ export class AuthController {
 
   @Post('/auth/forgot-password')
   @AllowAnonymous()
-  @Throttle({ long: { limit: 5 } })
+  @Throttle({ default: { limit: 5 } })
   @UsePipes(new ZodValidationPipe(forgotPasswordRequestSchema))
   async forgotPassword(@Body() body: ForgotPasswordRequestDto['body']) {
     return this.forgotPasswordHandler.execute({ email: body.email });
@@ -167,7 +167,7 @@ export class AuthController {
 
   @Post('/auth/verify-token')
   @AllowAnonymous()
-  @Throttle({ long: { limit: 10 } })
+  @Throttle({ default: { limit: 10 } })
   @UsePipes(new ZodValidationPipe(verifyTokenRequestSchema))
   async verifyToken(@Body() body: VerifyTokenRequestDto['body']) {
     const isTokenValid = await this.verifyTokenHandler.execute(body);
@@ -183,7 +183,7 @@ export class AuthController {
 
   @Post('/auth/reset-password')
   @AllowAnonymous()
-  @Throttle({ long: { limit: 10 } })
+  @Throttle({ default: { limit: 10 } })
   @UsePipes(new ZodValidationPipe(resetPasswordRequestSchema))
   async resetPassword(@Body() body: ResetPasswordRequestDto['body']) {
     return this.resetPasswordHandler.execute(body);

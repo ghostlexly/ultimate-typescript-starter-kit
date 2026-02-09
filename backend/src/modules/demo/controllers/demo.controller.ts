@@ -141,7 +141,7 @@ export class DemoController {
 
   @Get('/demos/strict-throttler')
   @AllowAnonymous()
-  @Throttle({ long: { limit: 10 } })
+  @Throttle({ default: { limit: 10 } })
   strictThrottler() {
     return {
       message: 'Strict throttler.',

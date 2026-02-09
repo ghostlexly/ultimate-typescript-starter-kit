@@ -3,10 +3,8 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { minutes, ThrottlerModule } from '@nestjs/throttler';
 import { SentryModule } from '@sentry/nestjs/setup';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { UnhandledExceptionsFilter } from './modules/core/filters/unhandled-exceptions.filter';
 import { JwtAuthGuard } from './modules/core/guards/jwt-auth.guard';
@@ -45,10 +43,9 @@ import { ScheduleModule } from '@nestjs/schedule';
       errorMessage: 'ThrottlerException: Too Many Requests',
       throttlers: [
         {
-          name: 'long',
-          ttl: 1 * 60 * 1000, // 1 minute
-          limit: 500,
-          blockDuration: 1 * 60 * 1000, // 1 minute
+          ttl: minutes(1),
+          limit: 150,
+          blockDuration: minutes(1),
         },
       ],
     }),
@@ -62,10 +59,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     MediaModule,
     CustomerModule,
   ],
-  controllers: [AppController],
   providers: [
-    AppService,
-
     // Guards
     {
       provide: APP_GUARD,
