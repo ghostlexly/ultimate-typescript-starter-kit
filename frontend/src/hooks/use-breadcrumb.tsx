@@ -1,6 +1,16 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode, useEffect, useRef } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useLayoutEffect,
+  useRef,
+  useEffect,
+} from 'react';
+import { usePathname } from 'next/navigation';
+import { useOnUpdateProp } from '@/hooks/use-on-update-prop';
 
 export interface BreadcrumbItem {
   label: string;
@@ -16,6 +26,11 @@ const BreadcrumbContext = createContext<BreadcrumbContextType | undefined>(undef
 
 export function BreadcrumbProvider({ children }: { children: ReactNode }) {
   const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([]);
+  const pathname = usePathname();
+
+  useOnUpdateProp(pathname, () => {
+    setBreadcrumbs([]);
+  });
 
   return (
     <BreadcrumbContext.Provider value={{ breadcrumbs, setBreadcrumbs }}>
@@ -36,22 +51,19 @@ export function useBreadcrumb() {
 
 /**
  * Sets breadcrumbs for the current page.
- * Automatically clears them on unmount.
+ * Does not clear on unmount — the next page overwrites them,
+ * avoiding a flash of empty/loading state between navigations.
  */
 export function useSetBreadcrumbs(items: BreadcrumbItem[]) {
   const { setBreadcrumbs } = useBreadcrumb();
   const prevItemsRef = useRef<string>('');
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const serialized = JSON.stringify(items);
 
     if (prevItemsRef.current !== serialized) {
       prevItemsRef.current = serialized;
       setBreadcrumbs(items);
     }
-
-    return () => {
-      setBreadcrumbs([]);
-    };
   }, [setBreadcrumbs, items]);
 }
