@@ -4,36 +4,8 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { SignInHandler } from './sign-in.handler';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { AuthService } from '../../auth.service';
-
-function createMockAccount(overrides = {}): any {
-  return {
-    id: 'account-123',
-    email: 'test@test.com',
-    role: 'CUSTOMER',
-    password: 'hashed-password',
-    providerId: null,
-    providerAccountId: null,
-    isEmailVerified: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    ...overrides,
-  };
-}
-
-function createMockSession(overrides = {}): any {
-  return {
-    id: 'session-123',
-    accountId: 'account-123',
-    ipAddress: '127.0.0.1',
-    userAgent:
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
-    expiresAt: new Date(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    account: createMockAccount(),
-    ...overrides,
-  };
-}
+import { createMockAccount } from 'src/__tests__/factories/account.factory';
+import { createMockSession } from 'src/__tests__/factories/session.factory';
 
 describe('SignInHandler', () => {
   let handler: SignInHandler;

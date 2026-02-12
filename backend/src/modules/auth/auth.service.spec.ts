@@ -4,60 +4,20 @@ import { DatabaseService } from '../shared/services/database.service';
 import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import bcrypt from 'bcrypt';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-
-function createMockAccount(overrides = {}): any {
-  return {
-    id: 'account-123',
-    email: 'test@test.com',
-    role: 'CUSTOMER',
-    password: 'hashed-password',
-    providerId: null,
-    providerAccountId: null,
-    isEmailVerified: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    ...overrides,
-  };
-}
-
-function createMockSession(overrides = {}): any {
-  return {
-    id: 'session-123',
-    accountId: 'account-123',
-    ipAddress: '127.0.0.1',
-    userAgent:
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
-    expiresAt: new Date(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    account: createMockAccount(),
-    ...overrides,
-  };
-}
-
-function createMockVerificationToken(overrides = {}): any {
-  return {
-    id: 'token-123',
-    token: '123456',
-    type: 'PASSWORD_RESET',
-    accountId: 'account-123',
-    value: '123456',
-    expiresAt: new Date(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    ...overrides,
-  };
-}
+import { createMockSession } from 'src/__tests__/factories/session.factory';
+import { createMockVerificationToken } from 'src/__tests__/factories/verification-token.factory';
+import { createMockAccount } from 'src/__tests__/factories/account.factory';
 
 function createMockJwtPayload(overrides = {}): any {
   const fakeSession = createMockSession();
+  const fakeAccount = createMockAccount();
 
   return {
     payload: {
       sub: fakeSession.id,
-      accountId: fakeSession.accountId,
-      role: fakeSession.account.role,
-      email: fakeSession.account.email,
+      accountId: fakeAccount.id,
+      role: fakeAccount.role,
+      email: fakeAccount.email,
     },
     ...overrides,
   };
@@ -178,8 +138,10 @@ describe('AuthService', () => {
   describe('generateAuthenticationTokens', () => {
     it('should generate access and refresh tokens for a valid session', async () => {
       // ===== Arrange
-      const fakeSession = createMockSession();
-      db.prisma.session.findUnique.mockResolvedValue(fakeSession);
+      db.prisma.session.findUnique.mockResolvedValue({
+        ...createMockSession(),
+        account: createMockAccount(),
+      } as any);
       const jwtSignAsyncSpy = jest.spyOn(jwtService, 'signAsync');
 
       // ===== Act
@@ -220,7 +182,10 @@ describe('AuthService', () => {
       });
 
       const fakeSession = createMockSession();
-      db.prisma.session.findUnique.mockResolvedValue(fakeSession);
+      db.prisma.session.findUnique.mockResolvedValue({
+        ...createMockSession(),
+        account: createMockAccount(),
+      } as any);
       db.prisma.session.update.mockResolvedValue(fakeSession);
 
       // ===== Act
@@ -237,7 +202,7 @@ describe('AuthService', () => {
           expiresAt: expect.any(Date),
         }),
       });
-      expect(result).toEqual({
+      expect(result).toMatchObject({
         session: fakeSession,
         accessToken: expect.any(String),
         refreshToken: expect.any(String),

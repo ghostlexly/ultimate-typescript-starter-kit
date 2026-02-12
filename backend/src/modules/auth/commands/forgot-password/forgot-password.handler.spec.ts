@@ -5,35 +5,8 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { ForgotPasswordHandler } from './forgot-password.handler';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { PasswordResetRequestedEvent } from '../../events/password-reset-requested/password-reset-requested.event';
-
-function createMockAccount(overrides = {}): any {
-  return {
-    id: 'account-123',
-    email: 'test@test.com',
-    role: 'CUSTOMER',
-    password: 'hashed-password',
-    providerId: null,
-    providerAccountId: null,
-    isEmailVerified: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    ...overrides,
-  };
-}
-
-function createMockVerificationToken(overrides = {}): any {
-  return {
-    id: 'token-123',
-    token: '123456',
-    type: 'PASSWORD_RESET',
-    accountId: 'account-123',
-    value: '123456',
-    expiresAt: new Date(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    ...overrides,
-  };
-}
+import { createMockAccount } from 'src/__tests__/factories/account.factory';
+import { createMockVerificationToken } from 'src/__tests__/factories/verification-token.factory';
 
 describe('ForgotPasswordHandler', () => {
   let handler: ForgotPasswordHandler;
