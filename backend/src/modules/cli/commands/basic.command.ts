@@ -5,7 +5,10 @@ import { DatabaseService } from 'src/modules/shared/services/database.service';
 @Command({
   name: 'basic',
   description: 'A parameter parse',
-  arguments: '<name>',
+  arguments: '[name]',
+  argsDescription: {
+    name: 'Name to greet (required)',
+  },
 })
 export class BasicCommandRunner extends CommandRunner {
   private logger = new Logger(BasicCommandRunner.name);

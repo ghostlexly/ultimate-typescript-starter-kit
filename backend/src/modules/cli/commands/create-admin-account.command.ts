@@ -6,7 +6,11 @@ import { AuthService } from 'src/modules/auth/auth.service';
 @Command({
   name: 'create:account:admin',
   description: 'Create an admin account',
-  arguments: '<email> <password>',
+  arguments: '[email] [password]',
+  argsDescription: {
+    email: 'Email address for the admin account (required)',
+    password: 'Password for the admin account (required)',
+  },
 })
 export class CreateAdminAccountCommandRunner extends CommandRunner {
   private logger = new Logger(CreateAdminAccountCommandRunner.name);
