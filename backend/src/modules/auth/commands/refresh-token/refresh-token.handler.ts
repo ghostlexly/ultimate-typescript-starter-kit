@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AuthService } from '../../auth.service';
-import { BusinessRuleException } from '../../../core/exceptions/business-rule.exception';
+import { BusinessRuleException } from '../../../../core/exceptions/business-rule.exception';
 
 @Injectable()
 export class RefreshTokenHandler {

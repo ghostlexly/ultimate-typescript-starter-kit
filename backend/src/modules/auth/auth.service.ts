@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import type { Response } from 'express';
-import { dateUtils } from 'src/modules/core/utils/date';
+import { dateUtils } from 'src/core/utils/date';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { VerificationType } from 'src/generated/prisma/client';
 import { authConstants } from './auth.constants';

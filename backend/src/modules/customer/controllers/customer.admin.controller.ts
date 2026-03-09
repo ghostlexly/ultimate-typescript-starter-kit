@@ -1,6 +1,6 @@
-import { Roles } from '../../core/decorators/roles.decorator';
+import { Roles } from '../../../core/decorators/roles.decorator';
 import { Body, Controller, Post, UsePipes } from '@nestjs/common';
-import { ZodValidationPipe } from '../../core/pipes/zod-validation.pipe';
+import { ZodValidationPipe } from '../../../core/pipes/zod-validation.pipe';
 import {
   AdminCreateCustomerRequestDto,
   adminCreateCustomerRequestSchema,

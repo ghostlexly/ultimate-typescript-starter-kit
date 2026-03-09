@@ -59,7 +59,6 @@ export class ZodValidationPipe implements PipeTransform {
             metadataType: metadata.type,
             origin: 'ZodValidationPipe',
           })),
-          cause: validation.error,
         });
       }
 

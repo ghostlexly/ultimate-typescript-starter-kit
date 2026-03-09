@@ -1,7 +1,7 @@
 import { Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import multer from 'multer';
-import { AllowAnonymous } from '../../core/decorators/allow-anonymous.decorator';
+import { AllowAnonymous } from '../../../core/decorators/allow-anonymous.decorator';
 import { UploadMediaHandler } from '../commands/upload-media/upload-media.handler';
 import { UploadVideoHandler } from '../commands/upload-video/upload-video.handler';
 

@@ -2,7 +2,7 @@ import { EventBus } from '@nestjs/cqrs';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import crypto from 'node:crypto';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
-import { dateUtils } from 'src/modules/core/utils/date';
+import { dateUtils } from 'src/core/utils/date';
 import { PasswordResetRequestedEvent } from '../../events/password-reset-requested/password-reset-requested.event';
 
 @Injectable()

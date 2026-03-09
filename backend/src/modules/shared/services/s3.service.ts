@@ -12,7 +12,7 @@ import { createWriteStream } from 'fs';
 import path from 'path';
 import { ConfigService } from '@nestjs/config';
 import { FilesService } from './files.service';
-import { dateUtils } from 'src/modules/core/utils/date';
+import { dateUtils } from 'src/core/utils/date';
 
 @Injectable()
 export class S3Service {

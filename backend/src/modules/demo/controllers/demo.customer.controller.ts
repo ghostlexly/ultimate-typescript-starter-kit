@@ -1,7 +1,7 @@
 import { Controller, Get, UnauthorizedException } from '@nestjs/common';
-import { Roles } from '../../core/decorators/roles.decorator';
-import { CurrentUser } from '../../core/decorators/current-user.decorator';
-import type { RequestUser } from '../../core/types/request';
+import { Roles } from '../../../core/decorators/roles.decorator';
+import { CurrentUser } from '../../../core/decorators/current-user.decorator';
+import type { RequestUser } from '../../../core/types/request';
 import { DatabaseService } from '../../shared/services/database.service';
 
 @Controller()

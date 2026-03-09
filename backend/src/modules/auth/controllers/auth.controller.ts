@@ -13,9 +13,9 @@ import {
 import { Throttle } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
-import { AllowAnonymous } from '../../core/decorators/allow-anonymous.decorator';
-import { ZodValidationPipe } from '../../core/pipes/zod-validation.pipe';
-import { OAuthRedirectExceptionFilter } from '../../core/filters/oauth-redirect.filter';
+import { AllowAnonymous } from '../../../core/decorators/allow-anonymous.decorator';
+import { ZodValidationPipe } from '../../../core/pipes/zod-validation.pipe';
+import { OAuthRedirectExceptionFilter } from '../../../core/filters/oauth-redirect.filter';
 import { AuthService } from '../auth.service';
 import { SignInHandler } from '../commands/sign-in/sign-in.handler';
 import { RefreshTokenHandler } from '../commands/refresh-token/refresh-token.handler';
@@ -42,8 +42,8 @@ import {
   type ResetPasswordRequestDto,
   resetPasswordRequestSchema,
 } from '../commands/reset-password/reset-password.request.dto';
-import { CurrentUser } from '../../core/decorators/current-user.decorator';
-import type { RequestUser } from '../../core/types/request';
+import { CurrentUser } from '../../../core/decorators/current-user.decorator';
+import type { RequestUser } from '../../../core/types/request';
 
 @Controller()
 export class AuthController {

@@ -2,10 +2,10 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
-import { dateUtils } from 'src/modules/core/utils/date';
+import { dateUtils } from 'src/core/utils/date';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { Account } from 'src/generated/prisma/client';
-import { OAuthRedirectException } from '../../core/exceptions/oauth-redirect.exception';
+import { OAuthRedirectException } from '../../../core/exceptions/oauth-redirect.exception';
 import { authConstants } from '../auth.constants';
 
 @Injectable()

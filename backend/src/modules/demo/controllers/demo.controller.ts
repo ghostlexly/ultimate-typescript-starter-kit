@@ -23,8 +23,8 @@ import type { Response } from 'express';
 import fs from 'node:fs/promises';
 import handlebars from 'handlebars';
 import path from 'node:path';
-import { AllowAnonymous } from '../../core/decorators/allow-anonymous.decorator';
-import { ZodValidationPipe } from '../../core/pipes/zod-validation.pipe';
+import { AllowAnonymous } from '../../../core/decorators/allow-anonymous.decorator';
+import { ZodValidationPipe } from '../../../core/pipes/zod-validation.pipe';
 import { PdfService } from '../../shared/services/pdf.service';
 import { DemoSerializeTestDto } from '../commands/misc/misc.response.dto';
 import { TestPlayerHandler } from '../commands/test-player/test-player.handler';
@@ -41,8 +41,8 @@ import {
 } from '../queries/get-paginated-data/get-paginated-data.request.dto';
 import { CommandBus } from '@nestjs/cqrs';
 import { KillDragonCommand } from '../commands/kill-dragon/kill-dragon.command';
-import { CurrentUser } from '../../core/decorators/current-user.decorator';
-import type { RequestUser } from '../../core/types/request';
+import { CurrentUser } from '../../../core/decorators/current-user.decorator';
+import type { RequestUser } from '../../../core/types/request';
 
 @Controller()
 export class DemoController {

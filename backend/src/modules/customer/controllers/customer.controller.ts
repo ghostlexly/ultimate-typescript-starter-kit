@@ -1,7 +1,7 @@
 import { RegisterCustomerHandler } from '../commands/register-customer/register-customer.handler';
 import { Body, Controller, Post, UsePipes } from '@nestjs/common';
-import { AllowAnonymous } from '../../core/decorators/allow-anonymous.decorator';
-import { ZodValidationPipe } from '../../core/pipes/zod-validation.pipe';
+import { AllowAnonymous } from '../../../core/decorators/allow-anonymous.decorator';
+import { ZodValidationPipe } from '../../../core/pipes/zod-validation.pipe';
 import {
   type RegisterCustomerRequestDto,
   registerCustomerRequestSchema,

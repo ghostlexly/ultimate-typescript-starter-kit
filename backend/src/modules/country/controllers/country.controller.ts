@@ -1,6 +1,6 @@
 import { Controller, Get, Query, UsePipes } from '@nestjs/common';
-import { AllowAnonymous } from '../../core/decorators/allow-anonymous.decorator';
-import { ZodValidationPipe } from '../../core/pipes/zod-validation.pipe';
+import { AllowAnonymous } from '../../../core/decorators/allow-anonymous.decorator';
+import { ZodValidationPipe } from '../../../core/pipes/zod-validation.pipe';
 import {
   type GetAllCountriesRequestDto,
   getAllCountriesRequestSchema,

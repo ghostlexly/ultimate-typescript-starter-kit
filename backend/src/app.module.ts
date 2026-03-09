@@ -6,18 +6,18 @@ import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { minutes, ThrottlerModule } from '@nestjs/throttler';
 import { SentryModule } from '@sentry/nestjs/setup';
 import { AuthModule } from './modules/auth/auth.module';
-import { UnhandledExceptionsFilter } from './modules/core/filters/unhandled-exceptions.filter';
-import { JwtAuthGuard } from './modules/core/guards/jwt-auth.guard';
-import { RolesGuard } from './modules/core/guards/roles.guard';
-import { ThrottlerBehindProxyGuard } from './modules/core/guards/throttler-behind-proxy.guard';
-import { TrimStringsPipe } from './modules/core/pipes/trim-strings.pipe';
+import { UnhandledExceptionsFilter } from './core/filters/unhandled-exceptions.filter';
+import { JwtAuthGuard } from './core/guards/jwt-auth.guard';
+import { RolesGuard } from './core/guards/roles.guard';
+import { ThrottlerBehindProxyGuard } from './core/guards/throttler-behind-proxy.guard';
+import { TrimStringsPipe } from './core/pipes/trim-strings.pipe';
 import { MediaModule } from './modules/media/media.module';
 import { DemoModule } from './modules/demo/demo.module';
 import { SharedModule } from './modules/shared/shared.module';
 import { CqrsModule } from '@nestjs/cqrs';
 import { CustomerModule } from './modules/customer/customer.module';
 import { CountryModule } from './modules/country/country.module';
-import { LoggerModule } from './modules/core/logger/logger.module';
+import { LoggerModule } from './core/logger/logger.module';
 import { ScheduleModule } from '@nestjs/schedule';
 
 @Global()

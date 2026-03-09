@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { asyncSpawn } from '../../core/utils/process';
+import { asyncSpawn } from '../../../core/utils/process';
 
 @Injectable()
 export class FfmpegService {

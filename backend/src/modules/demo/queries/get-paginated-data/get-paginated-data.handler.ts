@@ -2,7 +2,7 @@ import { DatabaseService } from 'src/modules/shared/services/database.service';
 import {
   buildQueryParams,
   transformWithPagination,
-} from 'src/modules/core/utils/page-query';
+} from 'src/core/utils/page-query';
 import { Prisma } from 'src/generated/prisma/client';
 import type { DemoGetPaginatedDataDto } from './get-paginated-data.request.dto';
 import { Injectable } from '@nestjs/common';
