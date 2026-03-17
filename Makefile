@@ -1,7 +1,8 @@
 .PHONY: help lint lint-fix type-check qa start stop build prisma-generate prisma-migrate-generate prisma-migrate-deploy prisma-migrate-diff cli
 
 COMPOSE := docker compose
-NPM := $(COMPOSE) exec frontend npm
+NPM_FRONTEND := $(COMPOSE) exec frontend npm
+NPM_BACKEND := $(COMPOSE) exec backend npm
 POSTGRES_TEST_URL := postgresql://lunisoft:ChangeMe@postgres-test:5432/test
 
 ##———————————— Commands
@@ -23,13 +24,15 @@ build: ## Build the project
 ##———————————— Code Quality
 
 lint: ## Launch ESLint
-	$(NPM) lint
+	$(NPM_FRONTEND) run lint
+	$(NPM_BACKEND) run lint
 
 lint-fix: ## Launch ESLint with autofix
-	$(NPM) lint --fix
+	$(NPM_FRONTEND) run lint --fix
+	$(NPM_BACKEND) run lint --fix
 
 type-check: ## Launch TypeScript type checking
-	$(NPM) type-check
+	$(NPM_BACKEND) run type-check
 
 qa: lint-fix type-check ## Launch quality automation (lint, type checking...)
 
