@@ -1,11 +1,13 @@
+import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
-import { Injectable } from '@nestjs/common';
+import { FindAllAccountsQuery } from './find-all-accounts.query';
 
-@Injectable()
-export class FindAllAccountsHandler {
+@QueryHandler(FindAllAccountsQuery)
+export class FindAllAccountsHandler implements IQueryHandler<FindAllAccountsQuery> {
   constructor(private readonly db: DatabaseService) {}
 
-  async execute() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async execute(query: FindAllAccountsQuery) {
     return await this.db.prisma.findManyAndCount('account', {});
   }
 }

@@ -1,23 +1,17 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
+import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { AuthService } from '../../auth.service';
+import { ResetPasswordCommand } from './reset-password.command';
 
-@Injectable()
-export class ResetPasswordHandler {
+@CommandHandler(ResetPasswordCommand)
+export class ResetPasswordHandler implements ICommandHandler<ResetPasswordCommand> {
   constructor(
     private readonly db: DatabaseService,
     private readonly authService: AuthService,
   ) {}
 
-  async execute({
-    email,
-    password,
-    token,
-  }: {
-    email: string;
-    password: string;
-    token: string;
-  }) {
+  async execute({ email, password, token }: ResetPasswordCommand) {
     const tokenValid = await this.authService.verifyVerificationToken({
       type: 'PASSWORD_RESET',
       token: token,

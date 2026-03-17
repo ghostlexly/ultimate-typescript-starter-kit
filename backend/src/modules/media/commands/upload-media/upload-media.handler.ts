@@ -1,15 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { MediaService } from '../../media.service';
 import { S3Service } from '../../../shared/services/s3.service';
+import { UploadMediaCommand } from './upload-media.command';
 
-@Injectable()
-export class UploadMediaHandler {
+@CommandHandler(UploadMediaCommand)
+export class UploadMediaHandler implements ICommandHandler<UploadMediaCommand> {
   constructor(
     private readonly mediaService: MediaService,
     private readonly s3Service: S3Service,
   ) {}
 
-  async execute({ file }: { file: Express.Multer.File }) {
+  async execute({ file }: UploadMediaCommand) {
     await this.mediaService.verifyMulterMaxSizeAndMimeType({
       file,
       allowedMimeTypes: ['image/jpeg', 'image/jpg', 'image/png', 'shared/pdf'],

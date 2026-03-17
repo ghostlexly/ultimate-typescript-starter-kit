@@ -10,6 +10,7 @@ import {
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
+import { CommandBus } from '@nestjs/cqrs';
 import { Throttle } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
@@ -17,11 +18,11 @@ import { AllowAnonymous } from '../../../core/decorators/allow-anonymous.decorat
 import { ZodValidationPipe } from '../../../core/pipes/zod-validation.pipe';
 import { OAuthRedirectExceptionFilter } from '../../../core/filters/oauth-redirect.filter';
 import { AuthService } from '../auth.service';
-import { SignInHandler } from '../commands/sign-in/sign-in.handler';
-import { RefreshTokenHandler } from '../commands/refresh-token/refresh-token.handler';
-import { ForgotPasswordHandler } from '../commands/forgot-password/forgot-password.handler';
-import { VerifyTokenHandler } from '../commands/verify-token/verify-token.handler';
-import { ResetPasswordHandler } from '../commands/reset-password/reset-password.handler';
+import { SignInCommand } from '../commands/sign-in/sign-in.command';
+import { RefreshTokenCommand } from '../commands/refresh-token/refresh-token.command';
+import { ForgotPasswordCommand } from '../commands/forgot-password/forgot-password.command';
+import { VerifyTokenCommand } from '../commands/verify-token/verify-token.command';
+import { ResetPasswordCommand } from '../commands/reset-password/reset-password.command';
 import {
   type SignInRequestDto,
   signInRequestSchema,
@@ -49,11 +50,7 @@ import type { RequestUser } from '../../../core/types/request';
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly signInHandler: SignInHandler,
-    private readonly refreshTokenHandler: RefreshTokenHandler,
-    private readonly forgotPasswordHandler: ForgotPasswordHandler,
-    private readonly verifyTokenHandler: VerifyTokenHandler,
-    private readonly resetPasswordHandler: ResetPasswordHandler,
+    private readonly commandBus: CommandBus,
   ) {}
 
   @Post('/auth/signin')
@@ -64,9 +61,9 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
     @Body() body: SignInRequestDto['body'],
   ) {
-    const { accessToken, refreshToken, role } = await this.signInHandler.execute({
-      ...body,
-    });
+    const { accessToken, refreshToken, role } = await this.commandBus.execute(
+      new SignInCommand({ ...body }),
+    );
 
     this.authService.setAuthCookies({
       res,
@@ -143,7 +140,9 @@ export class AuthController {
     }
 
     const { accessToken, refreshToken: newRefreshToken } =
-      await this.refreshTokenHandler.execute({ refreshToken });
+      await this.commandBus.execute(
+        new RefreshTokenCommand({ refreshToken }),
+      );
 
     this.authService.setAuthCookies({
       res,
@@ -162,7 +161,9 @@ export class AuthController {
   @Throttle({ default: { limit: 5 } })
   @UsePipes(new ZodValidationPipe(forgotPasswordRequestSchema))
   async forgotPassword(@Body() body: ForgotPasswordRequestDto['body']) {
-    return this.forgotPasswordHandler.execute({ email: body.email });
+    return this.commandBus.execute(
+      new ForgotPasswordCommand({ email: body.email }),
+    );
   }
 
   @Post('/auth/verify-token')
@@ -170,7 +171,9 @@ export class AuthController {
   @Throttle({ default: { limit: 10 } })
   @UsePipes(new ZodValidationPipe(verifyTokenRequestSchema))
   async verifyToken(@Body() body: VerifyTokenRequestDto['body']) {
-    const isTokenValid = await this.verifyTokenHandler.execute(body);
+    const isTokenValid = await this.commandBus.execute(
+      new VerifyTokenCommand(body),
+    );
 
     if (!isTokenValid) {
       throw new BadRequestException('This token is not valid or has expired.');
@@ -186,7 +189,9 @@ export class AuthController {
   @Throttle({ default: { limit: 10 } })
   @UsePipes(new ZodValidationPipe(resetPasswordRequestSchema))
   async resetPassword(@Body() body: ResetPasswordRequestDto['body']) {
-    return this.resetPasswordHandler.execute(body);
+    return this.commandBus.execute(
+      new ResetPasswordCommand(body),
+    );
   }
 
   @Get('/auth/me')

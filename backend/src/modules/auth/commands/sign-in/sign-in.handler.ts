@@ -1,16 +1,18 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
+import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { AuthService } from '../../auth.service';
 import type { Account } from 'src/generated/prisma/client';
+import { SignInCommand } from './sign-in.command';
 
-@Injectable()
-export class SignInHandler {
+@CommandHandler(SignInCommand)
+export class SignInHandler implements ICommandHandler<SignInCommand> {
   constructor(
     private readonly db: DatabaseService,
     private readonly authService: AuthService,
   ) {}
 
-  async execute({ email, password }: { email: string; password: string }) {
+  async execute({ email, password }: SignInCommand) {
     // Verify if user exists
     const account: Account | null = await this.db.prisma.account.findFirst({
       where: {

@@ -1,17 +1,19 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
+import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { AuthService } from 'src/modules/auth/auth.service';
 import { CustomerService } from '../../customer.service';
+import { RegisterCustomerCommand } from './register-customer.command';
 
-@Injectable()
-export class RegisterCustomerHandler {
+@CommandHandler(RegisterCustomerCommand)
+export class RegisterCustomerHandler implements ICommandHandler<RegisterCustomerCommand> {
   constructor(
     private readonly db: DatabaseService,
     private readonly authService: AuthService,
     private readonly customerService: CustomerService,
   ) {}
 
-  async execute({ email, password }: { email: string; password: string }) {
+  async execute({ email, password }: RegisterCustomerCommand) {
     const existingCustomer = await this.customerService.verifyExistingEmail({
       email: email,
     });

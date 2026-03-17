@@ -1,12 +1,14 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
+import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { AuthService } from '../../auth.service';
 import { BusinessRuleException } from '../../../../core/exceptions/business-rule.exception';
+import { RefreshTokenCommand } from './refresh-token.command';
 
-@Injectable()
-export class RefreshTokenHandler {
+@CommandHandler(RefreshTokenCommand)
+export class RefreshTokenHandler implements ICommandHandler<RefreshTokenCommand> {
   constructor(private readonly authService: AuthService) {}
 
-  async execute({ refreshToken }: { refreshToken: string }) {
+  async execute({ refreshToken }: RefreshTokenCommand) {
     if (!refreshToken) {
       throw new BusinessRuleException({
         message:

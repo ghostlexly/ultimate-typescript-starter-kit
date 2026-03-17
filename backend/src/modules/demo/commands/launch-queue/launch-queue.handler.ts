@@ -1,12 +1,14 @@
+import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
-import { Injectable } from '@nestjs/common';
+import { LaunchQueueCommand } from './launch-queue.command';
 
-@Injectable()
-export class LaunchQueueHandler {
+@CommandHandler(LaunchQueueCommand)
+export class LaunchQueueHandler implements ICommandHandler<LaunchQueueCommand> {
   constructor(@InjectQueue('demo') private readonly demoQueue: Queue) {}
 
-  async execute() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async execute(command: LaunchQueueCommand) {
     await this.demoQueue.add('testingJob', { message: 'Hello World' });
 
     return {

@@ -1,17 +1,17 @@
+import { QueryHandler, type IQueryHandler } from '@nestjs/cqrs';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import {
   buildQueryParams,
   transformWithPagination,
 } from 'src/core/utils/page-query';
 import { Prisma } from 'src/generated/prisma/client';
-import type { DemoGetPaginatedDataDto } from './get-paginated-data.request.dto';
-import { Injectable } from '@nestjs/common';
+import { GetPaginatedDataQuery } from './get-paginated-data.query';
 
-@Injectable()
-export class GetPaginatedDataHandler {
+@QueryHandler(GetPaginatedDataQuery)
+export class GetPaginatedDataHandler implements IQueryHandler<GetPaginatedDataQuery> {
   constructor(private readonly db: DatabaseService) {}
 
-  async execute({ query }: { query: DemoGetPaginatedDataDto['query'] }) {
+  async execute({ query }: GetPaginatedDataQuery) {
     const filterConditions: Prisma.CustomerWhereInput[] = [
       {
         countryCode: {

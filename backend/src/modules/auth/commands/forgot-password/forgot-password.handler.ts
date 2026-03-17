@@ -1,18 +1,19 @@
-import { EventBus } from '@nestjs/cqrs';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { EventBus, CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { BadRequestException } from '@nestjs/common';
 import crypto from 'node:crypto';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { dateUtils } from 'src/core/utils/date';
 import { PasswordResetRequestedEvent } from '../../events/password-reset-requested/password-reset-requested.event';
+import { ForgotPasswordCommand } from './forgot-password.command';
 
-@Injectable()
-export class ForgotPasswordHandler {
+@CommandHandler(ForgotPasswordCommand)
+export class ForgotPasswordHandler implements ICommandHandler<ForgotPasswordCommand> {
   constructor(
     private readonly db: DatabaseService,
     private readonly eventBus: EventBus,
   ) {}
 
-  async execute({ email }: { email: string }) {
+  async execute({ email }: ForgotPasswordCommand) {
     const account = await this.db.prisma.account.findFirst({
       where: {
         email: {

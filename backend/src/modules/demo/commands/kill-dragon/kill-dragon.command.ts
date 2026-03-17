@@ -8,7 +8,6 @@ export class KillDragonCommand {
   public readonly dragonId: string;
 
   constructor(props: KillDragonCommandProps) {
-    this.heroId = props.heroId;
-    this.dragonId = props.dragonId;
+    Object.assign(this, props);
   }
 }

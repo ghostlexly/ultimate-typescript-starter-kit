@@ -2,6 +2,7 @@ import { Test } from '@nestjs/testing';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { RefreshTokenHandler } from './refresh-token.handler';
+import { RefreshTokenCommand } from './refresh-token.command';
 import { AuthService } from '../../auth.service';
 import { createMockSession } from 'src/__tests__/factories/session.factory';
 import { createMockAccount } from 'src/__tests__/factories/account.factory';
@@ -34,9 +35,11 @@ describe('RefreshTokenHandler', () => {
     });
 
     // ===== Act
-    const result = await handler.execute({
-      refreshToken: 'valid-refresh-token',
-    });
+    const result = await handler.execute(
+      new RefreshTokenCommand({
+        refreshToken: 'valid-refresh-token',
+      }),
+    );
 
     // ===== Assert
     expect(result).toEqual({
@@ -48,9 +51,11 @@ describe('RefreshTokenHandler', () => {
   it('should throw error when refresh token is not provided', async () => {
     // ===== Act & Assert
     await expect(
-      handler.execute({
-        refreshToken: '',
-      }),
+      handler.execute(
+        new RefreshTokenCommand({
+          refreshToken: '',
+        }),
+      ),
     ).rejects.toThrow(
       new HttpException(
         {
@@ -70,9 +75,11 @@ describe('RefreshTokenHandler', () => {
 
     // ===== Act & Assert
     await expect(
-      handler.execute({
-        refreshToken: 'invalid-token',
-      }),
+      handler.execute(
+        new RefreshTokenCommand({
+          refreshToken: 'invalid-token',
+        }),
+      ),
     ).rejects.toThrow(
       new HttpException(
         { message: 'Invalid or expired refresh token.' },

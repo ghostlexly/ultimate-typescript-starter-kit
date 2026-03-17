@@ -18,6 +18,7 @@ import {
   UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Throttle } from '@nestjs/throttler';
 import type { Response } from 'express';
 import fs from 'node:fs/promises';
@@ -27,10 +28,11 @@ import { AllowAnonymous } from '../../../core/decorators/allow-anonymous.decorat
 import { ZodValidationPipe } from '../../../core/pipes/zod-validation.pipe';
 import { PdfService } from '../../shared/services/pdf.service';
 import { DemoSerializeTestDto } from '../commands/misc/misc.response.dto';
-import { TestPlayerHandler } from '../commands/test-player/test-player.handler';
-import { LaunchQueueHandler } from '../commands/launch-queue/launch-queue.handler';
-import { FindAllAccountsHandler } from '../queries/find-all-accounts/find-all-accounts.handler';
-import { GetPaginatedDataHandler } from '../queries/get-paginated-data/get-paginated-data.handler';
+import { TestPlayerCommand } from '../commands/test-player/test-player.command';
+import { LaunchQueueCommand } from '../commands/launch-queue/launch-queue.command';
+import { KillDragonCommand } from '../commands/kill-dragon/kill-dragon.command';
+import { FindAllAccountsQuery } from '../queries/find-all-accounts/find-all-accounts.query';
+import { GetPaginatedDataQuery } from '../queries/get-paginated-data/get-paginated-data.query';
 import {
   testPlayerRequestSchema,
   type TestPlayerRequestDto,
@@ -39,8 +41,6 @@ import {
   demoGetPaginatedDataSchema,
   type DemoGetPaginatedDataDto,
 } from '../queries/get-paginated-data/get-paginated-data.request.dto';
-import { CommandBus } from '@nestjs/cqrs';
-import { KillDragonCommand } from '../commands/kill-dragon/kill-dragon.command';
 import { CurrentUser } from '../../../core/decorators/current-user.decorator';
 import type { RequestUser } from '../../../core/types/request';
 
@@ -48,18 +48,15 @@ import type { RequestUser } from '../../../core/types/request';
 export class DemoController {
   constructor(
     private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
     private readonly pdfService: PdfService,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
-    private readonly testPlayerHandler: TestPlayerHandler,
-    private readonly launchQueueHandler: LaunchQueueHandler,
-    private readonly findAllAccountsHandler: FindAllAccountsHandler,
-    private readonly getPaginatedDataHandler: GetPaginatedDataHandler,
   ) {}
 
   @Get('/demos')
   @AllowAnonymous()
   async findAllAccounts() {
-    return this.findAllAccountsHandler.execute();
+    return this.queryBus.execute(new FindAllAccountsQuery());
   }
 
   @Post('/demos')
@@ -69,20 +66,22 @@ export class DemoController {
     @Body() body: TestPlayerRequestDto['body'],
     @Query() query: TestPlayerRequestDto['query'],
   ) {
-    return this.testPlayerHandler.execute({ ...body, ...query });
+    return this.commandBus.execute(
+      new TestPlayerCommand({ ...body, ...query }),
+    );
   }
 
   @Get('/demos/paginated-data')
   @AllowAnonymous()
   @UsePipes(new ZodValidationPipe(demoGetPaginatedDataSchema))
   async getPaginatedData(@Query() query: DemoGetPaginatedDataDto['query']) {
-    return this.getPaginatedDataHandler.execute({ query });
+    return this.queryBus.execute(new GetPaginatedDataQuery({ query }));
   }
 
   @Get('/demos/queue-launch')
   @AllowAnonymous()
   async queueLaunch() {
-    return this.launchQueueHandler.execute();
+    return this.commandBus.execute(new LaunchQueueCommand());
   }
 
   @Post('/demos/cqrs-kill-dragon')

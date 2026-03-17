@@ -2,6 +2,7 @@ import { Test } from '@nestjs/testing';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { SignInHandler } from './sign-in.handler';
+import { SignInCommand } from './sign-in.command';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { AuthService } from '../../auth.service';
 import { createMockAccount } from 'src/__tests__/factories/account.factory';
@@ -41,10 +42,12 @@ describe('SignInHandler', () => {
     });
 
     // ===== Act
-    const result = await handler.execute({
-      email: 'test@test.com',
-      password: 'password',
-    });
+    const result = await handler.execute(
+      new SignInCommand({
+        email: 'test@test.com',
+        password: 'password',
+      }),
+    );
 
     // ===== Assert
     expect(result).toEqual({
@@ -61,10 +64,12 @@ describe('SignInHandler', () => {
 
     // ===== Act & Assert
     await expect(
-      handler.execute({
-        email: 'test@test.com',
-        password: 'password',
-      }),
+      handler.execute(
+        new SignInCommand({
+          email: 'test@test.com',
+          password: 'password',
+        }),
+      ),
     ).rejects.toThrow(
       new HttpException(
         { message: 'Mot de passe ou e-mail incorrect.' },
@@ -82,10 +87,12 @@ describe('SignInHandler', () => {
 
     // ===== Act & Assert
     await expect(
-      handler.execute({
-        email: 'test@test.com',
-        password: 'password',
-      }),
+      handler.execute(
+        new SignInCommand({
+          email: 'test@test.com',
+          password: 'password',
+        }),
+      ),
     ).rejects.toThrow(
       new HttpException(
         {
@@ -107,10 +114,12 @@ describe('SignInHandler', () => {
 
     // ===== Act & Assert
     await expect(
-      handler.execute({
-        email: 'test@test.com',
-        password: 'wrong-password',
-      }),
+      handler.execute(
+        new SignInCommand({
+          email: 'test@test.com',
+          password: 'wrong-password',
+        }),
+      ),
     ).rejects.toThrow(
       new HttpException(
         { message: 'Mot de passe ou e-mail incorrect.' },
