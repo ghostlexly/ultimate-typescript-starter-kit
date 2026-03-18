@@ -19,7 +19,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand --forceExit",
     "test:e2e": "NODE_OPTIONS=--experimental-vm-modules jest --config ./test/jest-e2e.json --runInBand --forceExit",
-    "tw": "tailwindcss -i ./public/assets/css/input.css -o ./public/assets/css/tailwindcss.css",
+    "tw": "tailwindcss -i ./src/public/assets/css/input.css -o ./src/public/assets/css/tailwindcss.css",
     "cli": "node dist/cli.js"
   },
   "dependencies": {
