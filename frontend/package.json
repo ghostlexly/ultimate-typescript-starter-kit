@@ -59,12 +59,11 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4.1.11",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "eslint": "^10.0.0",
+    "eslint": "^9.39.4",
     "eslint-config-next": "^16.1.6",
     "postcss": "^8",
     "prettier": "^3.8.0",
