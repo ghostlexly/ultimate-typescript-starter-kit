@@ -4,9 +4,9 @@ import axios from 'axios';
 
 @Injectable()
 export class BrevoService {
-  private apiKey: string;
+  private readonly apiKey: string;
 
-  constructor(private configService: ConfigService) {
+  constructor(private readonly configService: ConfigService) {
     this.apiKey = this.configService.getOrThrow('API_BREVO_API_KEY');
   }
 
@@ -67,7 +67,7 @@ export class BrevoService {
     content: string;
   }) {
     // -- remove spaces and + signs from the recipient
-    recipient = recipient.replace(/[\s+]/g, '');
+    recipient = recipient.replaceAll(/[\s+]/g, '');
 
     return await axios.post(
       'https://api.brevo.com/v3/transactionalSMS/sms',

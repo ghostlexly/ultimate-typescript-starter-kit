@@ -1,16 +1,14 @@
 import { GalleryVerticalEndIcon } from 'lucide-react';
-import { ForgotPasswordResetForm } from './reset-form';
+import { VerifyCodeForm } from './verify-code-form';
 
-type Params = Promise<{ [key: string]: string | string[] | undefined }>;
-
-export default async function ForgotPasswordResetPage({
+export default async function VerifyCodePage({
   searchParams,
 }: {
-  searchParams: Params;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const params = await searchParams;
-  const email = typeof params.email === 'string' ? params.email : null;
-  const token = typeof params.token === 'string' ? params.token : null;
+  const resolvedSearchParams = await searchParams;
+  const email = (resolvedSearchParams.email as string) || null;
+
   return (
     <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 rounded-lg p-6 md:p-10">
       <div className="flex w-full max-w-md flex-col gap-6">
@@ -20,7 +18,7 @@ export default async function ForgotPasswordResetPage({
           </div>
           Acme Inc.
         </a>
-        <ForgotPasswordResetForm email={email} token={token} />
+        <VerifyCodeForm email={email} />
       </div>
     </div>
   );

@@ -1,11 +1,11 @@
 interface RegisterCustomerCommandProps {
   email: string;
-  password: string;
+  country?: string;
 }
 
 export class RegisterCustomerCommand {
   public readonly email: string;
-  public readonly password: string;
+  public readonly country?: string;
 
   constructor(props: RegisterCustomerCommandProps) {
     Object.assign(this, props);

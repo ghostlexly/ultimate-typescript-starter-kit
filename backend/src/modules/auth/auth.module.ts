@@ -4,26 +4,18 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { AuthController } from './controllers/auth.controller';
-import { SignInHandler } from './commands/sign-in/sign-in.handler';
+import { SendCodeHandler } from './commands/send-code/send-code.handler';
+import { VerifyCodeHandler } from './commands/verify-code/verify-code.handler';
 import { RefreshTokenHandler } from './commands/refresh-token/refresh-token.handler';
-import { ForgotPasswordHandler } from './commands/forgot-password/forgot-password.handler';
-import { VerifyTokenHandler } from './commands/verify-token/verify-token.handler';
-import { ResetPasswordHandler } from './commands/reset-password/reset-password.handler';
-import { PasswordResetRequestedEventHandler } from './events/password-reset-requested/password-reset-requested.event-handler';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
+import { LoginCodeRequestedEventHandler } from './events/login-code-requested/login-code-requested.event-handler';
 
-const CommandHandlers = [
-  SignInHandler,
-  RefreshTokenHandler,
-  ForgotPasswordHandler,
-  VerifyTokenHandler,
-  ResetPasswordHandler,
-];
+const CommandHandlers = [SendCodeHandler, VerifyCodeHandler, RefreshTokenHandler];
 
 const QueryHandlers = [];
 
-const EventHandlers = [PasswordResetRequestedEventHandler];
+const EventHandlers = [LoginCodeRequestedEventHandler];
 
 @Module({
   imports: [

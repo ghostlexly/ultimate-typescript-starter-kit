@@ -9,6 +9,7 @@ export function createMockVerificationToken(
     type: 'PASSWORD_RESET',
     accountId: 'account-123',
     value: '123456',
+    attempts: 0,
     expiresAt: new Date(),
     createdAt: new Date(),
     updatedAt: new Date(),

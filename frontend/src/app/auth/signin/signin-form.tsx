@@ -8,29 +8,19 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from '@/components/ui/field';
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { PasswordInput } from '@/components/ui/password-input';
-import { useAppStore } from '@/hooks/use-app-store';
-import { useSession } from '@/lib/luni-auth/luni-auth.provider';
 import { handleApiErrors } from '@/lib/handle-api-errors';
 import { wolfios } from '@/lib/wolfios/wolfios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useTransition } from 'react';
+import { useTransition } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { useFirstMount } from '@/hooks/use-first-mount';
 
 type FormValues = {
   email: string;
-  password: string;
 };
 
 export function SigninForm({
@@ -40,19 +30,17 @@ export function SigninForm({
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const router = useRouter();
-  const { previousLink } = useAppStore();
-  const session = useSession();
   const [isPendingTransition, startTransition] = useTransition();
 
   const form = useForm<FormValues>({
     defaultValues: {
       email: '',
-      password: '',
     },
   });
 
-  useFirstMount(async () => {
-    const errorParam = searchParams?.error;
+  // Show error from OAuth redirect
+  useFirstMount(() => {
+    const errorParam = searchParams.error;
 
     if (errorParam) {
       toast.error(
@@ -61,37 +49,15 @@ export function SigninForm({
     }
   });
 
+  // Handle email submission: send login code then redirect to verify page
   const handleSubmit = async (values: FormValues) => {
     try {
-      // Sign in
-      const response = await wolfios
-        .post(`/api/auth/signin`, {
-          email: values.email,
-          password: values.password,
-        })
-        .then((res) => res.data);
+      await wolfios.post('/api/auth/send-code', {
+        email: values.email,
+      });
 
-      // Refresh the session to update authentication state
-      await session.refresh();
-
-      // if previous link is provided, redirect to it
-      // (ex: when the user is redirected to login page from booking page)
       startTransition(() => {
-        if (previousLink && previousLink !== '/') {
-          router.push(previousLink);
-        } else {
-          switch (response.role) {
-            case 'ADMIN':
-              router.push('/admin-area');
-              break;
-            case 'CUSTOMER':
-              router.push('/');
-              break;
-            case 'HOUSEKEEPER':
-              router.push('/housekeeper-area');
-              break;
-          }
-        }
+        router.push(`/auth/signin/verify?email=${encodeURIComponent(values.email)}`);
       });
     } catch (error) {
       handleApiErrors({ error, form });
@@ -109,7 +75,7 @@ export function SigninForm({
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome back</CardTitle>
-          <CardDescription>Sign in with your Apple or Google account</CardDescription>
+          <CardDescription>Sign in to your account</CardDescription>
         </CardHeader>
         <CardContent>
           <form
@@ -153,33 +119,10 @@ export function SigninForm({
                         {...field}
                         id={field.name}
                         type="email"
-                        placeholder="m@example.com"
+                        placeholder="m@exemple.fr"
                         aria-invalid={fieldState.invalid}
                         required
                       />
-                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                    </Field>
-                  )}
-                />
-
-                <Controller
-                  name="password"
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor={field.name}>Password</FieldLabel>
-
-                      <PasswordInput
-                        {...field}
-                        id={field.name}
-                        aria-invalid={fieldState.invalid}
-                        required
-                      />
-
-                      <FieldDescription>
-                        <Link href="/auth/forgot-password">Forgot your password?</Link>
-                      </FieldDescription>
-
                       {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
                   )}
@@ -197,7 +140,7 @@ export function SigninForm({
               </FieldGroup>
 
               <div className="text-center text-sm">
-                Don&apos;t have an account?{' '}
+                Don&apos;t have an account ?{' '}
                 <Link
                   href="/auth/customer/signup"
                   className="underline underline-offset-4"

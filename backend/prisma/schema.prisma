@@ -76,6 +76,7 @@ model VerificationToken {
   token     String           @unique
   type      VerificationType // enum: PASSWORD_RESET, EMAIL_VERIFICATION, etc.
   value     String? // optional value being verified
+  attempts  Int              @default(0) // tracks failed verification attempts for brute-force protection
   accountId String
   account   Account          @relation(fields: [accountId], references: [id], onDelete: Cascade)
   expiresAt DateTime
@@ -89,6 +90,7 @@ enum VerificationType {
   PASSWORD_RESET
   EMAIL_VERIFICATION
   TWO_FACTOR
+  LOGIN_CODE
 }
 
 // ------------------------------------------------------

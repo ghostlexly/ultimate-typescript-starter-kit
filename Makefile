@@ -32,7 +32,7 @@ lint-fix: ## Launch ESLint with autofix
 	$(NPM_BACKEND) run lint --fix
 
 type-check: ## Launch TypeScript type checking
-	$(NPM_BACKEND) run type-check
+	cd backend && npm run type-check
 
 qa: lint-fix type-check ## Launch quality automation (lint, type checking...)
 

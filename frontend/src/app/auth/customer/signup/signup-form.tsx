@@ -11,11 +11,8 @@ import {
 import { CenteredLoadingSpinner } from '@/components/ui/centered-loading-spinner';
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { PasswordInput } from '@/components/ui/password-input';
 import { QueryErrorBoundary } from '@/components/ui/query-error-boundary';
 import { SingleSelectCombobox } from '@/components/ui/single-select-combobox/single-select-combobox';
-import { useAppStore } from '@/hooks/use-app-store';
-import { useSession } from '@/lib/luni-auth/luni-auth.provider';
 import { handleApiErrors } from '@/lib/handle-api-errors';
 import { wolfios } from '@/lib/wolfios/wolfios';
 import { useQuery } from '@tanstack/react-query';
@@ -23,13 +20,12 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useTransition } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
 import { useFirstMount } from '@/hooks/use-first-mount';
+import { toast } from 'react-toastify';
 
 type FormValues = {
   email: string;
   country: any | null;
-  password: string;
 };
 
 export function SignUpForm({
@@ -39,8 +35,6 @@ export function SignUpForm({
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const router = useRouter();
-  const { previousLink } = useAppStore();
-  const session = useSession();
   const [isPendingTransition, startTransition] = useTransition();
 
   const countries = useQuery({
@@ -51,7 +45,6 @@ export function SignUpForm({
   const form = useForm<FormValues>({
     defaultValues: {
       email: '',
-      password: '',
       country: null,
     },
   });
@@ -68,34 +61,17 @@ export function SignUpForm({
 
   const handleSubmit = async (values: FormValues) => {
     try {
-      // Register
+      // Register (email only, no password)
       await wolfios.post(`/api/customers/signup`, {
         email: values.email,
-        password: values.password,
-        role: 'CUSTOMER',
         country: values.country?.iso2Code,
       });
 
-      // Sign in
-      await wolfios
-        .post('/api/auth/signin', {
-          email: values.email,
-          password: values.password,
-          role: 'CUSTOMER',
-        })
-        .then((res) => res.data);
-
-      // Refresh the session to update authentication state
-      await session.refresh();
-
-      // if previous link is provided, redirect to it
-      // (ex: when the user is redirected to login page from booking page)
+      // Redirect directly to verify page (code already sent by backend)
       startTransition(() => {
-        if (previousLink && previousLink !== '/') {
-          router.push(previousLink);
-        } else {
-          router.push('/');
-        }
+        router.push(
+          `/auth/signin/verify?email=${encodeURIComponent(values.email)}`,
+        );
       });
     } catch (error) {
       handleApiErrors({ error, form });
@@ -193,25 +169,6 @@ export function SignUpForm({
                         searchPlaceholder="Search..."
                         getItemKeywords={(item: any) => [item.countryName, item.iso2Code]}
                         aria-invalid={fieldState.invalid}
-                      />
-
-                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                    </Field>
-                  )}
-                />
-
-                <Controller
-                  name="password"
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor={field.name}>Password</FieldLabel>
-
-                      <PasswordInput
-                        {...field}
-                        id={field.name}
-                        aria-invalid={fieldState.invalid}
-                        required
                       />
 
                       {fieldState.invalid && <FieldError errors={[fieldState.error]} />}

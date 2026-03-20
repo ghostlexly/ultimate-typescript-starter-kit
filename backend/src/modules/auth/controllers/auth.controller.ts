@@ -18,31 +18,21 @@ import { AllowAnonymous } from '../../../core/decorators/allow-anonymous.decorat
 import { ZodValidationPipe } from '../../../core/pipes/zod-validation.pipe';
 import { OAuthRedirectExceptionFilter } from '../../../core/filters/oauth-redirect.filter';
 import { AuthService } from '../auth.service';
-import { SignInCommand } from '../commands/sign-in/sign-in.command';
+import { SendCodeCommand } from '../commands/send-code/send-code.command';
+import { VerifyCodeCommand } from '../commands/verify-code/verify-code.command';
 import { RefreshTokenCommand } from '../commands/refresh-token/refresh-token.command';
-import { ForgotPasswordCommand } from '../commands/forgot-password/forgot-password.command';
-import { VerifyTokenCommand } from '../commands/verify-token/verify-token.command';
-import { ResetPasswordCommand } from '../commands/reset-password/reset-password.command';
 import {
-  type SignInRequestDto,
-  signInRequestSchema,
-} from '../commands/sign-in/sign-in.request.dto';
+  type SendCodeRequestDto,
+  sendCodeRequestSchema,
+} from '../commands/send-code/send-code.request.dto';
+import {
+  type VerifyCodeRequestDto,
+  verifyCodeRequestSchema,
+} from '../commands/verify-code/verify-code.request.dto';
 import {
   type RefreshTokenRequestDto,
   refreshTokenRequestSchema,
 } from '../commands/refresh-token/refresh-token.request.dto';
-import {
-  type ForgotPasswordRequestDto,
-  forgotPasswordRequestSchema,
-} from '../commands/forgot-password/forgot-password.request.dto';
-import {
-  type VerifyTokenRequestDto,
-  verifyTokenRequestSchema,
-} from '../commands/verify-token/verify-token.request.dto';
-import {
-  type ResetPasswordRequestDto,
-  resetPasswordRequestSchema,
-} from '../commands/reset-password/reset-password.request.dto';
 import { CurrentUser } from '../../../core/decorators/current-user.decorator';
 import type { RequestUser } from '../../../core/types/request';
 
@@ -53,16 +43,34 @@ export class AuthController {
     private readonly commandBus: CommandBus,
   ) {}
 
-  @Post('/auth/signin')
+  /**
+   * Send a 4-digit login code to the user's email.
+   * Security: 60-second cooldown between sends, throttled to 10 requests/minute.
+   */
+  @Post('/auth/send-code')
   @AllowAnonymous()
   @Throttle({ default: { limit: 10 } })
-  @UsePipes(new ZodValidationPipe(signInRequestSchema))
-  async signIn(
+  @UsePipes(new ZodValidationPipe(sendCodeRequestSchema))
+  async sendCode(@Body() body: SendCodeRequestDto['body']) {
+    return this.commandBus.execute(
+      new SendCodeCommand({ email: body.email }),
+    );
+  }
+
+  /**
+   * Verify the 4-digit login code and authenticate the user.
+   * Security: max 5 attempts per code, throttled to 5 requests/minute.
+   */
+  @Post('/auth/verify-code')
+  @AllowAnonymous()
+  @Throttle({ default: { limit: 5 } })
+  @UsePipes(new ZodValidationPipe(verifyCodeRequestSchema))
+  async verifyCode(
     @Res({ passthrough: true }) res: Response,
-    @Body() body: SignInRequestDto['body'],
+    @Body() body: VerifyCodeRequestDto['body'],
   ) {
     const { accessToken, refreshToken, role } = await this.commandBus.execute(
-      new SignInCommand({ ...body }),
+      new VerifyCodeCommand({ email: body.email, code: body.code }),
     );
 
     this.authService.setAuthCookies({
@@ -154,44 +162,6 @@ export class AuthController {
       accessToken,
       refreshToken: newRefreshToken,
     };
-  }
-
-  @Post('/auth/forgot-password')
-  @AllowAnonymous()
-  @Throttle({ default: { limit: 5 } })
-  @UsePipes(new ZodValidationPipe(forgotPasswordRequestSchema))
-  async forgotPassword(@Body() body: ForgotPasswordRequestDto['body']) {
-    return this.commandBus.execute(
-      new ForgotPasswordCommand({ email: body.email }),
-    );
-  }
-
-  @Post('/auth/verify-token')
-  @AllowAnonymous()
-  @Throttle({ default: { limit: 10 } })
-  @UsePipes(new ZodValidationPipe(verifyTokenRequestSchema))
-  async verifyToken(@Body() body: VerifyTokenRequestDto['body']) {
-    const isTokenValid = await this.commandBus.execute(
-      new VerifyTokenCommand(body),
-    );
-
-    if (!isTokenValid) {
-      throw new BadRequestException('This token is not valid or has expired.');
-    }
-
-    return {
-      message: 'Token is valid.',
-    };
-  }
-
-  @Post('/auth/reset-password')
-  @AllowAnonymous()
-  @Throttle({ default: { limit: 10 } })
-  @UsePipes(new ZodValidationPipe(resetPasswordRequestSchema))
-  async resetPassword(@Body() body: ResetPasswordRequestDto['body']) {
-    return this.commandBus.execute(
-      new ResetPasswordCommand(body),
-    );
   }
 
   @Get('/auth/me')

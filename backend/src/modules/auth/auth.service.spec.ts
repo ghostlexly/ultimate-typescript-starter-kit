@@ -5,7 +5,6 @@ import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import bcrypt from 'bcrypt';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { createMockSession } from 'src/__tests__/factories/session.factory';
-import { createMockVerificationToken } from 'src/__tests__/factories/verification-token.factory';
 import { createMockAccount } from 'src/__tests__/factories/account.factory';
 
 function createMockJwtPayload(overrides = {}): any {
@@ -110,6 +109,28 @@ describe('AuthService', () => {
       const token2 = authService.generateUniqueToken();
 
       expect(token1).not.toBe(token2);
+    });
+  });
+
+  describe('generateLoginCode', () => {
+    it('should generate a 4-digit code', () => {
+      // ===== Act
+      const code = authService.generateLoginCode();
+
+      // ===== Assert
+      expect(code).toBeDefined();
+      expect(code.length).toBe(4);
+      expect(/^\d{4}$/.test(code)).toBe(true);
+    });
+
+    it('should pad codes with leading zeros', () => {
+      // ===== Act
+      const codes = Array.from({ length: 100 }, () => authService.generateLoginCode());
+
+      // ===== Assert
+      codes.forEach((code) => {
+        expect(code.length).toBe(4);
+      });
     });
   });
 
@@ -247,37 +268,124 @@ describe('AuthService', () => {
     });
   });
 
-  describe('verifyVerificationToken', () => {
-    it('should return true when token is valid', async () => {
+  describe('verifyLoginCode', () => {
+    it('should return invalid when account is not found', async () => {
       // ===== Arrange
-      db.prisma.verificationToken.findFirst.mockResolvedValue(
-        createMockVerificationToken(),
-      );
+      db.prisma.account.findFirst.mockResolvedValue(null);
 
       // ===== Act
-      const result = await authService.verifyVerificationToken({
-        token: '123456',
-        email: 'test@test.com',
-        type: 'PASSWORD_RESET',
+      const result = await authService.verifyLoginCode({
+        email: 'unknown@test.com',
+        code: '1234',
       });
 
       // ===== Assert
-      expect(result).toBe(true);
+      expect(result.isValid).toBe(false);
+      expect(result.accountId).toBeNull();
     });
 
-    it('should return false when token is not found', async () => {
+    it('should return invalid when no active token exists', async () => {
       // ===== Arrange
+      db.prisma.account.findFirst.mockResolvedValue(
+        createMockAccount() as any,
+      );
       db.prisma.verificationToken.findFirst.mockResolvedValue(null);
 
       // ===== Act
-      const result = await authService.verifyVerificationToken({
-        type: 'PASSWORD_RESET',
-        token: 'invalid-token',
+      const result = await authService.verifyLoginCode({
         email: 'test@test.com',
+        code: '1234',
       });
 
       // ===== Assert
-      expect(result).toBe(false);
+      expect(result.isValid).toBe(false);
+    });
+
+    it('should return valid and delete token when code matches', async () => {
+      // ===== Arrange
+      const mockAccount = createMockAccount();
+      db.prisma.account.findFirst.mockResolvedValue(mockAccount as any);
+      db.prisma.verificationToken.findFirst.mockResolvedValue({
+        id: 'token-123',
+        token: '1234',
+        type: 'LOGIN_CODE',
+        attempts: 0,
+      } as any);
+
+      // ===== Act
+      const result = await authService.verifyLoginCode({
+        email: 'test@test.com',
+        code: '1234',
+      });
+
+      // ===== Assert
+      expect(result.isValid).toBe(true);
+      expect(result.accountId).toBe(mockAccount.id);
+      expect(db.prisma.verificationToken.delete).toHaveBeenCalledWith({
+        where: { id: 'token-123' },
+      });
+    });
+
+    it('should increment attempts on wrong code', async () => {
+      // ===== Arrange
+      db.prisma.account.findFirst.mockResolvedValue(
+        createMockAccount() as any,
+      );
+      db.prisma.verificationToken.findFirst.mockResolvedValue({
+        id: 'token-123',
+        token: '1234',
+        type: 'LOGIN_CODE',
+        attempts: 0,
+      } as any);
+      db.prisma.verificationToken.update.mockResolvedValue({
+        id: 'token-123',
+        attempts: 1,
+      } as any);
+
+      // ===== Act
+      const result = await authService.verifyLoginCode({
+        email: 'test@test.com',
+        code: '9999',
+      });
+
+      // ===== Assert
+      expect(result.isValid).toBe(false);
+      expect(result.remainingAttempts).toBe(4);
+      expect(db.prisma.verificationToken.update).toHaveBeenCalledWith({
+        where: { id: 'token-123' },
+        data: { attempts: { increment: 1 } },
+      });
+    });
+
+    it('should invalidate token when max attempts reached', async () => {
+      // ===== Arrange
+      db.prisma.account.findFirst.mockResolvedValue(
+        createMockAccount() as any,
+      );
+      db.prisma.verificationToken.findFirst.mockResolvedValue({
+        id: 'token-123',
+        token: '1234',
+        type: 'LOGIN_CODE',
+        attempts: 4,
+      } as any);
+      db.prisma.verificationToken.update.mockResolvedValue({
+        id: 'token-123',
+        attempts: 5,
+      } as any);
+
+      // ===== Act
+      const result = await authService.verifyLoginCode({
+        email: 'test@test.com',
+        code: '9999',
+      });
+
+      // ===== Assert
+      expect(result.isValid).toBe(false);
+      expect(result.isMaxAttemptsReached).toBe(true);
+      expect(result.remainingAttempts).toBe(0);
+      expect(db.prisma.verificationToken.delete).toHaveBeenCalledWith({
+        where: { id: 'token-123' },
+      });
     });
   });
 });
