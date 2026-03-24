@@ -1,7 +1,6 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { Prisma, PrismaClient } from '../../../generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
 import { ConfigService } from '@nestjs/config';
 
 type ModelName = Uncapitalize<Prisma.ModelName>;
@@ -48,16 +47,14 @@ export type PrismaTransactionClient = Omit<
 @Injectable()
 export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   public prisma: ExtendedPrismaClient;
-  private readonly pool: Pool;
   private readonly adapter: PrismaPg;
 
-  constructor(private configService: ConfigService) {
+  constructor(private readonly configService: ConfigService) {
     const connectionString = this.configService.get<string>(
       'APP_DATABASE_CONNECTION_URL',
     );
 
-    this.pool = new Pool({ connectionString });
-    this.adapter = new PrismaPg(this.pool);
+    this.adapter = new PrismaPg({ connectionString });
     this.prisma = new ExtendedPrismaClient({ adapter: this.adapter });
   }
 
@@ -67,6 +64,5 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
 
   async onModuleDestroy() {
     await this.prisma.$disconnect();
-    await this.pool.end();
   }
 }
