@@ -4,9 +4,9 @@ import { DatabaseService } from 'src/modules/shared/services/database.service';
 
 @Injectable()
 export class ClearExpiredVerificationTokensJob {
-  private logger = new Logger(ClearExpiredVerificationTokensJob.name);
+  private readonly logger = new Logger(ClearExpiredVerificationTokensJob.name);
 
-  constructor(private db: DatabaseService) {}
+  constructor(private readonly db: DatabaseService) {}
 
   @Cron(CronExpression.EVERY_HOUR)
   async execute() {

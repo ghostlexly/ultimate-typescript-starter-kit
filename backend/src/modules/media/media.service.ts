@@ -11,9 +11,9 @@ import { S3Service } from '../shared/services/s3.service';
 @Injectable()
 export class MediaService {
   constructor(
-    private db: DatabaseService,
-    private filesService: FilesService,
-    private s3Service: S3Service,
+    private readonly db: DatabaseService,
+    private readonly filesService: FilesService,
+    private readonly s3Service: S3Service,
   ) {}
 
   /**

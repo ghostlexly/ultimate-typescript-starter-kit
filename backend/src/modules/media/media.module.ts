@@ -16,5 +16,6 @@ const CommandHandlers = [UploadMediaHandler, UploadVideoHandler];
   ],
   controllers: [MediaController],
   providers: [...CommandHandlers, MediaService, MediaConsumer],
+  exports: [MediaService],
 })
 export class MediaModule {}

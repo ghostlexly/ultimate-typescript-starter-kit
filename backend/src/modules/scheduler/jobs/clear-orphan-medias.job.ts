@@ -6,10 +6,10 @@ import { MediaService } from '../../media/media.service';
 
 @Injectable()
 export class ClearOrphanMediasJob {
-  private logger = new Logger(ClearOrphanMediasJob.name);
+  private readonly logger = new Logger(ClearOrphanMediasJob.name);
 
   constructor(
-    private db: DatabaseService,
+    private readonly db: DatabaseService,
     private readonly mediaService: MediaService,
   ) {}
 

@@ -4,9 +4,9 @@ import { DatabaseService } from 'src/modules/shared/services/database.service';
 
 @Injectable()
 export class ClearExpiredSessionsJob {
-  private logger = new Logger(ClearExpiredSessionsJob.name);
+  private readonly logger = new Logger(ClearExpiredSessionsJob.name);
 
-  constructor(private db: DatabaseService) {}
+  constructor(private readonly db: DatabaseService) {}
 
   @Cron(CronExpression.EVERY_HOUR)
   async execute() {
