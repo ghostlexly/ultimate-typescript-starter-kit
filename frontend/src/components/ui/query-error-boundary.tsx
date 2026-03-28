@@ -4,7 +4,7 @@ import { RotateCcw } from 'lucide-react';
 
 const QueryErrorBoundary = ({ message }: { message?: string }) => {
   const onRetry = () => {
-    window.location.reload();
+    globalThis.location.reload();
   };
 
   return (

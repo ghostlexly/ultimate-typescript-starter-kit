@@ -1,4 +1,4 @@
-import { UseFormReturn, FieldValues, Path } from 'react-hook-form';
+import { FieldValues, Path, UseFormReturn } from 'react-hook-form';
 import { toast } from 'react-toastify';
 
 interface Violation {
@@ -36,11 +36,11 @@ const getErrorData = (error: unknown) => {
   return apiError.response?.data || null;
 };
 
-const getErrorMessage = (error: unknown) => {
-  if (typeof error !== 'object' || !error) return null;
+export const getErrorMessage = (error: unknown) => {
+  if (typeof error !== 'object' || !error) return undefined;
 
   const apiError = error as ApiError;
-  return apiError.response?.data?.message || apiError.message || null;
+  return apiError.response?.data?.message || apiError.message || undefined;
 };
 
 const getViolations = (error: unknown): Violation[] => {

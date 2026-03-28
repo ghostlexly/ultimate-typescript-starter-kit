@@ -13,7 +13,7 @@ import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field
 import { Input } from '@/components/ui/input';
 import { QueryErrorBoundary } from '@/components/ui/query-error-boundary';
 import { SingleSelectCombobox } from '@/components/ui/single-select-combobox/single-select-combobox';
-import { handleApiErrors } from '@/lib/handle-api-errors';
+import { getErrorMessage, handleApiErrors } from '@/lib/handle-api-errors';
 import { wolfios } from '@/lib/wolfios/wolfios';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
@@ -69,9 +69,7 @@ export function SignUpForm({
 
       // Redirect directly to verify page (code already sent by backend)
       startTransition(() => {
-        router.push(
-          `/auth/signin/verify?email=${encodeURIComponent(values.email)}`,
-        );
+        router.push(`/auth/signin/verify?email=${encodeURIComponent(values.email)}`);
       });
     } catch (error) {
       handleApiErrors({ error, form });
@@ -87,7 +85,7 @@ export function SignUpForm({
   if (countries.isLoading) {
     return <CenteredLoadingSpinner />;
   } else if (countries.isError) {
-    return <QueryErrorBoundary message={countries.error.message} />;
+    return <QueryErrorBoundary message={getErrorMessage(countries.error)} />;
   }
 
   return (

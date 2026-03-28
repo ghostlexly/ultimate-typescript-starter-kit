@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { CenteredLoadingSpinner } from '@/components/ui/centered-loading-spinner';
 import { QueryErrorBoundary } from '@/components/ui/query-error-boundary';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { getErrorMessage } from '@/lib/handle-api-errors';
 
 function ProtectedRouteExample({ children }: { children: ReactNode }) {
   return (
@@ -35,7 +36,7 @@ function ProtectedRouteExampleContent() {
   }
 
   if (protectedRoute.isError) {
-    return <QueryErrorBoundary message={protectedRoute.error.message} />;
+    return <QueryErrorBoundary message={getErrorMessage(protectedRoute.error)} />;
   }
 
   return (
