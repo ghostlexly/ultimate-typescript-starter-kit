@@ -7,7 +7,7 @@ import { QueryErrorBoundary } from '@/components/ui/query-error-boundary';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getErrorMessage } from '@/lib/handle-api-errors';
 
-function ProtectedRouteExample({ children }: { children: ReactNode }) {
+function ProtectedRouteExample({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <Card>
       <CardHeader>
