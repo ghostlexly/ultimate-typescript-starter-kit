@@ -34,12 +34,12 @@ import { KillDragonCommand } from '../commands/kill-dragon/kill-dragon.command';
 import { FindAllAccountsQuery } from '../queries/find-all-accounts/find-all-accounts.query';
 import { GetPaginatedDataQuery } from '../queries/get-paginated-data/get-paginated-data.query';
 import {
-  testPlayerRequestSchema,
   type TestPlayerRequestDto,
+  testPlayerRequestSchema,
 } from '../commands/test-player/test-player.request.dto';
 import {
-  demoGetPaginatedDataSchema,
   type DemoGetPaginatedDataDto,
+  demoGetPaginatedDataSchema,
 } from '../queries/get-paginated-data/get-paginated-data.request.dto';
 import { CurrentUser } from '../../../core/decorators/current-user.decorator';
 import type { RequestUser } from '../../../core/types/request';
@@ -66,9 +66,7 @@ export class DemoController {
     @Body() body: TestPlayerRequestDto['body'],
     @Query() query: TestPlayerRequestDto['query'],
   ) {
-    return this.commandBus.execute(
-      new TestPlayerCommand({ ...body, ...query }),
-    );
+    return this.commandBus.execute(new TestPlayerCommand({ ...body, ...query }));
   }
 
   @Get('/demos/paginated-data')
@@ -224,6 +222,7 @@ export class DemoController {
       date: new Date().toISOString(),
     };
 
+    // ttl in milliseconds
     await this.cacheManager.set(cacheKey, data, 5000);
 
     return data;

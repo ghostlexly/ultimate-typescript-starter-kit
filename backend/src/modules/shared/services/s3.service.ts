@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import {
   DeleteObjectCommand,
   GetObjectCommand,
@@ -7,18 +7,20 @@ import {
   StorageClass,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import fs from 'fs/promises';
-import { createWriteStream } from 'fs';
-import path from 'path';
+import fs from 'node:fs/promises';
+import { createWriteStream } from 'node:fs';
+import path from 'node:path';
 import { ConfigService } from '@nestjs/config';
 import { FilesService } from './files.service';
 import { dateUtils } from 'src/core/utils/date';
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 
 @Injectable()
 export class S3Service {
   constructor(
-    private configService: ConfigService,
-    private filesService: FilesService,
+    private readonly configService: ConfigService,
+    private readonly filesService: FilesService,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {
     this.client = new S3Client({
       endpoint: this.configService.getOrThrow('API_S3_ENDPOINT'),
@@ -32,9 +34,9 @@ export class S3Service {
     this.bucketName = this.configService.getOrThrow('API_S3_BUCKET');
   }
 
-  private client: S3Client;
+  private readonly client: S3Client;
 
-  private bucketName: string;
+  private readonly bucketName: string;
 
   /**
    * Save a file to S3 bucket and create a record in the database
@@ -196,14 +198,29 @@ export class S3Service {
   getPresignedUrl = async ({
     key,
     expiresIn = 3600,
+    useCache = true,
   }: {
     key: string;
     expiresIn?: number;
+    useCache?: boolean;
   }) => {
-    return await getSignedUrl(
+    if (useCache) {
+      const cachedUrl = await this.cacheManager.get<string>(key);
+      if (cachedUrl) {
+        return cachedUrl;
+      }
+    }
+
+    const presignedUrl = await getSignedUrl(
       this.client,
       new GetObjectCommand({ Bucket: this.bucketName, Key: key }),
       { expiresIn },
     );
+
+    if (useCache) {
+      await this.cacheManager.set(key, presignedUrl, expiresIn * 1000);
+    }
+
+    return presignedUrl;
   };
 }
