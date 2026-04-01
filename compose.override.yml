@@ -10,7 +10,6 @@ services:
   # ===================================================================================================================================================================================
   frontend:
     command: npm run dev
-    # command: /bin/sh -c "npm run build && npm run start"
     environment:
       - NODE_ENV=development
     volumes:

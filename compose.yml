@@ -53,7 +53,6 @@ services:
         published: 443
         target: 443
     volumes:
-      - ./caddy/logs:/var/log/caddy:z
       - caddy_data:/data
       - caddy_config:/config
     depends_on:
