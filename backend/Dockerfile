@@ -27,8 +27,8 @@ RUN apt install -y wget xz-utils procps
 RUN apt install -y ffmpeg
 
 # Install production-only dependencies (this will ignore devDependencies)
-COPY ./package.json ./
-COPY ./package-lock.json ./
+COPY ./package.json ./package.json
+COPY ./package-lock.json ./package-lock.json
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 
 # Playwright's dependencies
@@ -40,4 +40,4 @@ COPY ./prisma.config.ts ./prisma.config.ts
 COPY ./prisma ./prisma
 
 ENV NODE_ENV=production
-CMD npm run start:prod
+ENTRYPOINT ["npm", "run", "start:prod"]
