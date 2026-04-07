@@ -40,4 +40,4 @@ COPY ./prisma.config.ts ./prisma.config.ts
 COPY ./prisma ./prisma
 
 ENV NODE_ENV=production
-ENTRYPOINT ["npm", "run", "start:prod"]
+CMD ["npm", "run", "start:prod"]

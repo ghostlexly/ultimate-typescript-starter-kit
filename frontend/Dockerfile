@@ -32,4 +32,4 @@ COPY ./next.config.ts ./next.config.ts
 COPY ./public ./public
 
 ENV NODE_ENV=production
-ENTRYPOINT ["npm", "run", "start"]
+CMD ["npm", "run", "start"]
