@@ -4,7 +4,7 @@ import { CountryModule } from '../country/country.module';
 import { CustomerService } from './customer.service';
 import { RegisterCustomerHandler } from './commands/register-customer/register-customer.handler';
 import { UpdateCustomerInformationsHandler } from './commands/update-customer-informations/update-customer-informations.handler';
-import { GetCustomerInformationsHandler } from './queries/get-customer-informations/get-customer-informations.handler';
+import { GetCustomerInformationsHandler } from './commands/get-customer-informations/get-customer-informations.handler';
 import { CustomerController } from './controllers/customer.controller';
 import { CustomerAdminController } from './controllers/customer.admin.controller';
 import { CustomerPublicController } from './controllers/customer.public.controller';
@@ -14,13 +14,12 @@ const CommandHandlers = [
   RegisterCustomerHandler,
   UpdateCustomerInformationsHandler,
   AdminCreateCustomerHandler,
+  GetCustomerInformationsHandler,
 ];
-
-const QueryHandlers = [GetCustomerInformationsHandler];
 
 @Module({
   imports: [AuthModule, CountryModule],
   controllers: [CustomerController, CustomerAdminController, CustomerPublicController],
-  providers: [CustomerService, ...CommandHandlers, ...QueryHandlers],
+  providers: [CustomerService, ...CommandHandlers],
 })
 export class CustomerModule {}

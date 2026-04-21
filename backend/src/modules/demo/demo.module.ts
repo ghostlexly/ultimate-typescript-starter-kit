@@ -6,12 +6,16 @@ import { DemoCustomerController } from './controllers/demo.customer.controller';
 import { TestPlayerHandler } from './commands/test-player/test-player.handler';
 import { LaunchQueueHandler } from './commands/launch-queue/launch-queue.handler';
 import { KillDragonHandler } from './commands/kill-dragon/kill-dragon.handler';
-import { FindAllAccountsHandler } from './queries/find-all-accounts/find-all-accounts.handler';
-import { GetPaginatedDataHandler } from './queries/get-paginated-data/get-paginated-data.handler';
+import { FindAllAccountsHandler } from './commands/find-all-accounts/find-all-accounts.handler';
+import { GetPaginatedDataHandler } from './commands/get-paginated-data/get-paginated-data.handler';
 
-const CommandHandlers = [TestPlayerHandler, LaunchQueueHandler, KillDragonHandler];
-
-const QueryHandlers = [FindAllAccountsHandler, GetPaginatedDataHandler];
+const CommandHandlers = [
+  TestPlayerHandler,
+  LaunchQueueHandler,
+  KillDragonHandler,
+  FindAllAccountsHandler,
+  GetPaginatedDataHandler,
+];
 
 @Module({
   imports: [
@@ -20,6 +24,6 @@ const QueryHandlers = [FindAllAccountsHandler, GetPaginatedDataHandler];
     }),
   ],
   controllers: [DemoPublicController, DemoCustomerController],
-  providers: [DemoConsumer, ...CommandHandlers, ...QueryHandlers],
+  providers: [DemoConsumer, ...CommandHandlers],
 })
 export class DemoModule {}

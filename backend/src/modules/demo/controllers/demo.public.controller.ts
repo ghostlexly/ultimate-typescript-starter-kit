@@ -16,31 +16,23 @@ import {
   Res,
   SerializeOptions,
   UseInterceptors,
-  UsePipes,
 } from '@nestjs/common';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { CommandBus } from '@nestjs/cqrs';
 import { Throttle } from '@nestjs/throttler';
 import type { Response } from 'express';
 import fs from 'node:fs/promises';
 import handlebars from 'handlebars';
 import path from 'node:path';
 import { AllowAnonymous } from '../../../core/decorators/allow-anonymous.decorator';
-import { ZodValidationPipe } from '../../../core/pipes/zod-validation.pipe';
 import { PdfService } from '../../shared/services/pdf.service';
-import { DemoSerializeTestDto } from '../commands/misc/misc.response.dto';
+import { DemoSerializeTestResponse } from '../dtos/misc.response';
+import { TestPlayerBody, TestPlayerQuery } from '../dtos/test-player.request';
+import { GetPaginatedDataQuery } from '../dtos/get-paginated-data.request';
 import { TestPlayerCommand } from '../commands/test-player/test-player.command';
 import { LaunchQueueCommand } from '../commands/launch-queue/launch-queue.command';
 import { KillDragonCommand } from '../commands/kill-dragon/kill-dragon.command';
-import { FindAllAccountsQuery } from '../queries/find-all-accounts/find-all-accounts.query';
-import { GetPaginatedDataQuery } from '../queries/get-paginated-data/get-paginated-data.query';
-import {
-  type TestPlayerRequestDto,
-  testPlayerRequestSchema,
-} from '../commands/test-player/test-player.request.dto';
-import {
-  type DemoGetPaginatedDataDto,
-  demoGetPaginatedDataSchema,
-} from '../queries/get-paginated-data/get-paginated-data.request.dto';
+import { FindAllAccountsCommand } from '../commands/find-all-accounts/find-all-accounts.command';
+import { GetPaginatedDataCommand } from '../commands/get-paginated-data/get-paginated-data.command';
 import { AuthenticationPrincipal } from '../../../core/decorators/authentication-principal.decorator';
 import type { UserPrincipal } from '../../../core/types/request';
 
@@ -48,7 +40,6 @@ import type { UserPrincipal } from '../../../core/types/request';
 export class DemoPublicController {
   constructor(
     private readonly commandBus: CommandBus,
-    private readonly queryBus: QueryBus,
     private readonly pdfService: PdfService,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
@@ -56,24 +47,19 @@ export class DemoPublicController {
   @Get('/demos')
   @AllowAnonymous()
   async findAllAccounts() {
-    return this.queryBus.execute(new FindAllAccountsQuery());
+    return this.commandBus.execute(new FindAllAccountsCommand());
   }
 
   @Post('/demos')
   @AllowAnonymous()
-  @UsePipes(new ZodValidationPipe(testPlayerRequestSchema))
-  testPlayer(
-    @Body() body: TestPlayerRequestDto['body'],
-    @Query() query: TestPlayerRequestDto['query'],
-  ) {
+  testPlayer(@Body() body: TestPlayerBody, @Query() query: TestPlayerQuery) {
     return this.commandBus.execute(new TestPlayerCommand({ ...body, ...query }));
   }
 
   @Get('/demos/paginated-data')
   @AllowAnonymous()
-  @UsePipes(new ZodValidationPipe(demoGetPaginatedDataSchema))
-  async getPaginatedData(@Query() query: DemoGetPaginatedDataDto['query']) {
-    return this.queryBus.execute(new GetPaginatedDataQuery({ query }));
+  async getPaginatedData(@Query() query: GetPaginatedDataQuery) {
+    return this.commandBus.execute(new GetPaginatedDataCommand({ query }));
   }
 
   @Get('/demos/queue-launch')
@@ -101,7 +87,7 @@ export class DemoPublicController {
   @AllowAnonymous()
   @UseInterceptors(ClassSerializerInterceptor)
   serializeWithClass() {
-    return new DemoSerializeTestDto({
+    return new DemoSerializeTestResponse({
       firstName: 'John',
       lastName: 'Doe',
       password: '123456',
@@ -113,10 +99,10 @@ export class DemoPublicController {
   @AllowAnonymous()
   @UseInterceptors(ClassSerializerInterceptor)
   @SerializeOptions({
-    type: DemoSerializeTestDto,
+    type: DemoSerializeTestResponse,
     excludeExtraneousValues: true,
   })
-  serializeWithPipe(): DemoSerializeTestDto {
+  serializeWithPipe(): DemoSerializeTestResponse {
     return {
       firstName: 'John',
       lastName: 'Doe',
@@ -185,11 +171,11 @@ export class DemoPublicController {
       },
     );
 
-    const pdfBuffer = await this.pdfService.htmlToPdf({
+    const pdfBuffer = await this.pdfService.convertHtmlToPdf({
       html: renderedTemplate,
     });
 
-    res.setHeader('Content-Type', 'shared/pdf');
+    res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', 'inline; filename=invoice.pdf');
 
     return res.send(pdfBuffer);

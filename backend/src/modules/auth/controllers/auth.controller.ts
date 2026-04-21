@@ -8,31 +8,20 @@ import {
   Res,
   UseFilters,
   UseGuards,
-  UsePipes,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { Throttle } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { AllowAnonymous } from '../../../core/decorators/allow-anonymous.decorator';
-import { ZodValidationPipe } from '../../../core/pipes/zod-validation.pipe';
 import { OAuthRedirectExceptionFilter } from '../../../core/filters/oauth-redirect.filter';
 import { AuthService } from '../auth.service';
 import { SendCodeCommand } from '../commands/send-code/send-code.command';
 import { VerifyCodeCommand } from '../commands/verify-code/verify-code.command';
 import { RefreshTokenCommand } from '../commands/refresh-token/refresh-token.command';
-import {
-  type SendCodeRequestDto,
-  sendCodeRequestSchema,
-} from '../commands/send-code/send-code.request.dto';
-import {
-  type VerifyCodeRequestDto,
-  verifyCodeRequestSchema,
-} from '../commands/verify-code/verify-code.request.dto';
-import {
-  type RefreshTokenRequestDto,
-  refreshTokenRequestSchema,
-} from '../commands/refresh-token/refresh-token.request.dto';
+import { SendCodeRequest } from '../dtos/send-code.request';
+import { VerifyCodeRequest } from '../dtos/verify-code.request';
+import { RefreshTokenRequest } from '../dtos/refresh-token.request';
 import { AuthenticationPrincipal } from '../../../core/decorators/authentication-principal.decorator';
 import type { UserPrincipal } from '../../../core/types/request';
 
@@ -50,8 +39,7 @@ export class AuthController {
   @Post('/auth/send-code')
   @AllowAnonymous()
   @Throttle({ default: { limit: 10 } })
-  @UsePipes(new ZodValidationPipe(sendCodeRequestSchema))
-  async sendCode(@Body() body: SendCodeRequestDto['body']) {
+  async sendCode(@Body() body: SendCodeRequest) {
     return this.commandBus.execute(new SendCodeCommand({ email: body.email }));
   }
 
@@ -62,10 +50,9 @@ export class AuthController {
   @Post('/auth/verify-code')
   @AllowAnonymous()
   @Throttle({ default: { limit: 5 } })
-  @UsePipes(new ZodValidationPipe(verifyCodeRequestSchema))
   async verifyCode(
     @Res({ passthrough: true }) res: Response,
-    @Body() body: VerifyCodeRequestDto['body'],
+    @Body() body: VerifyCodeRequest,
   ) {
     const { accessToken, refreshToken, role } = await this.commandBus.execute(
       new VerifyCodeCommand({ email: body.email, code: body.code }),
@@ -130,11 +117,10 @@ export class AuthController {
   @Post('/auth/refresh')
   @AllowAnonymous()
   @Throttle({ default: { limit: 50 } })
-  @UsePipes(new ZodValidationPipe(refreshTokenRequestSchema))
   async refreshToken(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
-    @Body() body: RefreshTokenRequestDto['body'],
+    @Body() body: RefreshTokenRequest,
   ) {
     const refreshToken =
       body?.refreshToken ?? (req.cookies?.lunisoft_refresh_token as string | undefined);

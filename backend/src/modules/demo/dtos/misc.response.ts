@@ -1,12 +1,12 @@
 import { Exclude, Expose, Transform, Type } from 'class-transformer';
 
-class PersonDto {
+class Person {
   @Expose()
   name: string;
 }
 
-export class DemoSerializeTestDto {
-  constructor(partial: Partial<DemoSerializeTestDto>) {
+export class DemoSerializeTestResponse {
+  constructor(partial: Partial<DemoSerializeTestResponse>) {
     Object.assign(this, partial);
   }
 
@@ -23,7 +23,7 @@ export class DemoSerializeTestDto {
   @Expose()
   age: number;
 
-  @Type(() => PersonDto)
+  @Type(() => Person)
   @Expose()
-  person: PersonDto;
+  person: Person;
 }

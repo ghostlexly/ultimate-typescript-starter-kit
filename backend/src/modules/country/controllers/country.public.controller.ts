@@ -1,10 +1,6 @@
-import { Controller, Get, Query, UsePipes } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { AllowAnonymous } from '../../../core/decorators/allow-anonymous.decorator';
-import { ZodValidationPipe } from '../../../core/pipes/zod-validation.pipe';
-import {
-  type GetAllCountriesRequestDto,
-  getAllCountriesRequestSchema,
-} from '../queries/get-all-countries/get-all-countries.request.dto';
+import { GetAllCountriesQuery } from '../dtos/get-all-countries.request';
 import { CountryService } from '../country.service';
 
 @Controller()
@@ -13,8 +9,7 @@ export class CountryPublicController {
   constructor(private readonly countryService: CountryService) {}
 
   @Get('/countries')
-  @UsePipes(new ZodValidationPipe(getAllCountriesRequestSchema))
-  getCountries(@Query() query: GetAllCountriesRequestDto['query']) {
+  getCountries(@Query() query: GetAllCountriesQuery) {
     return this.countryService.getAllCountries(query.language);
   }
 }

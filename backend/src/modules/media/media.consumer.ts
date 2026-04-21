@@ -3,19 +3,19 @@ import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { FfmpegService } from 'src/modules/shared/services/ffmpeg.service';
-import path from 'path';
-import os from 'os';
-import crypto from 'crypto';
+import path from 'node:path';
+import os from 'node:os';
+import crypto from 'node:crypto';
 import { S3Service } from '../shared/services/s3.service';
 
 @Processor('media')
 export class MediaConsumer extends WorkerHost {
-  private logger = new Logger(MediaConsumer.name);
+  private readonly logger = new Logger(MediaConsumer.name);
 
   constructor(
-    private db: DatabaseService,
-    private ffmpegService: FfmpegService,
-    private s3Service: S3Service,
+    private readonly db: DatabaseService,
+    private readonly ffmpegService: FfmpegService,
+    private readonly s3Service: S3Service,
   ) {
     super();
   }

@@ -13,8 +13,6 @@ import { LoginCodeRequestedEventHandler } from './events/login-code-requested/lo
 
 const CommandHandlers = [SendCodeHandler, VerifyCodeHandler, RefreshTokenHandler];
 
-const QueryHandlers = [];
-
 const EventHandlers = [LoginCodeRequestedEventHandler];
 
 @Module({
@@ -38,7 +36,6 @@ const EventHandlers = [LoginCodeRequestedEventHandler];
   controllers: [AuthController],
   providers: [
     ...CommandHandlers,
-    ...QueryHandlers,
     ...EventHandlers,
 
     AuthService,

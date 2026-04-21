@@ -1,9 +1,10 @@
 import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { Browser, BrowserContext, chromium, devices } from 'playwright';
+import { BusinessRuleException } from '../../../core/exceptions/business-rule.exception';
 
 @Injectable()
 export class PdfService implements OnModuleDestroy {
-  private logger = new Logger(PdfService.name);
+  private readonly logger = new Logger(PdfService.name);
   private browser?: Browser;
   private context?: BrowserContext;
 
@@ -47,38 +48,49 @@ export class PdfService implements OnModuleDestroy {
    * @param html - The HTML string to generate a PDF from
    * @param footerHtml - Optional HTML string for the footer
    */
-  htmlToPdf = async ({ html, footerHtml }: { html: string; footerHtml?: string }) => {
-    // Launch browser
-    const context = await this.getContext();
-    const page = await context.newPage();
+  convertHtmlToPdf = async ({
+    html,
+    footerHtml,
+  }: {
+    html: string;
+    footerHtml?: string;
+  }) => {
+    try {
+      // Launch browser
+      const browserContext = await this.getContext();
+      const page = await browserContext.newPage();
 
-    // Set content and wait for loading
-    await page.setContent(html, { waitUntil: 'load' });
+      // Set content and wait for loading
+      await page.setContent(html, { waitUntil: 'networkidle' });
 
-    // Wait for fonts to load
-    await page.evaluate(async () => {
-      await document.fonts.ready;
-    });
+      await page.waitForSelector('style', { state: 'attached', timeout: 10_000 });
 
-    // Generate PDF
-    const pdfBuffer = await page.pdf({
-      format: 'A4',
-      margin: {
-        top: '20px',
-        right: '20px',
-        bottom: '60px', // Increased bottom margin to accommodate footer
-        left: '20px',
-      },
-      printBackground: true,
-      displayHeaderFooter: !!footerHtml,
-      footerTemplate: footerHtml,
-      headerTemplate: '<div></div>', // Empty header template to avoid default header
-    });
+      // Generate PDF
+      const pdfBuffer = await page.pdf({
+        format: 'A4',
+        margin: {
+          top: '20px',
+          right: '20px',
+          bottom: '60px', // Increased bottom margin to accommodate footer
+          left: '20px',
+        },
+        printBackground: true,
+        displayHeaderFooter: !!footerHtml,
+        footerTemplate: footerHtml,
+        headerTemplate: '<div></div>', // Empty header template to avoid default header
+      });
 
-    // Close page
-    await page.close();
+      // Close page
+      await page.close();
 
-    return pdfBuffer;
+      return pdfBuffer;
+    } catch (error) {
+      this.logger.error(`Error converting HTML to PDF - ${error.message}`);
+      throw new BusinessRuleException({
+        code: 'PDF_CONVERSION_ERROR',
+        message: 'Failed to convert HTML to PDF',
+      });
+    }
   };
 
   /**

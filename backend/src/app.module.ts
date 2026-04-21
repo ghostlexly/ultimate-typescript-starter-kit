@@ -11,6 +11,7 @@ import { JwtAuthGuard } from './core/guards/jwt-auth.guard';
 import { RolesGuard } from './core/guards/roles.guard';
 import { ThrottlerBehindProxyGuard } from './core/guards/throttler-behind-proxy.guard';
 import { TrimStringsPipe } from './core/pipes/trim-strings.pipe';
+import { ClassValidatorPipe } from './core/pipes/validation.pipe';
 import { MediaModule } from './modules/media/media.module';
 import { DemoModule } from './modules/demo/demo.module';
 import { SharedModule } from './modules/shared/shared.module';
@@ -82,10 +83,14 @@ import { SeederModule } from './modules/seeder/seeder.module';
       useClass: UnhandledExceptionsFilter,
     },
 
-    // Pipes
+    // Pipes (executed in order — trim raw strings before running class-validator)
     {
       provide: APP_PIPE,
       useClass: TrimStringsPipe,
+    },
+    {
+      provide: APP_PIPE,
+      useClass: ClassValidatorPipe,
     },
   ],
   exports: [],

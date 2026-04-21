@@ -1,29 +1,21 @@
-import { Body, Controller, Get, Patch, UsePipes } from '@nestjs/common';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { Body, Controller, Get, Patch } from '@nestjs/common';
+import { CommandBus } from '@nestjs/cqrs';
 import { Roles } from '../../../core/decorators/roles.decorator';
-import { ZodValidationPipe } from '../../../core/pipes/zod-validation.pipe';
-import {
-  type UpdateCustomerInformationsRequestDto,
-  updateCustomerInformationsRequestSchema,
-} from '../commands/update-customer-informations/update-customer-informations.request.dto';
+import { UpdateCustomerInformationsRequest } from '../dtos/update-customer-informations.request';
 import { UpdateCustomerInformationsCommand } from '../commands/update-customer-informations/update-customer-informations.command';
-import { GetCustomerInformationsQuery } from '../queries/get-customer-informations/get-customer-informations.query';
+import { GetCustomerInformationsCommand } from '../commands/get-customer-informations/get-customer-informations.command';
 import { AuthenticationPrincipal } from '../../../core/decorators/authentication-principal.decorator';
 import type { UserPrincipal } from '../../../core/types/request';
 
 @Controller()
 @Roles(['CUSTOMER'])
 export class CustomerPublicController {
-  constructor(
-    private readonly commandBus: CommandBus,
-    private readonly queryBus: QueryBus,
-  ) {}
+  constructor(private readonly commandBus: CommandBus) {}
 
   @Patch('/customer/informations')
-  @UsePipes(new ZodValidationPipe(updateCustomerInformationsRequestSchema))
   async updateCustomerInformations(
     @AuthenticationPrincipal() principal: UserPrincipal,
-    @Body() body: UpdateCustomerInformationsRequestDto['body'],
+    @Body() body: UpdateCustomerInformationsRequest,
   ) {
     return this.commandBus.execute(
       new UpdateCustomerInformationsCommand({
@@ -35,8 +27,8 @@ export class CustomerPublicController {
 
   @Get('/customer/informations')
   async getCustomerInformations(@AuthenticationPrincipal() user: UserPrincipal) {
-    return this.queryBus.execute(
-      new GetCustomerInformationsQuery({ accountId: user.accountId }),
+    return this.commandBus.execute(
+      new GetCustomerInformationsCommand({ accountId: user.accountId }),
     );
   }
 }

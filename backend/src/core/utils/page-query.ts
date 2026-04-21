@@ -1,25 +1,14 @@
-import { z } from 'zod';
-
 /**
- * Zod schema for validating common pagination/query parameters
- * Used to validate query strings from HTTP requests
+ * Shape accepted by the pagination/query utilities. DTOs that want to expose
+ * pagination should extend `PageQueryDto` (see `src/core/dtos/page-query.dto.ts`)
+ * which provides the matching class-validator decorators.
  */
-export const pageQuerySchema = z
-  .object({
-    page: z.coerce.number().min(1).optional(), // Page number (1-indexed)
-    first: z.coerce.number().min(1).optional(), // Items per page
-    sort: z.string().optional(), // Sort string (e.g., 'name:asc,email:desc')
-    include: z.union([z.string(), z.array(z.string())]).optional(), // Relations to include
-  })
-  .partial();
-
-/**
- * TypeScript type inferred from the pageQuerySchema
- * Allows additional unknown properties for flexibility
- */
-export type PageQueryInput = z.infer<typeof pageQuerySchema> & {
-  [key: string]: unknown;
-};
+export interface PageQueryInput {
+  page?: number; // Page number (1-indexed)
+  first?: number; // Items per page
+  sort?: string; // Sort string (e.g., 'name:asc,email:desc')
+  include?: string | string[]; // Relations to include
+}
 
 /**
  * Valid sort directions for database queries
