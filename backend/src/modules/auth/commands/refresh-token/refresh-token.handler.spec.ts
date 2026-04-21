@@ -4,8 +4,8 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { RefreshTokenHandler } from './refresh-token.handler';
 import { RefreshTokenCommand } from './refresh-token.command';
 import { AuthService } from '../../auth.service';
-import { createMockSession } from 'src/__tests__/factories/session.factory';
-import { createMockAccount } from 'src/__tests__/factories/account.factory';
+import { createMockSession } from 'src/core/tests/factories/session.factory';
+import { createMockAccount } from 'src/core/tests/factories/account.factory';
 
 describe('RefreshTokenHandler', () => {
   let handler: RefreshTokenHandler;

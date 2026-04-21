@@ -23,15 +23,15 @@ export class S3Service {
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {
     this.client = new S3Client({
-      endpoint: this.configService.getOrThrow('API_S3_ENDPOINT'),
+      endpoint: this.configService.getOrThrow('APP_S3_ENDPOINT'),
       region: 'auto', // [ex for AWS: eu-west-3] [ex for Cloudflare: auto]
       credentials: {
-        accessKeyId: this.configService.getOrThrow('API_S3_ACCESS_KEY'),
-        secretAccessKey: this.configService.getOrThrow('API_S3_SECRET_KEY'),
+        accessKeyId: this.configService.getOrThrow('APP_S3_ACCESS_KEY'),
+        secretAccessKey: this.configService.getOrThrow('APP_S3_SECRET_KEY'),
       },
     });
 
-    this.bucketName = this.configService.getOrThrow('API_S3_BUCKET');
+    this.bucketName = this.configService.getOrThrow('APP_S3_BUCKET');
   }
 
   private readonly client: S3Client;

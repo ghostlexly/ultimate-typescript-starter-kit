@@ -7,7 +7,7 @@ import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { AuthService } from '../../auth.service';
 import { EventBus } from '@nestjs/cqrs';
 import { LoginCodeRequestedEvent } from '../../events/login-code-requested/login-code-requested.event';
-import { createMockAccount } from '../../../../__tests__/factories/account.factory';
+import { createMockAccount } from '../../../../core/tests/factories/account.factory';
 
 describe('SendCodeHandler', () => {
   let handler: SendCodeHandler;

@@ -9,7 +9,7 @@ import { CountryService } from '../country.service';
 
 @Controller()
 @AllowAnonymous()
-export class CountryController {
+export class CountryPublicController {
   constructor(private readonly countryService: CountryService) {}
 
   @Get('/countries')

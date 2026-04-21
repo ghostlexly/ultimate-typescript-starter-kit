@@ -9,8 +9,6 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { BasicCommandRunner } from './commands/basic.command';
 import { CreateAdminAccountCommandRunner } from './commands/create-admin-account.command';
 import { GenerateJwtKeysCommandRunner } from './commands/generate-jwt-keys.command';
-import { SeedCommandRunner } from './commands/seed.command';
-import { UsersSeeder } from './seeders/users.seeder';
 
 @Module({
   imports: [
@@ -24,7 +22,7 @@ import { UsersSeeder } from './seeders/users.seeder';
     BullModule.forRoot({
       connection: {
         host: process.env.APP_REDIS_HOST,
-        port: parseInt(process.env.APP_REDIS_PORT ?? '6379'),
+        port: Number.parseInt(process.env.APP_REDIS_PORT ?? '6379'),
       },
     }),
     CqrsModule.forRoot(),
@@ -35,13 +33,9 @@ import { UsersSeeder } from './seeders/users.seeder';
   ],
   providers: [
     // Commands
-    SeedCommandRunner,
     BasicCommandRunner,
     CreateAdminAccountCommandRunner,
     GenerateJwtKeysCommandRunner,
-
-    // Seeders
-    UsersSeeder,
   ],
 })
 export class CliModule {}

@@ -1,4 +1,4 @@
-import { Session } from '../../generated/prisma/client';
+import { Session } from '../../../generated/prisma/client';
 
 export function createMockSession(overrides: Partial<Session> = {}): Session {
   return {

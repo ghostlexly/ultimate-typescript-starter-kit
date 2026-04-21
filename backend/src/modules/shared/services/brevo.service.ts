@@ -7,7 +7,7 @@ export class BrevoService {
   private readonly apiKey: string;
 
   constructor(private readonly configService: ConfigService) {
-    this.apiKey = this.configService.getOrThrow('API_BREVO_API_KEY');
+    this.apiKey = this.configService.getOrThrow('APP_BREVO_KEY');
   }
 
   sendEmailTemplate = async ({

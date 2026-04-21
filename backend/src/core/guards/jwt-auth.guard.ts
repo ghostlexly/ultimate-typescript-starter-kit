@@ -5,7 +5,7 @@ import { ALLOW_ANONYMOUS_KEY } from 'src/core/decorators/allow-anonymous.decorat
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
-  constructor(private reflector: Reflector) {
+  constructor(private readonly reflector: Reflector) {
     super();
   }
 

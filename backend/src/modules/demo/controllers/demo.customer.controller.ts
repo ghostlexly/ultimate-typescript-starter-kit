@@ -1,7 +1,7 @@
 import { Controller, Get, UnauthorizedException } from '@nestjs/common';
 import { Roles } from '../../../core/decorators/roles.decorator';
-import { CurrentUser } from '../../../core/decorators/current-user.decorator';
-import type { RequestUser } from '../../../core/types/request';
+import { AuthenticationPrincipal } from '../../../core/decorators/authentication-principal.decorator';
+import type { UserPrincipal } from '../../../core/types/request';
 import { DatabaseService } from '../../shared/services/database.service';
 
 @Controller()
@@ -10,7 +10,7 @@ export class DemoCustomerController {
   constructor(private readonly db: DatabaseService) {}
 
   @Get('/demos/protected-route-customer')
-  async protectedRouteCustomer(@CurrentUser() user: RequestUser) {
+  async protectedRouteCustomer(@AuthenticationPrincipal() user: UserPrincipal) {
     const customer = await this.db.prisma.customer.findFirst({
       where: { accountId: user.accountId },
     });

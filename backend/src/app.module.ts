@@ -19,6 +19,7 @@ import { CustomerModule } from './modules/customer/customer.module';
 import { CountryModule } from './modules/country/country.module';
 import { LoggerModule } from './core/logger/logger.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { SeederModule } from './modules/seeder/seeder.module';
 
 @Global()
 @Module({
@@ -36,7 +37,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     BullModule.forRoot({
       connection: {
         host: process.env.APP_REDIS_HOST,
-        port: parseInt(process.env.APP_REDIS_PORT ?? '6379'),
+        port: Number.parseInt(process.env.APP_REDIS_PORT ?? '6379'),
       },
     }),
     ThrottlerModule.forRoot({
@@ -53,6 +54,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 
     // -- Business Modules
     SharedModule,
+    SeederModule,
     CountryModule,
     DemoModule,
     AuthModule,

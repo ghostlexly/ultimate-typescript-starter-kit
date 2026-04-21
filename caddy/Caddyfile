@@ -1,10 +1,15 @@
 {
     # Disable admin API for security
     admin off
+    debug
+    log {
+        output stdout
+        format console
+    }
 }
 
-# Shared configuration snippet
-(common) {
+# Hosts
+localhost, http://tunnel.lunisoft.fr {
     # File upload size limit - 100MB for large file uploads
     request_body {
         max_size 100MB
@@ -30,14 +35,14 @@
         minimum_length 1024
     }
 
-    # API routes -> ExpressJS backend
+    # API routes -> Backend
     handle /api/* {
-        reverse_proxy backend:3000
+        reverse_proxy ts-starter-backend:3000
     }
 
-    # All other routes -> NextJS frontend
+    # All other routes -> Frontend
     handle {
-        reverse_proxy frontend:3000
+        reverse_proxy ts-starter-frontend:3000
     }
 
     # Error handling
@@ -47,22 +52,4 @@
             respond "Service temporarily unavailable" 503
         }
     }
-}
-
-# Local development (HTTP only)
-
-:80 {
-    import common
-}
-
-# Local development (self-signed certificates)
-
-localhost:443 {
-    tls internal
-    import common
-}
-
-# Production
-dispomenage.fr, www.dispomenage.fr {
-    import common
 }

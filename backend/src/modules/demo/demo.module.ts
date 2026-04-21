@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
 import { DemoConsumer } from './demo.consumer';
-import { DemoController } from './controllers/demo.controller';
+import { DemoPublicController } from './controllers/demo.public.controller';
 import { DemoCustomerController } from './controllers/demo.customer.controller';
 import { TestPlayerHandler } from './commands/test-player/test-player.handler';
 import { LaunchQueueHandler } from './commands/launch-queue/launch-queue.handler';
@@ -19,7 +19,7 @@ const QueryHandlers = [FindAllAccountsHandler, GetPaginatedDataHandler];
       name: 'demo',
     }),
   ],
-  controllers: [DemoController, DemoCustomerController],
+  controllers: [DemoPublicController, DemoCustomerController],
   providers: [DemoConsumer, ...CommandHandlers, ...QueryHandlers],
 })
 export class DemoModule {}

@@ -8,12 +8,12 @@ import {
 } from '../commands/update-customer-informations/update-customer-informations.request.dto';
 import { UpdateCustomerInformationsCommand } from '../commands/update-customer-informations/update-customer-informations.command';
 import { GetCustomerInformationsQuery } from '../queries/get-customer-informations/get-customer-informations.query';
-import { CurrentUser } from '../../../core/decorators/current-user.decorator';
-import type { RequestUser } from '../../../core/types/request';
+import { AuthenticationPrincipal } from '../../../core/decorators/authentication-principal.decorator';
+import type { UserPrincipal } from '../../../core/types/request';
 
 @Controller()
 @Roles(['CUSTOMER'])
-export class CustomerCustomerController {
+export class CustomerPublicController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
@@ -22,19 +22,19 @@ export class CustomerCustomerController {
   @Patch('/customer/informations')
   @UsePipes(new ZodValidationPipe(updateCustomerInformationsRequestSchema))
   async updateCustomerInformations(
-    @CurrentUser() user: RequestUser,
+    @AuthenticationPrincipal() principal: UserPrincipal,
     @Body() body: UpdateCustomerInformationsRequestDto['body'],
   ) {
     return this.commandBus.execute(
       new UpdateCustomerInformationsCommand({
-        accountId: user.accountId,
+        accountId: principal.accountId,
         countryCode: body.countryCode,
       }),
     );
   }
 
   @Get('/customer/informations')
-  async getCustomerInformations(@CurrentUser() user: RequestUser) {
+  async getCustomerInformations(@AuthenticationPrincipal() user: UserPrincipal) {
     return this.queryBus.execute(
       new GetCustomerInformationsQuery({ accountId: user.accountId }),
     );

@@ -1,4 +1,4 @@
-export interface RequestUser {
+export interface UserPrincipal {
   sessionId: string;
   role: string;
   accountId: string;
@@ -13,6 +13,6 @@ declare global {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-    interface User extends RequestUser {}
+    interface User extends UserPrincipal {}
   }
 }

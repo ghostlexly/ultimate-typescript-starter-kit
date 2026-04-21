@@ -5,8 +5,8 @@ import { VerifyCodeHandler } from './verify-code.handler';
 import { VerifyCodeCommand } from './verify-code.command';
 import { DatabaseService } from 'src/modules/shared/services/database.service';
 import { AuthService } from '../../auth.service';
-import { createMockAccount } from 'src/__tests__/factories/account.factory';
-import { createMockSession } from 'src/__tests__/factories/session.factory';
+import { createMockAccount } from 'src/core/tests/factories/account.factory';
+import { createMockSession } from 'src/core/tests/factories/session.factory';
 
 describe('VerifyCodeHandler', () => {
   let handler: VerifyCodeHandler;
@@ -74,9 +74,7 @@ describe('VerifyCodeHandler', () => {
 
     // ===== Act & Assert
     await expect(
-      handler.execute(
-        new VerifyCodeCommand({ email: 'test@test.com', code: '9999' }),
-      ),
+      handler.execute(new VerifyCodeCommand({ email: 'test@test.com', code: '9999' })),
     ).rejects.toThrow(BadRequestException);
   });
 

@@ -7,7 +7,7 @@ import { UpdateCustomerInformationsHandler } from './commands/update-customer-in
 import { GetCustomerInformationsHandler } from './queries/get-customer-informations/get-customer-informations.handler';
 import { CustomerController } from './controllers/customer.controller';
 import { CustomerAdminController } from './controllers/customer.admin.controller';
-import { CustomerCustomerController } from './controllers/customer.customer.controller';
+import { CustomerPublicController } from './controllers/customer.public.controller';
 import { AdminCreateCustomerHandler } from './commands/admin-create-customer/admin-create-customer.handler';
 
 const CommandHandlers = [
@@ -20,7 +20,7 @@ const QueryHandlers = [GetCustomerInformationsHandler];
 
 @Module({
   imports: [AuthModule, CountryModule],
-  controllers: [CustomerController, CustomerAdminController, CustomerCustomerController],
+  controllers: [CustomerController, CustomerAdminController, CustomerPublicController],
   providers: [CustomerService, ...CommandHandlers, ...QueryHandlers],
 })
 export class CustomerModule {}

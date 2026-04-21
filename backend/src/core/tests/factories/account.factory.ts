@@ -1,4 +1,4 @@
-import { Account } from '../../generated/prisma/client';
+import { Account } from '../../../generated/prisma/client';
 
 export function createMockAccount(overrides: Partial<Account> = {}): Account {
   return {

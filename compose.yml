@@ -1,85 +1,89 @@
 services:
-  backend:
-    image: lunisoft/terracapital:backend
-    build:
-      context: ./backend
+  ts-starter-postgres:
+    image: postgres:17.9
     environment:
-      - NODE_ENV=production
-      - FORCE_COLOR=1
-      - DISPLAY=${X11_DISPLAY}
-      - APP_PORT=${APP_PORT}
-      - APP_BASE_URL=${APP_BASE_URL}
-      - APP_DATABASE_CONNECTION_URL=${APP_DATABASE_CONNECTION_URL}
-      - APP_REDIS_HOST=${APP_REDIS_HOST}
-      - APP_REDIS_PORT=${APP_REDIS_PORT}
-      - APP_JWT_PRIVATE_KEY=${APP_JWT_PRIVATE_KEY}
-      - APP_JWT_PUBLIC_KEY=${APP_JWT_PUBLIC_KEY}
-      - API_S3_ENDPOINT=${API_S3_ENDPOINT}
-      - API_S3_ACCESS_KEY=${API_S3_ACCESS_KEY}
-      - API_S3_SECRET_KEY=${API_S3_SECRET_KEY}
-      - API_S3_BUCKET=${API_S3_BUCKET}
-      - API_GOOGLE_CLIENT_ID=${API_GOOGLE_CLIENT_ID}
-      - API_GOOGLE_CLIENT_SECRET=${API_GOOGLE_CLIENT_SECRET}
-      - APP_PLAYWRIGHT_HEADLESS=${APP_PLAYWRIGHT_HEADLESS}
-      - API_BREVO_API_KEY=${API_BREVO_API_KEY}
+      POSTGRES_USER: lunisoft
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ts-starter
+    expose:
+      - "5432"
+    ports:
+      - "127.0.0.1:5432:5432" # Bind to 127.0.0.1 to prevents remote connections to the database
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U lunisoft -d ts-starter" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - lunisoft
+
+  ts-starter-redis:
+    image: redis:8.6.2-alpine
+    expose:
+      - "6379"
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - lunisoft
+
+  ts-starter-backend:
+    image: lunisoft/terracapital:backend
+    build: ./backend
+    environment:
+      NODE_ENV: production
+      FORCE_COLOR: 1
+      DISPLAY: ${X11_DISPLAY}
+      APP_PORT: ${APP_PORT}
+      APP_BASE_URL: ${APP_BASE_URL}
+      APP_DATABASE_CONNECTION_URL: ${APP_DATABASE_CONNECTION_URL}
+      APP_REDIS_HOST: ${APP_REDIS_HOST}
+      APP_REDIS_PORT: ${APP_REDIS_PORT}
+      APP_JWT_PRIVATE_KEY: ${APP_JWT_PRIVATE_KEY}
+      APP_JWT_PUBLIC_KEY: ${APP_JWT_PUBLIC_KEY}
+      APP_S3_ENDPOINT: ${APP_S3_ENDPOINT}
+      APP_S3_ACCESS_KEY: ${APP_S3_ACCESS_KEY}
+      APP_S3_SECRET_KEY: ${APP_S3_SECRET_KEY}
+      APP_S3_BUCKET: ${APP_S3_BUCKET}
+      APP_GOOGLE_CLIENT_ID: ${APP_GOOGLE_CLIENT_ID}
+      APP_GOOGLE_CLIENT_SECRET: ${APP_GOOGLE_CLIENT_SECRET}
+      APP_PLAYWRIGHT_HEADLESS: ${APP_PLAYWRIGHT_HEADLESS}
+      APP_BREVO_KEY: ${APP_BREVO_KEY}
+    expose:
+      - "3000"
+    depends_on:
+      ts-starter-postgres:
+        condition: service_healthy
+      ts-starter-redis:
+        condition: service_started
     volumes:
       - ./backend/logs:/usr/src/app/logs
-    depends_on:
-      - postgres
-      - redis
     tty: true
-    restart: unless-stopped
+    networks:
+      - lunisoft
 
-  frontend:
+  ts-starter-frontend:
     image: lunisoft/terracapital:frontend
-    build:
-      context: ./frontend
+    build: ./frontend
     environment:
       - NODE_ENV=production
-    restart: unless-stopped
-
-  caddy:
-    image: lunisoft/terracapital:caddy
-    build:
-      context: ./caddy
-    ports:
-      - mode: host
-        protocol: tcp
-        published: 80
-        target: 80
-      - mode: host
-        protocol: tcp
-        published: 443
-        target: 443
-    volumes:
-      - caddy_data:/data
-      - caddy_config:/config
-    depends_on:
-      - backend
-      - frontend
-    restart: unless-stopped
-
-  redis:
-    image: redis:8.2.2
-    command: redis-server --save 60 1 --loglevel warning
-    volumes:
-      - redis_data:/data
-    restart: unless-stopped
-
-  postgres:
-    image: postgres:17.2
-    ports:
-      - "127.0.0.1:5432:5432"
-    environment:
-      - POSTGRES_USER=lunisoft
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${PROJECT_NAME}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    restart: unless-stopped
+    expose:
+      - "3000"
+    healthcheck:
+      test: "curl -s http://localhost:3000 || exit 1"
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - lunisoft
 
 volumes:
-  postgres_data:
-  redis_data:
-  caddy_data:
-  caddy_config:
+  postgres-data:
+  redis-data:
+
+networks:
+  lunisoft:
+    external: true

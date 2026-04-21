@@ -1,29 +1,31 @@
 services:
-  backend:
+  caddy:
+    build: ./caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      - lunisoft
+
+  ts-starter-backend:
     command: npm run start:dev
     environment:
-      - NODE_ENV=development
+      NODE_ENV: development
     volumes:
       - ./backend:/usr/src/app
       - /usr/src/app/node_modules
 
-  frontend:
+  ts-starter-frontend:
     command: npm run dev
     environment:
-      - NODE_ENV=development
+      NODE_ENV: development
     volumes:
       - ./frontend:/usr/src/app
       - /usr/src/app/node_modules
 
-  caddy:
-    volumes:
-      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
-
-  redis-commander:
-    image: ghcr.io/joeferner/redis-commander:latest
-    environment:
-      - REDIS_HOST=${APP_REDIS_HOST}
-      - REDIS_PORT=${APP_REDIS_PORT}
-      - REDIS_PASSWORD=GhostLexly.7
-    ports:
-      - "8081:8081"
+volumes:
+  caddy-data:
+  caddy-config:

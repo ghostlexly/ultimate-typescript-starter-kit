@@ -1,11 +1,11 @@
 import { Test } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { DatabaseService } from '../shared/services/database.service';
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import bcrypt from 'bcrypt';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { createMockSession } from 'src/__tests__/factories/session.factory';
-import { createMockAccount } from 'src/__tests__/factories/account.factory';
+import { createMockSession } from 'src/core/tests/factories/session.factory';
+import { createMockAccount } from 'src/core/tests/factories/account.factory';
 
 function createMockJwtPayload(overrides = {}): any {
   const fakeSession = createMockSession();
@@ -286,9 +286,7 @@ describe('AuthService', () => {
 
     it('should return invalid when no active token exists', async () => {
       // ===== Arrange
-      db.prisma.account.findFirst.mockResolvedValue(
-        createMockAccount() as any,
-      );
+      db.prisma.account.findFirst.mockResolvedValue(createMockAccount() as any);
       db.prisma.verificationToken.findFirst.mockResolvedValue(null);
 
       // ===== Act
@@ -328,9 +326,7 @@ describe('AuthService', () => {
 
     it('should increment attempts on wrong code', async () => {
       // ===== Arrange
-      db.prisma.account.findFirst.mockResolvedValue(
-        createMockAccount() as any,
-      );
+      db.prisma.account.findFirst.mockResolvedValue(createMockAccount() as any);
       db.prisma.verificationToken.findFirst.mockResolvedValue({
         id: 'token-123',
         token: '1234',
@@ -359,9 +355,7 @@ describe('AuthService', () => {
 
     it('should invalidate token when max attempts reached', async () => {
       // ===== Arrange
-      db.prisma.account.findFirst.mockResolvedValue(
-        createMockAccount() as any,
-      );
+      db.prisma.account.findFirst.mockResolvedValue(createMockAccount() as any);
       db.prisma.verificationToken.findFirst.mockResolvedValue({
         id: 'token-123',
         token: '1234',

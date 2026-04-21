@@ -33,8 +33,8 @@ import {
   type RefreshTokenRequestDto,
   refreshTokenRequestSchema,
 } from '../commands/refresh-token/refresh-token.request.dto';
-import { CurrentUser } from '../../../core/decorators/current-user.decorator';
-import type { RequestUser } from '../../../core/types/request';
+import { AuthenticationPrincipal } from '../../../core/decorators/authentication-principal.decorator';
+import type { UserPrincipal } from '../../../core/types/request';
 
 @Controller()
 export class AuthController {
@@ -52,9 +52,7 @@ export class AuthController {
   @Throttle({ default: { limit: 10 } })
   @UsePipes(new ZodValidationPipe(sendCodeRequestSchema))
   async sendCode(@Body() body: SendCodeRequestDto['body']) {
-    return this.commandBus.execute(
-      new SendCodeCommand({ email: body.email }),
-    );
+    return this.commandBus.execute(new SendCodeCommand({ email: body.email }));
   }
 
   /**
@@ -147,10 +145,9 @@ export class AuthController {
       );
     }
 
-    const { accessToken, refreshToken: newRefreshToken } =
-      await this.commandBus.execute(
-        new RefreshTokenCommand({ refreshToken }),
-      );
+    const { accessToken, refreshToken: newRefreshToken } = await this.commandBus.execute(
+      new RefreshTokenCommand({ refreshToken }),
+    );
 
     this.authService.setAuthCookies({
       res,
@@ -165,7 +162,7 @@ export class AuthController {
   }
 
   @Get('/auth/me')
-  getMe(@CurrentUser() user: RequestUser) {
+  getMe(@AuthenticationPrincipal() user: UserPrincipal) {
     return {
       accountId: user.accountId,
       email: user.email,

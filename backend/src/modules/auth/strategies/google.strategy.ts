@@ -10,16 +10,16 @@ import { authConstants } from '../auth.constants';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
-  private logger = new Logger(GoogleStrategy.name);
+  private readonly logger = new Logger(GoogleStrategy.name);
   private readonly appBaseUrl: string;
 
   constructor(
-    private db: DatabaseService,
+    private readonly db: DatabaseService,
     configService: ConfigService,
   ) {
     super({
-      clientID: configService.getOrThrow<string>('API_GOOGLE_CLIENT_ID'),
-      clientSecret: configService.getOrThrow<string>('API_GOOGLE_CLIENT_SECRET'),
+      clientID: configService.getOrThrow<string>('APP_GOOGLE_CLIENT_ID'),
+      clientSecret: configService.getOrThrow<string>('APP_GOOGLE_CLIENT_SECRET'),
       callbackURL: `${configService.getOrThrow<string>('APP_BASE_URL')}/api/auth/google/callback`,
       scope: ['email', 'profile'],
     });

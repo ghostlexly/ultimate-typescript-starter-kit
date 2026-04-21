@@ -41,11 +41,11 @@ import {
   type DemoGetPaginatedDataDto,
   demoGetPaginatedDataSchema,
 } from '../queries/get-paginated-data/get-paginated-data.request.dto';
-import { CurrentUser } from '../../../core/decorators/current-user.decorator';
-import type { RequestUser } from '../../../core/types/request';
+import { AuthenticationPrincipal } from '../../../core/decorators/authentication-principal.decorator';
+import type { UserPrincipal } from '../../../core/types/request';
 
 @Controller()
-export class DemoController {
+export class DemoPublicController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
@@ -229,13 +229,13 @@ export class DemoController {
   }
 
   @Get('/demos/protected-route')
-  protectedRoute(@CurrentUser() user: RequestUser) {
+  protectedRoute(@AuthenticationPrincipal() principal: UserPrincipal) {
     return {
       message: 'Protected route.',
-      sessionId: user.sessionId,
-      role: user.role,
-      accountId: user.accountId,
-      email: user.email,
+      sessionId: principal.sessionId,
+      role: principal.role,
+      accountId: principal.accountId,
+      email: principal.email,
     };
   }
 }

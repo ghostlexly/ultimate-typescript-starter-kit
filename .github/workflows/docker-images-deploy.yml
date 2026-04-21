@@ -41,7 +41,7 @@ jobs:
 
       - name: Create environment file(s)
         run: |
-          echo "${{ secrets.ENV_FILE }}" > .env
+          echo "${{ secrets.ENV }}" > .env
 
       - name: Login to docker registry
         uses: docker/login-action@v2
@@ -109,20 +109,6 @@ jobs:
 
             # Start new containers
             sudo docker compose up -d
-
-            # Wait for PostgreSQL server readiness with timeout
-            echo "Waiting for PostgreSQL server readiness..."
-            ATTEMPTS=0
-            until sudo docker compose exec postgres pg_isready -h localhost -U lunisoft -d dispomenage; do
-              ATTEMPTS=$((ATTEMPTS+1))
-              if [ "$ATTEMPTS" -ge 60 ]; then
-                echo "PostgreSQL did not become ready in time" >&2
-                exit 1
-              fi
-              echo "PostgreSQL not ready yet ($ATTEMPTS) - waiting..."
-              sleep 2
-            done
-            echo "PostgreSQL is ready!"
 
       - name: Run migrations on production server
         uses: appleboy/ssh-action@master

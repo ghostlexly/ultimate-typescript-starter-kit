@@ -1,4 +1,4 @@
-import { VerificationToken } from '../../generated/prisma/client';
+import { VerificationToken } from '../../../generated/prisma/client';
 
 export function createMockVerificationToken(
   overrides: Partial<VerificationToken> = {},
