@@ -6,9 +6,9 @@ import {
   S3Client,
   StorageClass,
 } from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import fs from 'node:fs/promises';
-import { createWriteStream } from 'node:fs';
+import { createReadStream, createWriteStream } from 'node:fs';
 import path from 'node:path';
 import { ConfigService } from '@nestjs/config';
 import { FilesService } from './files.service';
@@ -59,7 +59,6 @@ export class S3Service {
     mimeType: string;
     storageClass?: StorageClass;
   }) => {
-    const buffer = await fs.readFile(filePath);
     const normalizedFileName = this.filesService.getNormalizedFileName(fileName);
 
     const key = path.join(
@@ -69,16 +68,21 @@ export class S3Service {
       normalizedFileName,
     );
 
-    // -- Save to S3
-    await this.client.send(
-      new PutObjectCommand({
+    // Stream the file to S3 via multipart upload to avoid loading
+    // the entire payload into memory (and to keep the event loop free
+    // of large synchronous checksum hashing on big buffers).
+    const upload = new Upload({
+      client: this.client,
+      params: {
         Bucket: this.bucketName,
         Key: key,
-        Body: buffer,
+        Body: createReadStream(filePath),
         StorageClass: storageClass,
         ContentType: mimeType,
-      }),
-    );
+      },
+    });
+
+    await upload.done();
 
     return key;
   };
