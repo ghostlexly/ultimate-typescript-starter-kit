@@ -23,7 +23,7 @@ export class UploadVideoHandler implements ICommandHandler<UploadVideoCommand> {
       originalFileName: file.originalname,
     });
 
-    await this.mediaQueue.add('optimizeVideo', { mediaId: media.id });
+    await this.mediaQueue.add('optimizeVideo', { mediaId: media.id }, { attempts: 3 });
 
     return {
       status: 'success',

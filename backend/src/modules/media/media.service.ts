@@ -76,7 +76,9 @@ export class MediaService {
     });
 
     if (!allowedMimeTypes.includes(fileInfos.mimeType)) {
-      throw new UnsupportedMediaTypeException('This file type is not supported.');
+      throw new UnsupportedMediaTypeException(
+        `This file type ${fileInfos.mimeType} is not supported.`,
+      );
     }
 
     if (file.size > maxFileSizeInBytes) {
