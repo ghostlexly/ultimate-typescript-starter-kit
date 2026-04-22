@@ -1,8 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import {
-  DatabaseService,
-  PrismaTransactionClient,
-} from '../../shared/services/database.service';
+import { DatabaseService, PrismaTx } from '../../shared/services/database.service';
 import { AuthService } from '../../auth/auth.service';
 import { ConfigService } from '@nestjs/config';
 
@@ -31,7 +28,7 @@ export class DevDataSeeder {
     this.logger.log('Development data seeding complete');
   }
 
-  private async seedCustomer({ tx }: { tx: PrismaTransactionClient }): Promise<void> {
+  private async seedCustomer({ tx }: { tx: PrismaTx }): Promise<void> {
     // If the admin already exists, return
     const customerExists = await tx.account.count({
       where: {

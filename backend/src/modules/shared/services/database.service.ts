@@ -33,7 +33,7 @@ class ExtendedPrismaClient extends PrismaClient {
   }
 }
 
-export type PrismaTransactionClient = Omit<
+export type PrismaTx = Omit<
   ExtendedPrismaClient,
   | '$extends'
   | '$transaction'

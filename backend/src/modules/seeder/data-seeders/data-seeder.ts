@@ -1,8 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import {
-  DatabaseService,
-  PrismaTransactionClient,
-} from '../../shared/services/database.service';
+import { DatabaseService, PrismaTx } from '../../shared/services/database.service';
 import { AuthService } from '../../auth/auth.service';
 
 @Injectable()
@@ -22,7 +19,7 @@ export class DataSeeder {
     this.logger.log('Production data seeding complete');
   }
 
-  private async seedAdmin({ tx }: { tx: PrismaTransactionClient }): Promise<void> {
+  private async seedAdmin({ tx }: { tx: PrismaTx }): Promise<void> {
     // If the admin already exists, return
     const adminExists = await tx.account.count({
       where: {
