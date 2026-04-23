@@ -1,7 +1,7 @@
 import { utilities as nestWinstonModuleUtilities } from 'nest-winston';
 import * as winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
-import { join } from 'path';
+import { join } from 'node:path';
 
 // Custom format to reorder JSON properties (timestamp and message first)
 const orderedJson = winston.format((info) => {
@@ -42,7 +42,7 @@ export const createWinstonConfig = () => {
       format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.ms(),
-        nestWinstonModuleUtilities.format.nestLike('FodmapFacile', {
+        nestWinstonModuleUtilities.format.nestLike('LUNISOFT', {
           colors: true,
           prettyPrint: true,
           processId: false,
@@ -63,13 +63,11 @@ export const createWinstonConfig = () => {
    *
    * When you set level: 'warn', that transport will log messages at warn level and above (i.e., warn + error).
    */
-  transports.push(
-    // All logs
-    createRotateTransport('combined-%DATE%.log', 'debug'),
+  // All logs
+  transports.push(createRotateTransport('combined-%DATE%.log', 'debug'));
 
-    // Only errors & warnings
-    createRotateTransport('warn-%DATE%.log', 'warn'),
-  );
+  // Only errors & warnings
+  transports.push(createRotateTransport('warn-%DATE%.log', 'warn'));
 
   return {
     transports,

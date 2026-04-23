@@ -47,6 +47,7 @@ export class DevDataSeeder {
 
     await tx.customer.create({
       data: {
+        countryCode: 'FR',
         account: {
           create: {
             role: 'CUSTOMER',

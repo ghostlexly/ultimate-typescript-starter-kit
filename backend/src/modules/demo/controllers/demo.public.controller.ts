@@ -33,10 +33,10 @@ import { LaunchQueueCommand } from '../commands/launch-queue/launch-queue.comman
 import { KillDragonCommand } from '../commands/kill-dragon/kill-dragon.command';
 import { FindAllAccountsCommand } from '../commands/find-all-accounts/find-all-accounts.command';
 import { GetPaginatedDataCommand } from '../commands/get-paginated-data/get-paginated-data.command';
-import { AuthenticationPrincipal } from '../../../core/decorators/authentication-principal.decorator';
-import type { UserPrincipal } from '../../../core/types/request';
+import { DbTransactionCommand } from '../commands/db-transaction/db-transaction.command';
 
-@Controller()
+@Controller('demos')
+@AllowAnonymous()
 export class DemoPublicController {
   constructor(
     private readonly commandBus: CommandBus,
@@ -44,47 +44,51 @@ export class DemoPublicController {
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
-  @Get('/demos')
-  @AllowAnonymous()
+  @Get()
   async findAllAccounts() {
     return this.commandBus.execute(new FindAllAccountsCommand());
   }
 
-  @Post('/demos')
-  @AllowAnonymous()
+  @Get('db-transaction')
+  async testDbTransaction() {
+    await this.commandBus.execute(new DbTransactionCommand('lunisoft'));
+
+    return {
+      message: 'Database transaction test completed successfully',
+    };
+  }
+
+  @Post()
   testPlayer(@Body() body: TestPlayerBody, @Query() query: TestPlayerQuery) {
-    return this.commandBus.execute(new TestPlayerCommand({ ...body, ...query }));
+    return this.commandBus.execute(
+      new TestPlayerCommand(body.name, body.age, body.person, query.id),
+    );
   }
 
-  @Get('/demos/paginated-data')
-  @AllowAnonymous()
+  @Get('paginated-data')
   async getPaginatedData(@Query() query: GetPaginatedDataQuery) {
-    return this.commandBus.execute(new GetPaginatedDataCommand({ query }));
+    return this.commandBus.execute(
+      new GetPaginatedDataCommand({
+        query,
+      }),
+    );
   }
 
-  @Get('/demos/queue-launch')
-  @AllowAnonymous()
+  @Get('queue-launch')
   async queueLaunch() {
     return this.commandBus.execute(new LaunchQueueCommand());
   }
 
-  @Post('/demos/cqrs-kill-dragon')
-  @AllowAnonymous()
+  @Post('cqrs-kill-dragon')
   async killDragon() {
-    const response = await this.commandBus.execute(
-      new KillDragonCommand({
-        dragonId: '17',
-        heroId: '20',
-      }),
-    );
+    const response = await this.commandBus.execute(new KillDragonCommand(17, 20));
 
     return {
       message: `The dragon #${response.dragonId} has been killed by #${response.heroId}, confirmation: ${response.killed}.`,
     };
   }
 
-  @Get('/demos/serialize-with-class')
-  @AllowAnonymous()
+  @Get('serialize-with-class')
   @UseInterceptors(ClassSerializerInterceptor)
   serializeWithClass() {
     return new DemoSerializeTestResponse({
@@ -95,8 +99,7 @@ export class DemoPublicController {
     });
   }
 
-  @Get('/demos/serialize-with-options')
-  @AllowAnonymous()
+  @Get('serialize-with-options')
   @UseInterceptors(ClassSerializerInterceptor)
   @SerializeOptions({
     type: DemoSerializeTestResponse,
@@ -114,16 +117,14 @@ export class DemoPublicController {
     };
   }
 
-  @Get('/demos/public-route')
-  @AllowAnonymous()
+  @Get('public-route')
   publicRoute() {
     return {
       message: 'Public route.',
     };
   }
 
-  @Get('/demos/strict-throttler')
-  @AllowAnonymous()
+  @Get('strict-throttler')
   @Throttle({ default: { limit: 10 } })
   strictThrottler() {
     return {
@@ -131,14 +132,12 @@ export class DemoPublicController {
     };
   }
 
-  @Get('/demos/throw-unhandled-error')
-  @AllowAnonymous()
+  @Get('throw-unhandled-error')
   throwUnhandledError() {
     throw new Error('Unhandled error');
   }
 
-  @Get('/demos/pdf-generation')
-  @AllowAnonymous()
+  @Get('pdf-generation')
   async testPdfGeneration(@Res() res: Response) {
     const template = await fs.readFile(
       path.join(process.cwd(), 'dist', 'views', 'invoice.hbs'),
@@ -181,8 +180,7 @@ export class DemoPublicController {
     return res.send(pdfBuffer);
   }
 
-  @Get('/demos/cached-by-interceptor')
-  @AllowAnonymous()
+  @Get('cached-by-interceptor')
   @UseInterceptors(CacheInterceptor)
   @CacheKey('cached-response')
   @CacheTTL(5000)
@@ -193,8 +191,7 @@ export class DemoPublicController {
     };
   }
 
-  @Get('/demos/cached-by-service')
-  @AllowAnonymous()
+  @Get('cached-by-service')
   async testCachedData() {
     const cacheKey = 'cached-data';
     const cachedData = await this.cacheManager.get(cacheKey);
@@ -212,16 +209,5 @@ export class DemoPublicController {
     await this.cacheManager.set(cacheKey, data, 5000);
 
     return data;
-  }
-
-  @Get('/demos/protected-route')
-  protectedRoute(@AuthenticationPrincipal() principal: UserPrincipal) {
-    return {
-      message: 'Protected route.',
-      sessionId: principal.sessionId,
-      role: principal.role,
-      accountId: principal.accountId,
-      email: principal.email,
-    };
   }
 }

@@ -25,7 +25,7 @@ import { RefreshTokenRequest } from '../dtos/refresh-token.request';
 import { AuthenticationPrincipal } from '../../../core/decorators/authentication-principal.decorator';
 import type { UserPrincipal } from '../../../core/types/request';
 
-@Controller()
+@Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
@@ -36,7 +36,7 @@ export class AuthController {
    * Send a 4-digit login code to the user's email.
    * Security: 60-second cooldown between sends, throttled to 10 requests/minute.
    */
-  @Post('/auth/send-code')
+  @Post('send-code')
   @AllowAnonymous()
   @Throttle({ default: { limit: 10 } })
   async sendCode(@Body() body: SendCodeRequest) {
@@ -47,7 +47,7 @@ export class AuthController {
    * Verify the 4-digit login code and authenticate the user.
    * Security: max 5 attempts per code, throttled to 5 requests/minute.
    */
-  @Post('/auth/verify-code')
+  @Post('verify-code')
   @AllowAnonymous()
   @Throttle({ default: { limit: 5 } })
   async verifyCode(
@@ -71,7 +71,7 @@ export class AuthController {
     };
   }
 
-  @Get('/auth/google')
+  @Get('google')
   @AllowAnonymous()
   @UseGuards(AuthGuard('google'))
   @UseFilters(OAuthRedirectExceptionFilter)
@@ -79,7 +79,7 @@ export class AuthController {
     // This route initiates the Google OAuth flow for customers
   }
 
-  @Get('/auth/google/callback')
+  @Get('google/callback')
   @AllowAnonymous()
   @UseGuards(AuthGuard('google'))
   @UseFilters(OAuthRedirectExceptionFilter)
@@ -114,7 +114,7 @@ export class AuthController {
     }
   }
 
-  @Post('/auth/refresh')
+  @Post('refresh')
   @AllowAnonymous()
   @Throttle({ default: { limit: 50 } })
   async refreshToken(
@@ -147,7 +147,7 @@ export class AuthController {
     };
   }
 
-  @Get('/auth/me')
+  @Get('me')
   getMe(@AuthenticationPrincipal() user: UserPrincipal) {
     return {
       accountId: user.accountId,

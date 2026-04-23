@@ -10,6 +10,16 @@ export interface PageQueryInput {
   include?: string | string[]; // Relations to include
 }
 
+export interface PageQueryResult {
+  nodes: unknown[];
+  pagination: {
+    currentPage: number;
+    itemsPerPage: number;
+    pagesCount: number;
+    itemsCount: number;
+  };
+}
+
 /**
  * Valid sort directions for database queries
  */
@@ -313,11 +323,11 @@ export const transformWithPagination = ({
   page,
   first,
 }: {
-  data: unknown;
+  data: unknown[];
   count: number;
   page: number;
   first: number;
-}) => {
+}): PageQueryResult => {
   // Calculate total number of pages (rounded up)
   const pagesCount = Math.ceil(count / first);
 

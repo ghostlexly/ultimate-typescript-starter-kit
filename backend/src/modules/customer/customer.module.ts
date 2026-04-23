@@ -5,9 +5,9 @@ import { CustomerService } from './customer.service';
 import { RegisterCustomerHandler } from './commands/register-customer/register-customer.handler';
 import { UpdateCustomerInformationsHandler } from './commands/update-customer-informations/update-customer-informations.handler';
 import { GetCustomerInformationsHandler } from './commands/get-customer-informations/get-customer-informations.handler';
-import { CustomerController } from './controllers/customer.controller';
-import { CustomerAdminController } from './controllers/customer.admin.controller';
 import { CustomerPublicController } from './controllers/customer.public.controller';
+import { CustomerAdminController } from './controllers/customer.admin.controller';
+import { CustomerController } from './controllers/customer.controller';
 import { AdminCreateCustomerHandler } from './commands/admin-create-customer/admin-create-customer.handler';
 
 const CommandHandlers = [
@@ -19,7 +19,7 @@ const CommandHandlers = [
 
 @Module({
   imports: [AuthModule, CountryModule],
-  controllers: [CustomerController, CustomerAdminController, CustomerPublicController],
+  controllers: [CustomerPublicController, CustomerAdminController, CustomerController],
   providers: [CustomerService, ...CommandHandlers],
 })
 export class CustomerModule {}

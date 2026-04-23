@@ -1,7 +1,7 @@
 {
-    # Disable admin API for security
-    admin off
-    debug
+    admin off # Disable admin API for security
+    #debug
+
     log {
         output stdout
         format console

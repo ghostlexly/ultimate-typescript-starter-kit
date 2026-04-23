@@ -1,13 +1,16 @@
-interface KillDragonCommandProps {
-  heroId: string;
-  dragonId: string;
+import { Command } from '@nestjs/cqrs';
+
+export interface KillDragonCommandResult {
+  dragonId: number;
+  heroId: number;
+  killed: boolean;
 }
 
-export class KillDragonCommand {
-  public readonly heroId: string;
-  public readonly dragonId: string;
-
-  constructor(props: KillDragonCommandProps) {
-    Object.assign(this, props);
+export class KillDragonCommand extends Command<KillDragonCommandResult> {
+  constructor(
+    public readonly heroId: number,
+    public readonly dragonId: number,
+  ) {
+    super();
   }
 }

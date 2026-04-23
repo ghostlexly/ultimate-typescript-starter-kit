@@ -7,7 +7,7 @@ import { UploadMediaCommand } from '../commands/upload-media/upload-media.comman
 import { UploadVideoCommand } from '../commands/upload-video/upload-video.command';
 import { ValidationException } from '../../../core/exceptions/validation.exception';
 
-@Controller('/media')
+@Controller('media')
 @AllowAnonymous()
 export class MediaController {
   constructor(private readonly commandBus: CommandBus) {}
@@ -37,7 +37,7 @@ export class MediaController {
     return this.commandBus.execute(new UploadMediaCommand({ file }));
   }
 
-  @Post('/video')
+  @Post('video')
   @UseInterceptors(
     FileInterceptor('file', {
       storage: multer.diskStorage({}),

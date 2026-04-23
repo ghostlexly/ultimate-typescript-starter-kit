@@ -1,16 +1,34 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Patch } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { AllowAnonymous } from '../../../core/decorators/allow-anonymous.decorator';
-import { RegisterCustomerRequest } from '../dtos/register-customer.request';
-import { RegisterCustomerCommand } from '../commands/register-customer/register-customer.command';
+import { Roles } from '../../../core/decorators/roles.decorator';
+import { UpdateCustomerInformationsRequest } from '../dtos/update-customer-informations.request';
+import { UpdateCustomerInformationsCommand } from '../commands/update-customer-informations/update-customer-informations.command';
+import { GetCustomerInformationsCommand } from '../commands/get-customer-informations/get-customer-informations.command';
+import { AuthenticationPrincipal } from '../../../core/decorators/authentication-principal.decorator';
+import type { UserPrincipal } from '../../../core/types/request';
 
-@Controller()
-@AllowAnonymous()
+@Controller('customer')
+@Roles(['CUSTOMER'])
 export class CustomerController {
   constructor(private readonly commandBus: CommandBus) {}
 
-  @Post('/customers/signup')
-  async registerCustomer(@Body() body: RegisterCustomerRequest) {
-    return this.commandBus.execute(new RegisterCustomerCommand(body));
+  @Patch('informations')
+  async updateCustomerInformations(
+    @AuthenticationPrincipal() principal: UserPrincipal,
+    @Body() body: UpdateCustomerInformationsRequest,
+  ) {
+    return this.commandBus.execute(
+      new UpdateCustomerInformationsCommand({
+        accountId: principal.accountId,
+        countryCode: body.countryCode,
+      }),
+    );
+  }
+
+  @Get('informations')
+  async getCustomerInformations(@AuthenticationPrincipal() user: UserPrincipal) {
+    return this.commandBus.execute(
+      new GetCustomerInformationsCommand({ accountId: user.accountId }),
+    );
   }
 }

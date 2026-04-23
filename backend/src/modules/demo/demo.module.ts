@@ -8,8 +8,10 @@ import { LaunchQueueHandler } from './commands/launch-queue/launch-queue.handler
 import { KillDragonHandler } from './commands/kill-dragon/kill-dragon.handler';
 import { FindAllAccountsHandler } from './commands/find-all-accounts/find-all-accounts.handler';
 import { GetPaginatedDataHandler } from './commands/get-paginated-data/get-paginated-data.handler';
+import { DbTransactionHandler } from './commands/db-transaction/db-transaction.handler';
 
 const CommandHandlers = [
+  DbTransactionHandler,
   TestPlayerHandler,
   LaunchQueueHandler,
   KillDragonHandler,
