@@ -90,11 +90,14 @@ export class DemoPublicController {
 
   @Get('serialize-with-class')
   @UseInterceptors(ClassSerializerInterceptor)
-  serializeWithClass() {
+  serializeWithClass(): DemoSerializeTestResponse {
     return new DemoSerializeTestResponse({
       firstName: 'John',
       lastName: 'Doe',
       password: '123456',
+      person: {
+        name: 'John DOE',
+      },
       age: 30,
     });
   }
