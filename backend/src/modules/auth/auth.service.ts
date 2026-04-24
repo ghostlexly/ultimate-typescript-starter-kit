@@ -17,11 +17,8 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {
-    const jwtPublicKey = this.configService.get<string>('APP_JWT_PUBLIC_KEY');
-
-    if (jwtPublicKey) {
-      this.jwtPublicKey = Buffer.from(jwtPublicKey, 'base64').toString('utf8');
-    }
+    const jwtPublicKey = this.configService.getOrThrow<string>('APP_JWT_PUBLIC_KEY');
+    this.jwtPublicKey = Buffer.from(jwtPublicKey, 'base64').toString('utf8');
   }
 
   async extractJwtPayload({ token }: { token: string }): Promise<any> {

@@ -81,6 +81,8 @@ export async function optimizeVideoJob(
       `Optimized video file ${mediaId} uploaded to S3 as ${newKey} successfully.`,
     );
   } catch (error) {
-    logger.error(`Error optimizing video ${job.data.mediaId}: ${error.message}`);
+    const message = error instanceof Error ? error.message : String(error);
+
+    logger.error(`Error optimizing video ${job.data.mediaId}: ${message}`);
   }
 }

@@ -41,7 +41,7 @@ describe('SendCodeHandler', () => {
     authService.createLoginCodeToken.mockResolvedValue(undefined as any);
 
     // ===== Act
-    const result = await handler.execute(new SendCodeCommand({ email: 'test@test.com' }));
+    const result = await handler.execute(new SendCodeCommand('test@test.com'));
 
     // ===== Assert
     expect(result).toEqual({
@@ -66,7 +66,7 @@ describe('SendCodeHandler', () => {
 
     // ===== Act & Assert
     await expect(
-      handler.execute(new SendCodeCommand({ email: 'unknown@test.com' })),
+      handler.execute(new SendCodeCommand('unknown@test.com')),
     ).rejects.toThrow('No account found with this email address.');
   });
 
@@ -77,9 +77,9 @@ describe('SendCodeHandler', () => {
     authService.getLoginCodeCooldownRemaining.mockResolvedValue(45);
 
     // ===== Act & Assert
-    await expect(
-      handler.execute(new SendCodeCommand({ email: 'test@test.com' })),
-    ).rejects.toThrow(HttpException);
+    await expect(handler.execute(new SendCodeCommand('test@test.com'))).rejects.toThrow(
+      HttpException,
+    );
 
     expect(eventBus.publish).not.toHaveBeenCalled();
   });

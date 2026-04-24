@@ -85,7 +85,9 @@ export class PdfService implements OnModuleDestroy {
 
       return pdfBuffer;
     } catch (error) {
-      this.logger.error(`Error converting HTML to PDF - ${error.message}`);
+      const message = error instanceof Error ? error.message : String(error);
+
+      this.logger.error(`Error converting HTML to PDF - ${message}`);
       throw new BusinessRuleException({
         code: 'PDF_CONVERSION_ERROR',
         message: 'Failed to convert HTML to PDF',
@@ -104,7 +106,9 @@ export class PdfService implements OnModuleDestroy {
         this.context = undefined;
       }
     } catch (error) {
-      this.logger.warn(`Error closing Playwright context - ${error.message}`);
+      const message = error instanceof Error ? error.message : String(error);
+
+      this.logger.warn(`Error closing Playwright context - ${message}`);
     }
     try {
       if (this.browser) {
@@ -112,7 +116,9 @@ export class PdfService implements OnModuleDestroy {
         this.browser = undefined;
       }
     } catch (error) {
-      this.logger.warn(`Error closing Playwright browser - ${error.message}`);
+      const message = error instanceof Error ? error.message : String(error);
+
+      this.logger.warn(`Error closing Playwright browser - ${message}`);
     }
   }
 }

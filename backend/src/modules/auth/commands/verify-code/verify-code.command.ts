@@ -1,13 +1,10 @@
-interface VerifyCodeCommandProps {
-  email: string;
-  code: string;
-}
+import { Command } from '@nestjs/cqrs';
 
-export class VerifyCodeCommand {
-  public readonly email: string;
-  public readonly code: string;
-
-  constructor(props: VerifyCodeCommandProps) {
-    Object.assign(this, props);
+export class VerifyCodeCommand extends Command<any> {
+  constructor(
+    public readonly email: string,
+    public readonly code: string,
+  ) {
+    super();
   }
 }

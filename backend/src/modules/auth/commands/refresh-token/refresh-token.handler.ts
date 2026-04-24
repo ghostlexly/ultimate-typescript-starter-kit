@@ -28,7 +28,9 @@ export class RefreshTokenHandler implements ICommandHandler<RefreshTokenCommand>
         refreshToken: newRefreshToken,
       };
     } catch (error) {
-      throw new BadRequestException(error.message);
+      const message = error instanceof Error ? error.message : String(error);
+
+      throw new BadRequestException(message);
     }
   }
 }

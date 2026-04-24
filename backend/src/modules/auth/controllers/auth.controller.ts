@@ -40,7 +40,7 @@ export class AuthController {
   @AllowAnonymous()
   @Throttle({ default: { limit: 10 } })
   async sendCode(@Body() body: SendCodeRequest) {
-    return this.commandBus.execute(new SendCodeCommand({ email: body.email }));
+    return this.commandBus.execute(new SendCodeCommand(body.email));
   }
 
   /**
@@ -55,7 +55,7 @@ export class AuthController {
     @Body() body: VerifyCodeRequest,
   ) {
     const { accessToken, refreshToken, role } = await this.commandBus.execute(
-      new VerifyCodeCommand({ email: body.email, code: body.code }),
+      new VerifyCodeCommand(body.email, body.code),
     );
 
     this.authService.setAuthCookies({
@@ -132,7 +132,7 @@ export class AuthController {
     }
 
     const { accessToken, refreshToken: newRefreshToken } = await this.commandBus.execute(
-      new RefreshTokenCommand({ refreshToken }),
+      new RefreshTokenCommand(refreshToken),
     );
 
     this.authService.setAuthCookies({

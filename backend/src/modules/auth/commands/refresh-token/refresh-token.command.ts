@@ -1,11 +1,7 @@
-interface RefreshTokenCommandProps {
-  refreshToken: string;
-}
+import { Command } from '@nestjs/cqrs';
 
-export class RefreshTokenCommand {
-  public readonly refreshToken: string;
-
-  constructor(props: RefreshTokenCommandProps) {
-    Object.assign(this, props);
+export class RefreshTokenCommand extends Command<any> {
+  constructor(public readonly refreshToken: string) {
+    super();
   }
 }

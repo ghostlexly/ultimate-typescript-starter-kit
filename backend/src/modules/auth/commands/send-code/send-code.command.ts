@@ -1,11 +1,7 @@
-interface SendCodeCommandProps {
-  email: string;
-}
+import { Command } from '@nestjs/cqrs';
 
-export class SendCodeCommand {
-  public readonly email: string;
-
-  constructor(props: SendCodeCommandProps) {
-    Object.assign(this, props);
+export class SendCodeCommand extends Command<any> {
+  constructor(public readonly email: string) {
+    super();
   }
 }

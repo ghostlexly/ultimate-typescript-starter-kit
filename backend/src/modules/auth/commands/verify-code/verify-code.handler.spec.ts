@@ -48,9 +48,7 @@ describe('VerifyCodeHandler', () => {
     db.prisma.account.findUnique.mockResolvedValue(mockAccount);
 
     // ===== Act
-    const result = await handler.execute(
-      new VerifyCodeCommand({ email: 'test@test.com', code: '1234' }),
-    );
+    const result = await handler.execute(new VerifyCodeCommand('test@test.com', '1234'));
 
     // ===== Assert
     expect(result).toEqual({
@@ -74,7 +72,7 @@ describe('VerifyCodeHandler', () => {
 
     // ===== Act & Assert
     await expect(
-      handler.execute(new VerifyCodeCommand({ email: 'test@test.com', code: '9999' })),
+      handler.execute(new VerifyCodeCommand('test@test.com', '9999')),
     ).rejects.toThrow(BadRequestException);
   });
 
@@ -89,9 +87,7 @@ describe('VerifyCodeHandler', () => {
 
     // ===== Act & Assert
     try {
-      await handler.execute(
-        new VerifyCodeCommand({ email: 'test@test.com', code: '9999' }),
-      );
+      await handler.execute(new VerifyCodeCommand('test@test.com', '9999'));
       fail('Should have thrown');
     } catch (error: any) {
       expect(error).toBeInstanceOf(BadRequestException);
