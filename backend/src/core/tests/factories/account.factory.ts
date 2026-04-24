@@ -9,8 +9,8 @@ export function createMockAccount(overrides: Partial<Account> = {}): Account {
     providerId: null,
     providerAccountId: null,
     isEmailVerified: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    createdAt: new Date('2025-10-29T09:00:00Z'),
+    updatedAt: new Date('2025-10-29T09:00:00Z'),
     ...overrides,
   };
 }

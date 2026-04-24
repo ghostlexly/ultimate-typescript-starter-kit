@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcrypt';
 import crypto from 'node:crypto';
@@ -10,22 +9,13 @@ import { authConstants } from './auth.constants';
 
 @Injectable()
 export class AuthService {
-  private readonly jwtPublicKey: string;
-
   constructor(
     private readonly db: DatabaseService,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
-  ) {
-    const jwtPublicKey = this.configService.getOrThrow<string>('APP_JWT_PUBLIC_KEY');
-    this.jwtPublicKey = Buffer.from(jwtPublicKey, 'base64').toString('utf8');
-  }
+  ) {}
 
   async extractJwtPayload({ token }: { token: string }): Promise<any> {
-    return await this.jwtService.verifyAsync(token, {
-      algorithms: ['RS256'],
-      secret: this.jwtPublicKey,
-    });
+    return await this.jwtService.verifyAsync(token);
   }
 
   /**

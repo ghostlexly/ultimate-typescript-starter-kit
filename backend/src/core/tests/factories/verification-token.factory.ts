@@ -10,9 +10,9 @@ export function createMockVerificationToken(
     accountId: 'account-123',
     value: '123456',
     attempts: 0,
-    expiresAt: new Date(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    expiresAt: new Date('2025-10-29T09:30:00Z'),
+    createdAt: new Date('2025-10-29T09:00:00Z'),
+    updatedAt: new Date('2025-10-29T09:00:00Z'),
     ...overrides,
   };
 }
