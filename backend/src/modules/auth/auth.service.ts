@@ -247,6 +247,7 @@ export class AuthService {
         sessionId: session.id,
         role: session.account.role,
         email: session.account.email,
+        iat: Math.floor(Date.now() / 1000),
       },
       {
         expiresIn: `${authConstants.accessTokenExpirationMinutes}m`,
@@ -258,13 +259,11 @@ export class AuthService {
 
     const refreshToken = await this.jwtService.signAsync(
       {
-        sessionId: session.id,
-        role: session.account.role,
-        email: session.account.email,
+        iat: Math.floor(Date.now() / 1000),
       },
       {
         expiresIn: `${authConstants.refreshTokenExpirationMinutes}m`,
-        subject: session.account.id,
+        subject: session.id,
         issuer: 'ts-starter-kit',
         audience: ['ts-starter-kit'],
       },
