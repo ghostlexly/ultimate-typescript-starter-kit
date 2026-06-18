@@ -1,4 +1,4 @@
-import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
@@ -7,12 +7,12 @@ import { DatabaseService } from 'src/modules/shared/services/database.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  private logger = new Logger(JwtStrategy.name);
+  private readonly logger = new Logger(JwtStrategy.name);
 
   constructor(
-    private db: DatabaseService,
+    private readonly db: DatabaseService,
     configService: ConfigService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
@@ -36,15 +36,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   validate(jwt: any) {
     try {
-      if (!jwt.payload) {
+      if (!jwt.sessionId) {
         this.logger.error("JWT token's payload is missing !");
         return false;
       }
 
-      const sessionId = jwt.payload.sub;
-      const role = jwt.payload.role;
-      const accountId = jwt.payload.accountId;
-      const email = jwt.payload.email;
+      const accountId = jwt.sub;
+      const role = jwt.role;
+      const sessionId = jwt.sessionId;
+      const email = jwt.email;
 
       if (!sessionId) {
         this.logger.error("Session ID is missing in JWT token's payload !");

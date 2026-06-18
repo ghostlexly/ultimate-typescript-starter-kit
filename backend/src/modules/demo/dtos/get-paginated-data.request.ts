@@ -1,5 +1,5 @@
 import { IsOptional, IsUUID } from 'class-validator';
-import { PageQueryDto } from 'src/core/dtos/page-query.dto';
+import { PageQueryDto } from '../../../core/utils/page-query';
 
 export class GetPaginatedDataQuery extends PageQueryDto {
   @IsOptional()

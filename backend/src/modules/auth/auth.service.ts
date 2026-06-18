@@ -242,29 +242,33 @@ export class AuthService {
       throw new Error('Session does not exist.');
     }
 
-    const accessToken = await this.jwtService.signAsync({
-      payload: {
-        sub: session.id,
-        accountId: session.account.id,
+    const accessToken = await this.jwtService.signAsync(
+      {
+        sessionId: session.id,
         role: session.account.role,
         email: session.account.email,
       },
-      options: {
+      {
         expiresIn: `${authConstants.accessTokenExpirationMinutes}m`,
+        subject: session.account.id,
+        issuer: 'ts-starter-kit',
+        audience: ['ts-starter-kit'],
       },
-    });
+    );
 
-    const refreshToken = await this.jwtService.signAsync({
-      payload: {
-        sub: session.id,
-        accountId: session.account.id,
+    const refreshToken = await this.jwtService.signAsync(
+      {
+        sessionId: session.id,
         role: session.account.role,
         email: session.account.email,
       },
-      options: {
+      {
         expiresIn: `${authConstants.refreshTokenExpirationMinutes}m`,
+        subject: session.account.id,
+        issuer: 'ts-starter-kit',
+        audience: ['ts-starter-kit'],
       },
-    });
+    );
 
     return {
       accessToken,
@@ -277,7 +281,7 @@ export class AuthService {
       throw new Error('Invalid or expired refresh token.');
     });
 
-    if (!jwt.payload) {
+    if (!jwt.sessionId) {
       throw new Error('This token does not provide a payload.');
     }
 
@@ -286,7 +290,7 @@ export class AuthService {
         account: true,
       },
       where: {
-        id: jwt.payload.sub,
+        id: jwt.sessionId,
         expiresAt: {
           gt: new Date(),
         },

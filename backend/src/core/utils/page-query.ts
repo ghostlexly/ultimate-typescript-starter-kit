@@ -1,14 +1,46 @@
+import { Transform, Type } from 'class-transformer';
+import { IsArray, IsInt, IsOptional, IsString, Min } from 'class-validator';
+
 /**
- * Shape accepted by the pagination/query utilities. DTOs that want to expose
- * pagination should extend `PageQueryDto` (see `src/core/dtos/page-query.dto.ts`)
- * which provides the matching class-validator decorators.
+ * Common pagination/query parameters DTO
+ * Used to validate query strings from HTTP requests with class-validator
  */
-export interface PageQueryInput {
-  page?: number; // Page number (1-indexed)
-  first?: number; // Items per page
-  sort?: string; // Sort string (e.g., 'name:asc,email:desc')
-  include?: string | string[]; // Relations to include
+export class PageQueryDto {
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  page?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  first?: number;
+
+  @IsOptional()
+  @IsString()
+  sort?: string;
+
+  // Accept either ?include=foo,bar or ?include=foo&include=bar
+  @IsOptional()
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  @IsArray()
+  @IsString({ each: true })
+  include?: string[];
 }
+
+/**
+ * Common pagination/query parameters input shape
+ * Allows additional unknown properties for flexibility
+ */
+export type PageQueryInput = {
+  page?: number;
+  first?: number;
+  sort?: string;
+  include?: string | string[];
+  [key: string]: unknown;
+};
 
 export interface PageQueryResult {
   nodes: unknown[];
@@ -178,8 +210,9 @@ const parseIncludes = (include?: string | string[]) => {
   // Handle array input
   if (Array.isArray(include)) {
     include.forEach((i) => includes.add(i));
-  } else {
-    // Handle string input (comma-separated)
+  }
+  // Handle string input (comma-separated)
+  else {
     include
       .split(',')
       .map((i) => i.trim())
@@ -323,11 +356,11 @@ export const transformWithPagination = ({
   page,
   first,
 }: {
-  data: unknown[];
+  data: unknown;
   count: number;
   page: number;
   first: number;
-}): PageQueryResult => {
+}) => {
   // Calculate total number of pages (rounded up)
   const pagesCount = Math.ceil(count / first);
 
