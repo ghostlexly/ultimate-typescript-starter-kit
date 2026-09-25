@@ -280,7 +280,10 @@ export class AuthService {
       throw new Error('Invalid or expired refresh token.');
     });
 
-    if (!jwt.sessionId) {
+    // The refresh token carries the session id in its `sub` (subject) claim
+    const sessionId: string | undefined = jwt.sub;
+
+    if (!sessionId) {
       throw new Error('This token does not provide a payload.');
     }
 
@@ -289,7 +292,7 @@ export class AuthService {
         account: true,
       },
       where: {
-        id: jwt.sessionId,
+        id: sessionId,
         expiresAt: {
           gt: new Date(),
         },

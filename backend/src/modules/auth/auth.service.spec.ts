@@ -7,17 +7,16 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { createMockSession } from 'src/core/tests/factories/session.factory';
 import { createMockAccount } from 'src/core/tests/factories/account.factory';
 
-function createMockJwtPayload(overrides = {}): any {
+/**
+ * Build the decoded claims of a refresh token.
+ * The session id lives in the `sub` (subject) claim, mirroring `generateAuthenticationTokens`.
+ */
+function createMockRefreshTokenPayload(overrides = {}): any {
   const fakeSession = createMockSession();
-  const fakeAccount = createMockAccount();
 
   return {
-    payload: {
-      sub: fakeSession.id,
-      accountId: fakeAccount.id,
-      role: fakeAccount.role,
-      email: fakeAccount.email,
-    },
+    sub: fakeSession.id,
+    iat: Math.floor(Date.now() / 1000),
     ...overrides,
   };
 }
@@ -195,14 +194,15 @@ describe('AuthService', () => {
   describe('refreshAuthenticationTokens', () => {
     it('should refresh tokens with valid refresh token', async () => {
       // ===== Arrange
-      const validRefreshToken = await jwtService.signAsync({
-        payload: createMockJwtPayload(),
-        options: {
-          expiresIn: `5m`,
-        },
-      });
-
       const fakeSession = createMockSession();
+      const validRefreshToken = await jwtService.signAsync(
+        {},
+        {
+          subject: fakeSession.id,
+          expiresIn: '5m',
+        },
+      );
+
       db.prisma.session.findUnique.mockResolvedValue({
         ...createMockSession(),
         account: createMockAccount(),
@@ -255,7 +255,7 @@ describe('AuthService', () => {
       // ===== Arrange
       jest
         .spyOn(authService, 'extractJwtPayload')
-        .mockResolvedValue(createMockJwtPayload());
+        .mockResolvedValue(createMockRefreshTokenPayload());
 
       db.prisma.session.findUnique.mockResolvedValue(null);
 
