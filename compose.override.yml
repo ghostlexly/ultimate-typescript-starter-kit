@@ -11,12 +11,10 @@ services:
       - lunisoft
 
   ts-starter-backend:
-    command: npm run start:dev
-    environment:
-      NODE_ENV: development
-    volumes:
-      - ./backend:/usr/src/app
-      - /usr/src/app/node_modules
+    # Don't start backend in dev — run it from your IDE instead.
+    # Profiles require to be run with the argument "docker compose --profile prod up -d"
+    profiles:
+      - prod
 
   ts-starter-frontend:
     command: npm run dev
