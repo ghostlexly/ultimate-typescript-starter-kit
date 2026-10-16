@@ -1,9 +1,11 @@
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module.js';
-import { setupApp } from './app.setup.js';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import cluster from 'node:cluster';
 import { availableParallelism } from 'node:os';
-import { NestExpressApplication } from '@nestjs/platform-express';
+import { AppModule } from './app.module.js';
+import { setupApp } from './app.setup.js';
+import type { Env } from './core/config/env.types.js';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -11,7 +13,10 @@ async function bootstrap() {
   // Shared configuration (also applied by the e2e tests)
   setupApp(app);
 
-  await app.listen(process.env.PORT ?? 3000);
+  const configService = app.get(ConfigService<Env, true>);
+  const port = configService.get('APP_PORT', { infer: true });
+
+  await app.listen(port);
 }
 
 if (cluster.isPrimary) {

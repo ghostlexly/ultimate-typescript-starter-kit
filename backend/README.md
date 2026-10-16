@@ -57,6 +57,42 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## Configuration (@nestjs/config)
+
+Environment variables are loaded by `ConfigModule` (global) from `.env`, then `../.env`, with real environment variables taking precedence. They are validated at startup against the Zod schema in `src/core/config/env.schema.ts`: the app refuses to boot on a missing or malformed value.
+
+- Add every new variable to `env.schema.ts` before reading it.
+- Read values through the typed service, never through `process.env`:
+
+```ts
+constructor(private readonly configService: ConfigService<Env, true>) {}
+
+const port = this.configService.get('APP_PORT', { infer: true });
+```
+
+## Database (Drizzle ORM)
+
+The database layer uses [Drizzle ORM](https://orm.drizzle.team) on PostgreSQL.
+
+- Schema: `src/core/database/schema/` (one table or enum per file, re-exported from `index.ts`)
+- Migrations: `migrations/` (generated SQL **and** `meta/`, both committed: `db:migrate` finds nothing to apply without `meta/_journal.json`)
+- Connection: `APP_DATABASE_CONNECTION_URL` (read from `.env` / `../.env` by drizzle-kit). When running tooling or the backend on the host, the URL must point at `localhost`, not at the Compose service name `ts-starter-postgres`, which only resolves inside Docker.
+- NestJS: `DatabaseModule` is global, inject the instance by type with `constructor(private readonly db: Database) {}`
+
+```bash
+# generate a migration from schema changes
+$ npm run db:generate -- --name <migration-name>
+
+# apply pending migrations
+$ npm run db:migrate
+
+# push the schema directly (prototyping only, no migration file)
+$ npm run db:push
+
+# browse the database
+$ npm run db:studio
+```
+
 ## Deployment
 
 When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
