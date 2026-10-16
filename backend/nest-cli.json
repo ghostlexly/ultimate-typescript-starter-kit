@@ -3,31 +3,6 @@
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
   "compilerOptions": {
-    "builder": {
-      "type": "swc",
-      "options": { "extensions": [".ts", ".tsx", ".js", ".jsx"] },
-      "typeCheck": true
-    },
-    "deleteOutDir": true,
-    "assets": [
-      {
-        "include": "views/**/*",
-        "watchAssets": true
-      },
-      {
-        "include": "public/**/*",
-        "watchAssets": true
-      },
-      {
-        "include": "**/*.json",
-        "exclude": "node_modules/**",
-        "watchAssets": true
-      },
-      {
-        "include": "**/*.csv",
-        "exclude": "node_modules/**",
-        "watchAssets": true
-      }
-    ]
+    "deleteOutDir": true
   }
 }
